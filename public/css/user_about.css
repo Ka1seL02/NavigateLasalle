@@ -1,0 +1,199 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    font-family: 'Inter';
+    background: url('../img/bg_user-about.jpg') no-repeat center center fixed;
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 2rem 0;
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+    width: 80%;
+}
+
+.banner-title {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.banner-title img {
+    width: 450px;
+}
+
+.banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.banner-text .title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: var(--light-green);
+    text-shadow: -4px 3px var(--dark-green);
+    letter-spacing: 0.2rem;
+    padding-right: 1rem;
+}
+
+.banner-text .small {
+    margin-top: -0.5rem;
+    padding-left: 3rem;
+    font-family: 'Caveat';
+    font-size: 1.5rem;
+}
+
+/* Navigation */
+.about-navigation {
+    margin-top: 0.5rem;
+}
+
+.nav-btn {
+    font-size: 0.9rem;
+    font-family: 'EB Garamond';
+    margin: 0 0.25rem;
+    padding: 0.5rem 1rem;
+    color: var(--white);
+    background-color: var(--orange);
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+/* Our DLSU-D */
+.about-dlsud {
+    display: flex;
+    gap: 5rem;
+    width: 70%;
+}
+
+.about-dlsud .left,
+.about-dlsud .right {
+    width: 50%;
+}
+
+.about-dlsud .left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.left .text {
+    font-size: 1rem;
+    font-family: 'EB Garamond';
+    color: var(--white);
+    text-align: justify;
+    background-color: var(--dark-green);
+    max-width: 450px;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+.about-dlsud .right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.about-dlsud .right img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 1rem;
+}
+
+/* Our Values */
+.about-values {
+    display: flex;
+    margin-top: 2rem;
+    width: 70%;
+}
+
+.values-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+.value-card {
+    flex: 1;
+    max-width: 300px;
+    height: 325px;
+    background-color: var(--dark-green);
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.value-card i {
+    font-size: 2rem;
+    color: var(--dark-green);
+    background-color: var(--white);
+    border-radius: 50%;
+    padding: 1rem;
+    margin-top: -4rem;
+}
+
+.value-card h2 {
+    border-bottom: 1px solid var(--white);
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+        -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.value-card p {
+    font-size: 0.9rem;
+}
+
+/* Our History */
+.about-history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+}
+
+.about-history p {
+    color: var(--white);
+    text-align: center;
+    width: 90%;
+    margin-bottom: 1rem;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+        -1px 1px 0 #000, 1px 1px 0 #000;
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle | About Campus</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/root.css">
+    <link rel="stylesheet" href="../css/user_about.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <!-- Logo -->
+    <img src="../img/dlsud_logo.png" class="logo" onclick="window.location.href='user_dashboard.html'">
+
+    <main>
+
+        <section class="header">
+            <!-- Banner Title -->
+            <div class="banner-title">
+                <img src="../img/about_brushstroke.png">
+                <div class="banner-text">
+                    <span class="title">DLSU-D</span>
+                    <span class="small">creating possibilities</span>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <nav class="about-navigation">
+                <button class="nav-btn" data-target="our-dlsud">Our DLSU-D</button>
+                <button class="nav-btn" data-target="core-values">Our Core Values</button>
+                <button class="nav-btn" data-target="our-history">Our History</button>
+            </nav>
+        </section>
+
+        <!-- Our DLSU-D -->
+        <section class="about-dlsud" id="about-dlsud">
+            <div class="left">
+                <div class="text">
+                    De La Salle University-Dasmariñas (DLSU-D) is a leading Catholic educational institution in Southern
+                    Luzon, known for its commitment to academic excellence, environmental stewardship, and social
+                    transformation. As part of the global Lasallian network, DLSU-D nurtures learners to become
+                    competent, compassionate, and responsible individuals ready to make a difference in society.
+                    <br><br>
+                    Nestled in a peaceful and eco-friendly campus in Dasmariñas City, Cavite, DLSU-D offers a vibrant
+                    learning environment where innovation meets tradition. With a strong emphasis on quality education
+                    and community involvement, the university continues to shape future leaders and changemakers
+                    grounded in faith, service, and integrity.
+                </div>
+            </div>
+            <div class="right">
+                <img src="../img/about_our-dlsud1.jpg">
+            </div>
+        </section>
+
+        <!-- Our Core Values -->
+        <section class="about-values" id="core-values">
+            <div class="values-container">
+                <div class="value-card">
+                    <i class='bx bx-bulb'></i>
+                    <h2>Our Mission</h2>
+                    <p>To champion the Human and Christian Education of lifelong learners who
+                        value history and culture
+                        through responsive and inclusive academic, research, and extension programs.</p>
+                </div>
+
+                <div class="value-card">
+                    <i class='bx bx-show'></i>
+                    <h2>Our Vision</h2>
+                    <p>A leading Catholic University that inspires excellence and drives
+                        innovation towards a just,
+                        peaceful, and sustainable society.</p>
+                </div>
+
+                <div class="value-card">
+                    <i class='bx bx-user'></i>
+                    <h2>Our Identity</h2>
+                    <p>DLSU-D - inspired by the charism of St. John Baptist De La Salle - is a
+                        Catholic Lasallian
+                        Institution of learning, committed to provide a human and Christian Education to the young,
+                        especially the poor and the marginalized.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our History -->
+        <section class="about-history" id="our-history">
+            <p>
+                From its origins as De La Salle University-Emilio Aguinaldo College until its evolution to Cavite's
+                premiere university,
+                learn about the history of De La Salle University-Dasmariñas through this video produced by the
+                Strategic Communications Office.
+            </p>
+
+            <video controls>
+                <source src="../videos/about_dlsud-history.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </section>
+    </main>
+
+    <script>
+        const buttons = document.querySelectorAll('.nav-btn');
+        const sections = {
+            "our-dlsud": document.getElementById('about-dlsud'),
+            "core-values": document.getElementById('core-values'),
+            "our-history": document.getElementById('our-history')
+        };
+
+        function hideAllSections() {
+            Object.values(sections).forEach(sec => sec.style.display = 'none');
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                hideAllSections();
+                const targetId = button.dataset.target;
+                const section = sections[targetId];
+                if (section) {
+                    section.style.display = 'flex';
+                }
+            });
+        });
+
+        // Show only the first section on load
+        hideAllSections();
+        sections["our-dlsud"].style.display = 'flex';
+    </script>
+
+</body>
+
+</html>

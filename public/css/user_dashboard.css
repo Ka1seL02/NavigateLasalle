@@ -1,0 +1,332 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    font-family: 'Inter', sans-serif;
+    background: url('../img/bg_user-dashboard.jpg') no-repeat center center fixed;
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 50vw;
+    height: 70vh;
+    gap: 0.5rem;
+}
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+    width: 300px;
+    background-color: var(--white);
+    border-radius: 30px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    align-self: right;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    padding: 0 10px;
+    font-size: 14px;
+    font-family: 'Inter';
+    font-style: italic;
+}
+
+.search-bar i {
+    font-size: 20px;
+    color: var(--dark-green);
+    cursor: pointer;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 0.3rem;
+}
+
+/* News Section */
+.news-section {
+    flex: 2;
+    display: flex;
+    flex-direction: row;
+    background-color: var(--green);
+    border-radius: 15px 0 0 15px;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.news-carousel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    justify-content: space-between;
+    color: var(--white);
+}
+
+/* News Container */
+.news-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: .5rem;
+}
+
+.news-card img {
+    height: 250px;
+    width: 100%;
+    object-fit: cover;
+    align-self: center;
+}
+
+.news-card h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    font-style: italic;
+    font-family: 'EB Garamond';
+    margin: 0.5rem 0;
+}
+
+.news-card p {
+    font-size: 0.9rem;
+    font-weight: 300;
+    font-family: 'Inter';
+    line-height: 1.5;
+}
+
+.news-card a {
+    background-color: var(--white);
+    color: var(--green);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: fit-content;
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+    border: 1px solid var(--green);
+    font-family: 'EB Garamond';
+}
+
+.news-card a:hover {
+    background-color: var(--green);
+    color: var(--white);
+    border: 1px solid var(--white);
+}
+
+/* News Tags */
+.tags {
+    font-size: 0.75rem;
+    font-weight: 100;
+}
+
+/* Indicators and controls for carousel */
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.carousel-indicators span {
+    font-size: 2rem;
+}
+
+.indicator {
+    cursor: pointer;
+    font-size: 24px;
+    margin: 0 5px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.3s ease;
+}
+
+.indicator.active {
+    color: var(--white);
+}
+
+.prev-btn, .next-btn {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.prev-btn:hover, .next-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Ensure smooth transitions */
+.news-card {
+    transition: opacity 0.3s ease;
+}
+
+.menu-section {
+    flex: 1.5;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.datetime {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    color: var(--white);
+    background-color: var(--green);
+    border-radius: 0 15px 0 0;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.datetime small {
+    margin-top: -5px;
+    font-style: italic;
+}
+
+.weatherlocation {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+    padding: 1.5rem;
+    gap: 0.5rem;
+}
+
+.weatherlocation div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.weatherlocation div img {
+    aspect-ratio: 1/1;
+    width: 100px;
+}
+
+.weatherlocation div h2 {
+    font-size: 3rem;
+    text-align: center;
+    line-height: 0.5;
+    font-family: 'Roboto';
+    color: var(--dark-grey);
+}
+
+.weatherlocation div h2 small {
+    font-size: 1rem;
+    font-weight: lighter;
+    font-style: italic;
+    color: var(--dark-green);
+}
+
+.weatherlocation p {
+    font-size: 0.80rem;
+    text-align: center;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--dark-green);
+}
+
+.controls {
+    flex: 6;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+    justify-items: center;
+    align-items: center;
+}
+
+.control-card {
+    width: 100%;
+    height: 100%;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--green);
+    padding: 1rem;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.control-card i {
+    font-size: 4rem;
+}
+
+.control-card h3 {
+    font-size: 1rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--green);
+    text-align: center;
+    font-family: 'Roboto';
+}
+
+.control-card:last-child {
+    border-radius: 0 0 15px 0;
+}
+
+/* Loading and Error States */
+.loading-indicator,
+.error-message,
+.no-news-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 300px;
+    color: var(--white);
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-indicator i,
+.error-message i,
+.no-news-message i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.bx-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
