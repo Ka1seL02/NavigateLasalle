@@ -42,5 +42,5 @@ const getLatestNews = async (limit = 5) => {
 module.exports = {
   connectDB,
   News,
-  getLatestNews
+  getLatestNews,
 };
