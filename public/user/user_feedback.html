@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle | Feedback</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/root.css">
+    <link rel="stylesheet" href="../css/user_feedback.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <img src="../img/dlsud_logo.png" class="logo">
+    <main>
+        <div class="link">
+            <a href="user_dashboard.html">Dashboard</a> /
+            <a href="user_help.html">Help</a> /
+            <a>Feedback</a>
+        </div>
+
+        <h1>Share your experience</h1>
+        <p>Thank you for sharing your thoughts with us. We truly value your input—whether it's an idea, a concern, or a kind word. While we may not be able to respond to every message individually, please know that your feedback is carefully reviewed and shared with the relevant teams. Your insights play a crucial role in helping us enhance Navigate La Salle, ensuring it becomes more intuitive, inclusive, and effective for everyone.</p>
+
+        <form method="POST">
+            <label for="rating">How would you rate your experience using Navigate La Salle?</label>
+            <div class="star-rating" id="star-rating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+
+            <label for="feedback">Please tell us your experience and struggles using Navigate La Salle.</label>
+            <textarea id="feedback" name="feedback" rows="4" placeholder="Enter your detailed feedback here..." required></textarea>
+
+            <button type="submit" id="submit-btn" disabled>Submit Feedback</button>
+        </form>
+    </main>
+
+    <script>
+        const form = document.querySelector('form');
+        const feedbackTextarea = document.getElementById('feedback');
+        const stars = document.querySelectorAll('.star');
+        const submitButton = document.getElementById('submit-btn');
+        let selectedRating = 0;
+
+        // Handle star click
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = star.getAttribute('data-value');
+                // Highlight stars
+                stars.forEach(s => {
+                    if (s.getAttribute('data-value') <= selectedRating) {
+                        s.classList.add('selected');
+                    } else {
+                        s.classList.remove('selected');
+                    }
+                });
+                checkFormValidity(); // Check form validity whenever a rating is selected
+            });
+        });
+
+        // Handle feedback input and check form validity
+        feedbackTextarea.addEventListener('input', checkFormValidity);
+
+        function checkFormValidity() {
+            if (selectedRating > 0 && feedbackTextarea.value.trim() !== "") {
+                submitButton.disabled = false; // Enable submit button
+            } else {
+                submitButton.disabled = true; // Disable submit button if no rating or feedback
+            }
+        }
+
+        // Handle form submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            try {
+                const feedbackData = {
+                    rating: selectedRating,
+                    feedback: feedbackTextarea.value.trim()
+                };
+
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(feedbackData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit feedback.');
+                }
+
+                // Show success message using Swal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thank you for your feedback!',
+                    text: 'Your feedback has been submitted successfully.',
+                    confirmButtonText: 'Close'
+                });
+
+                form.reset();
+                stars.forEach(s => s.classList.remove('selected'));
+                selectedRating = 0;
+                checkFormValidity(); // Recheck validity after form reset
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                // Show error message using Swal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error submitting feedback',
+                    text: 'Please try again later.',
+                    confirmButtonText: 'Close'
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
+

@@ -7,7 +7,7 @@ require('dotenv').config(); // Load env variables
 const { connectDB } = require('./public/db');
 
 const app = express();
-const port = process.env.PORT || 3000; // fallback if PORT is not set
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
@@ -17,8 +17,10 @@ app.use(express.static('public'));
 // Connect to database
 connectDB();
 
-// API Routes - now correctly referencing the path inside public folder
+// API Routes
 app.use('/api/news', require('./public/routes/api/news'));
+app.use('/api/faq', require('./public/routes/api/faq'));
+app.use('/api/feedback', require('./public/routes/api/feedback'));
 
 // Start the server
 app.listen(port, () => {

@@ -24,6 +24,9 @@
         </header>
 
         <div class="faq-container">
+            <!-- This is where the FAQ items should be generated. -->
+            <!-- Example layout and class name below 
+
             <div class="faq-item">
                 <div class="faq-question">
                     <p>What is Navigate La Salle?</p>
@@ -37,144 +40,68 @@
                 </div>
             </div>
 
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>Is the kiosk available 24/7?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>The kiosk is available during campus operational hours. Availability may vary depending on
-                        building schedules, maintenance, and campus events.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>Can I access the kiosk services remotely (e.g., through a website or app)?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Navigate La Salle is currently designed for on-campus access through kiosks. Remote access via a
-                        web portal or mobile application is under consideration for future development.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>What areas or buildings are covered by the kiosk system?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>The system covers key areas of DLSU-D, including academic buildings, administrative offices,
-                        libraries, cafeterias, clinics, recreational spaces, and notable landmarks across the campus.
-                    </p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>How accurate are the directions provided by the kiosk?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Navigate La Salle provides highly accurate, optimized, and efficient routes across the DLSU-D
-                        campus, always guiding you through the fastest and most convenient paths available.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>Does the map show real-time information, like construction zones or closed pathways?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Currently, the map does not display real-time construction zones or temporary closures. Future
-                        updates may integrate these features for even better navigation.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>How do I use the interactive map?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Users can easily search for locations, view campus maps, and get step-by-step directions by
-                        following on-screen prompts. The interface is designed to be intuitive and user-friendly,
-                        requiring no specific peripherals or complex interactions.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>Can I get directions to specific buildings/locations on campus?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Yes. Navigate La Salle allows users to search for specific destinations and provides detailed
-                        routing instructions across the campus.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>How do I report a technical issue with the kiosk?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>To report a technical issue, users can use the “Provide Feedback” button on the kiosk dashboard.
-                        You can enter your name (optional), email (optional), user type (visitor, student, faculty,
-                        etc.), and a description of the issue encountered.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>How can I provide feedback about my experience with the kiosk?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Feedback can be submitted through the “Provide Feedback” section on the kiosk. Users can
-                        optionally include their name and email address, select their role (e.g., visitor, student,
-                        faculty), and share their comments or suggestions.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>How often is the information updated on the kiosk?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Information displayed on Navigate La Salle is updated regularly by system administrators to
-                        ensure accuracy and relevance for all users.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">
-                    <p>Can I print directions or information from the kiosk?</p>
-                    <i class='bx bx-plus'></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Printing is not available. However, users are welcome to take a picture of the displayed
-                        information. All content shown is intended for public view, and no sensitive data is presented
-                        on the kiosks.</p>
-                </div>
-            </div>
+            -->
         </div>
 
         <img src="../img/dlsud_logo.png" onclick="window.location.href='user_dashboard.html'">
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
+            const faqContainer = document.querySelector(".faq-container");
+
+            try {
+                // Fetch FAQs from the API
+                const response = await fetch('/api/faq');
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch FAQs');
+                }
+
+                const faqs = await response.json();
+
+                if (faqs.length === 0) {
+                    faqContainer.innerHTML = '<p class="no-faqs">No FAQs available at the moment.</p>';
+                    return;
+                }
+
+                // Generate FAQ items HTML
+                faqs.forEach(faq => {
+                    const faqItem = document.createElement('div');
+                    faqItem.className = 'faq-item';
+
+                    faqItem.innerHTML = `
+                <div class="faq-question">
+                    <p>${faq.question}</p>
+                    <i class='bx bx-plus'></i>
+                </div>
+                <div class="faq-answer">
+                    <p>${faq.answer}</p>
+                </div>
+            `;
+
+                    faqContainer.appendChild(faqItem);
+                });
+
+                // Add click event listeners to the FAQ items
+                setupFAQInteractions();
+
+            } catch (error) {
+                console.error('Error fetching FAQs:', error);
+                faqContainer.innerHTML = '<p class="error-message">Failed to load FAQs. Please try again later.</p>';
+            }
+        });
+
+        function setupFAQInteractions() {
             const faqItems = document.querySelectorAll(".faq-item");
 
             faqItems.forEach(item => {
                 const question = item.querySelector(".faq-question");
                 const answer = item.querySelector(".faq-answer");
                 const icon = question.querySelector("i");
+
+                // Initially hide all answers
+                answer.style.display = "none";
 
                 question.addEventListener("click", () => {
                     // Close all other open answers
@@ -195,7 +122,7 @@
                     icon.classList.toggle("bx-minus", !isOpen);
                 });
             });
-        });
+        }
     </script>
 </body>
 

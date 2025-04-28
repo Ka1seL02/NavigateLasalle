@@ -1,0 +1,125 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    font-family: 'Inter';
+    background: url('../img/bg_user-feedback.png') no-repeat center center fixed;
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    height: 600px;
+    gap: 1rem;
+    justify-content: space-between;
+    overflow-y: auto;
+    padding: 2rem 0;
+}
+
+/* Links */
+.link {
+    display: flex;
+    color: var(--light-grey);
+    font-weight: 200;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.link a {
+    text-decoration: none;
+    color: var(--dark-grey);
+}
+
+.link a:last-of-type {
+    font-weight: 600;
+    border-bottom: 2px solid var(--green);
+    color: var(--green);
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--dark-grey);
+    font-family: 'EB Garamond';
+}
+
+p {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--dark-grey);
+}
+
+/* Feedback Form */
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 1rem;
+}
+
+form label {
+    font-family: 'EB Garamond';
+    font-size: 1.2rem;
+    color: var(--dark-grey);
+    align-self: flex-start;
+}
+
+form textarea {
+    width: 100%;
+    height: 100px;
+    padding: 1rem;
+    border-radius: 15px;
+    border: 1px solid var(--light-grey);
+    background-color: var(--white);
+    color: var(--dark-grey);
+    font-family: 'Poppins';
+    font-weight: 300;
+    resize: none;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+form button {
+    width: fit-content;
+    padding: 1rem;
+    border-radius: 15px;
+    border: none;
+    background-color: var(--green);
+    color: var(--white);
+    font-family: 'Poppins';
+    font-weight: bold;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+form button:disabled {
+    background-color: var(--shadow);
+    color: var(--light-grey);
+    cursor: not-allowed;
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.star {
+    font-size: 4rem;
+    color: var(--light-grey);
+    transition: color 0.2s;
+}
+
+.star.selected {
+    color: var(--green);
+}
