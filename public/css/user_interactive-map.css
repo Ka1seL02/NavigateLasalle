@@ -1,0 +1,119 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: url('../img/bg_user-dashboard.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+}
+
+nav {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background-color: var(--white);
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+nav.collapsed {
+    width: 40px;
+}
+
+/* Collapse button */
+nav i {
+    width: 100%;
+    height: 40px;
+    color: var(--white);
+    background-color: var(--dark-green);
+    font-size: 1.5rem;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+nav.collapsed i {
+    transform: rotate(180deg);
+}
+
+nav.collapsed .sidebar-search,
+nav.collapsed .sidebar-list {
+    display: none;
+}
+
+/* Sidebar search container */
+.sidebar-search {
+    display: flex;
+    height: 50px;
+    background-color: var(--white);
+    border: 1px solid var(--black);
+    border-right: none;
+}
+
+.sidebar-search i {
+    width: 20%;
+    padding-left: 1.5rem;
+    background-color: var(--white);
+    color: var(--dark-green);
+}
+
+.sidebar-search input {
+    width: 80%;
+    border: none;
+}
+
+/* Building list */
+.sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    border-left: 1px solid var(--black);
+    height: 630px;
+    width: 100%;
+}
+
+.sidebar-list li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--dirty-white);
+}
+
+li .number {
+    width: 40px;
+    height: 40px;
+    background-color: var(--orange);
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-family: 'EB Garamond';
+}
+
+.building-info {
+    font-family: 'Roboto';
+    margin-left: 0.5rem;
+}
+
+.building-info h3 {
+    font-size: 1.2rem;
+}
+
+.building-info p {
+    font-size: 0.9rem;
+    font-weight: 300;
+    font-style: italic;
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle | Dashboard</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/root.css">
+    <link rel="stylesheet" href="../css/user_interactive-map.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <img src="../img/dlsud_logo.png" class="logo">
+    <nav id="sidebar">
+        <i class="bx bx-chevrons-right" id="collapse-btn"></i>
+        <div class="sidebar-search">
+            <i class='bx bx-search'></i>
+            <input type="text" placeholder="Search for a location...">
+        </div>
+        <ul class="sidebar-list">
+            <li>
+                <span class="number">1</span>
+                <div class="building-info">
+                    <h3>AB Building</h3>
+                    <p>Antonio de las Alas Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">2</span>
+                <div class="building-info">
+                    <h3>JFH Building</h3>
+                    <p>Julian Felipe Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">3</span>
+                <div class="building-info">
+                    <h3>PCH Building</h3>
+                    <p>Paulo Campos Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">4</span>
+                <div class="building-info">
+                    <h3>JPL Building</h3>
+                    <p>Jose P. Laurel Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">5</span>
+                <div class="building-info">
+                    <h3>JRH Building</h3>
+                    <p>Jose Rizal Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">6</span>
+                <div class="building-info">
+                    <h3>JGH Building</h3>
+                    <p>Jose Garcia Villa Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">7</span>
+                <div class="building-info">
+                    <h3>JSH Building</h3>
+                    <p>Jose S. Alano Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">8</span>
+                <div class="building-info">
+                    <h3>JMH Building</h3>
+                    <p>Jose M. Alano Hall</p>
+                </div>
+            </li>
+            <li>
+                <span class="number">9</span>
+                <div class="building-info">
+                    <h3>JCH Building</h3>
+                    <p>Jose C. Villanueva Hall</p>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const collapseBtn = document.getElementById('collapse-btn');
+
+            collapseBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed'); // Toggle the "collapsed" class
+            });
+        });
+    </script>
+</body>
+
+</html>
