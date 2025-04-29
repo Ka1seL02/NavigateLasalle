@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,11 @@
     <!-- Styles -->
     <link rel="stylesheet" href="../css/root.css">
     <link rel="stylesheet" href="../css/user_dashboard.css">
+    <link rel="stylesheet" href="../css/user_news-modal.css">
     <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 </head>
+
 <body>
     <img src="../img/dlsud_logo.png" class="logo">
     <main>
@@ -19,7 +22,6 @@
         </div>
         <div class="main-content">
             <div class="news-section">
-                <!-- Prev Button -->
                 <button class="prev-btn">
                     <i class='bx bx-chevron-left'></i>
                 </button>
@@ -43,8 +45,9 @@
                 <button class="next-btn">
                     <i class='bx bx-chevron-right'></i>
                 </button>
-                <!-- Next Button -->
             </div>
+
+            <!-- Other Items -->
             <div class="menu-section">
                 <div class="datetime">
                     <h1>13:00</h1>
@@ -52,15 +55,15 @@
                 </div>
                 <div class="weatherlocation">
                     <div>
-                        <img src="../img/weather_img.png">
-                        <h2>
+                        <img id="weather-icon" src="../img/weather_img.png">
+                        <h2 id="weather-temp">
                             30°C<br>
                             <small>Dasmarinas, Cavite</small>
                         </h2>
                     </div>
-                    <p>
+                    <p id="weather-quote">
                         "Sunny days are perfect for outdoor activities.<br>
-                        Stay hyrdrated and have fun!"
+                        Stay hydrated and have fun!"
                     </p>
                 </div>
                 <div class="controls">
@@ -82,21 +85,61 @@
                     </div>
                 </div>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', async () => {
+                    try {
+                        const response = await fetch('news_modal.html');
+                        if (!response.ok) {
+                            throw new Error('Failed to load news modal');
+                        }
+                        const modalHTML = await response.text();
+                        const mainElement = document.querySelector('main');
+                        mainElement.insertAdjacentHTML('beforeend', modalHTML);
+
+                        const closeModalButton = document.getElementById('close-modal');
+                        closeModalButton.addEventListener('click', () => {
+                            document.getElementById('news-modal').style.display = 'none';
+                        });
+                    } catch (error) {
+                        console.error('Error loading news modal:', error);
+                    }
+                });
+            </script>
         </div>
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async () => {
             const newsContainer = document.getElementById('news-container');
             const indicatorsContainer = document.getElementById('carousel-indicators');
             const prevBtn = document.querySelector('.prev-btn');
             const nextBtn = document.querySelector('.next-btn');
-            
+
             let currentIndex = 0;
             let newsItems = [];
             let autoSlideInterval;
             const autoSlideDelay = 5000; // 5 seconds
-            
+
+            // Load the news modal dynamically
+            try {
+                const response = await fetch('news_modal.html');
+                if (!response.ok) {
+                    throw new Error('Failed to load news modal');
+                }
+                const modalHTML = await response.text();
+                const mainElement = document.querySelector('main');
+                mainElement.insertAdjacentHTML('beforeend', modalHTML);
+
+                // Add close functionality to the modal
+                const closeModalButton = document.getElementById('close-modal');
+                closeModalButton.addEventListener('click', () => {
+                    document.getElementById('news-modal').style.display = 'none';
+                });
+            } catch (error) {
+                console.error('Error loading news modal:', error);
+            }
+
             // Fetch news from API
             async function fetchNews() {
                 try {
@@ -104,7 +147,7 @@
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    
+
                     newsItems = await response.json();
                     renderNews();
                     initializeCarousel();
@@ -118,7 +161,7 @@
                     `;
                 }
             }
-            
+
             // Render news items in carousel
             function renderNews() {
                 if (newsItems.length === 0) {
@@ -130,21 +173,21 @@
                     `;
                     return;
                 }
-                
+
                 // Clear container
                 newsContainer.innerHTML = '';
                 indicatorsContainer.innerHTML = '';
-                
+
                 // Create news cards
                 newsItems.forEach((item, index) => {
                     // Format date
                     const newsDate = new Date(item.date);
                     const formattedDate = newsDate.toLocaleDateString('en-US', {
-                        month: 'long', 
-                        day: 'numeric', 
+                        month: 'long',
+                        day: 'numeric',
                         year: 'numeric'
                     }).toUpperCase();
-                    
+
                     // Create news card
                     const newsCard = document.createElement('div');
                     newsCard.className = 'news-card';
@@ -160,12 +203,12 @@
                             </span>
                         </div>
                         <h2>${item.title}</h2>
-                        <p>${item.description}</p>
-                        <a href="#">Read more</a>
+                        <p>${item.lead}</p>
+                        <a href="#" class="read-more" data-index="${index}">Read more</a>
                     `;
-                    
+
                     newsContainer.appendChild(newsCard);
-                    
+
                     // Create indicator
                     const indicator = document.createElement('span');
                     indicator.className = index === 0 ? 'indicator active' : 'indicator';
@@ -173,25 +216,53 @@
                     indicator.textContent = '•';
                     indicatorsContainer.appendChild(indicator);
                 });
+
+                initializeReadMoreButtons(); // Initialize "Read More" buttons
             }
-            
+
+            // Initialize "Read More" buttons
+            function initializeReadMoreButtons() {
+                const readMoreButtons = document.querySelectorAll('.read-more');
+
+                readMoreButtons.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault();
+
+                        const index = button.getAttribute('data-index');
+                        const newsItem = newsItems[index];
+
+                        // Update modal content
+                        document.getElementById('modal-day').textContent = new Date(newsItem.date).getDate();
+                        document.getElementById('modal-month').textContent = new Date(newsItem.date).toLocaleString('en-US', { month: 'short' }).toUpperCase();
+                        document.getElementById('modal-title').textContent = newsItem.title;
+                        document.getElementById('modal-tag').innerHTML = `<i class='bx bxs-tag'></i> ${newsItem.tag}`;
+                        document.getElementById('modal-image').src = newsItem.imageUrl;
+                        document.getElementById('modal-lead').textContent = newsItem.lead;
+                        document.getElementById('modal-description').textContent = newsItem.description;
+
+                        // Show the modal
+                        document.getElementById('news-modal').style.display = 'flex';
+                    });
+                });
+            }
+
             // Initialize carousel functionality
             function initializeCarousel() {
                 const cards = document.querySelectorAll('.news-card');
                 const indicators = document.querySelectorAll('.indicator');
-                
+
                 if (cards.length === 0) return;
-                
+
                 // Function to show a specific card
                 function showCard(index) {
                     // Hide all cards
                     cards.forEach(card => {
                         card.style.display = 'none';
                     });
-                    
+
                     // Show the selected card
                     cards[index].style.display = 'flex';
-                    
+
                     // Update indicators
                     indicators.forEach((indicator, i) => {
                         if (i === index) {
@@ -200,63 +271,63 @@
                             indicator.classList.remove('active');
                         }
                     });
-                    
+
                     // Update current index
                     currentIndex = index;
                 }
-                
+
                 // Function to start auto slide
                 function startAutoSlide() {
                     // Clear any existing interval first
                     clearInterval(autoSlideInterval);
-                    
+
                     // Set new interval
-                    autoSlideInterval = setInterval(function() {
+                    autoSlideInterval = setInterval(function () {
                         let nextIndex = (currentIndex + 1) % cards.length;
                         showCard(nextIndex);
                     }, autoSlideDelay);
                 }
-                
+
                 // Function to handle manual navigation
                 function manualNavigate(index) {
                     showCard(index);
-                    
+
                     // Reset the auto slide timer
                     startAutoSlide();
                 }
-                
+
                 // Event listeners for navigation buttons
-                prevBtn.addEventListener('click', function() {
+                prevBtn.addEventListener('click', function () {
                     let prevIndex = (currentIndex - 1 + cards.length) % cards.length;
                     manualNavigate(prevIndex);
                 });
-                
-                nextBtn.addEventListener('click', function() {
+
+                nextBtn.addEventListener('click', function () {
                     let nextIndex = (currentIndex + 1) % cards.length;
                     manualNavigate(nextIndex);
                 });
-                
+
                 // Event listeners for indicators
                 indicators.forEach((indicator, index) => {
-                    indicator.addEventListener('click', function() {
+                    indicator.addEventListener('click', function () {
                         manualNavigate(index);
                     });
                 });
-                
+
                 // Start auto slide
                 startAutoSlide();
-                
+
                 // Pause auto slide when hovering over the carousel
-                newsContainer.addEventListener('mouseenter', function() {
+                newsContainer.addEventListener('mouseenter', function () {
                     clearInterval(autoSlideInterval);
                 });
-                
+
                 // Resume auto slide when mouse leaves the carousel
-                newsContainer.addEventListener('mouseleave', function() {
+                newsContainer.addEventListener('mouseleave', function () {
                     startAutoSlide();
                 });
             }
-            
+
             // Update datetime
             function updateDateTime() {
                 const now = new Date();
@@ -264,20 +335,61 @@
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const dateStr = now.toLocaleDateString('en-US', options);
-                
+
                 document.querySelector('.datetime h1').textContent = `${hours}:${minutes}`;
                 document.querySelector('.datetime small').textContent = dateStr;
             }
-            
+
             // Initialize
             fetchNews();
-            
+
             // Initial datetime update
             updateDateTime();
-            
+
             // Update datetime every minute
             setInterval(updateDateTime, 60000);
         });
+
+        // Fetch weather data from OpenWeatherMap
+        fetch('https://api.openweathermap.org/data/2.5/weather?q=Dasmarinas,PH&appid=7e2f1538e6abf5b08339d02cc1af4b15&units=metric')
+            .then(response => response.json())
+            .then(data => {
+                const temp = (data.main.temp).toFixed(1);
+                const weather = data.weather[0].description;
+                const iconCode = data.weather[0].icon;
+
+                document.getElementById('weather-temp').innerHTML = `${temp}°C<br><small>Dasmarinas, Cavite</small>`;
+                document.getElementById('weather-quote').innerText = getWeatherDescription(weather);
+
+                const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                document.getElementById('weather-icon').src = iconUrl;
+            })
+            .catch(error => console.error('Error fetching weather data:', error));
+
+        function getWeatherDescription(weatherDescription) {
+            if (weatherDescription.includes('clear sky')) {
+                return "Clear skies with no clouds in sight.";
+            } else if (weatherDescription.includes('few clouds')) {
+                return "A few clouds scattered across the sky.";
+            } else if (weatherDescription.includes('scattered clouds')) {
+                return "Scattered clouds with some breaks of blue sky.";
+            } else if (weatherDescription.includes('overcast clouds')) {
+                return "Broken clouds, but the sky is still visible in places.";
+            } else if (weatherDescription.includes('shower rain')) {
+                return "Light rain showers are occurring.";
+            } else if (weatherDescription.includes('rain')) {
+                return "Moderate to heavy rain with overcast skies.";
+            } else if (weatherDescription.includes('thunderstorm')) {
+                return "Thunderstorms with heavy rain and lightning.";
+            } else if (weatherDescription.includes('snow')) {
+                return "Snowfall with cold temperatures.";
+            } else if (weatherDescription.includes('mist')) {
+                return "Misty conditions, reducing visibility.";
+            } else {
+                return "The weather is currently clear.";
+            }
+        }
     </script>
 </body>
+
 </html>
