@@ -6,20 +6,13 @@
     --black: #000000;
     --shadow: #e0e0e0;
     --dark-grey: #353535;
+    --grey: #545454;
     --light-grey: #9fa0a9;
     /* Other colors */
     --green: #008a3d;
     --light-green: #00c657;
     --dark-green: #00401c;
     --red: #f80504;
+    --dark-red: #8a0000;
     --orange: #ff7b00;
-}
-
-/* DLSUD Logo */
-.logo {
-    position: absolute;
-    width: 5rem;
-    top: 0;
-    left: 0;
-    margin: 1rem 1rem;
 }

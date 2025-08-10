@@ -1,0 +1,185 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: var(--dirty-white);
+}
+
+/* Sidebar */
+nav {
+    background-color: var(--white);
+    height: 100vh;
+    width: 300px;
+    border-right: 1px solid var(--light-grey);
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem;
+}
+
+.nav-header img {
+    width: 5rem;
+    rotate: 180deg;
+}
+
+.nav-header h2 {
+    font-family: 'Montserrat';
+    font-size: 2.25rem;
+    margin-top: 1rem;
+    color: var(--grey);
+    text-shadow:
+        -1px -1px 0 var(--dark-grey),
+        1px -1px 0 var(--dark-grey),
+        -1px 1px 0 var(--dark-grey),
+        1px 1px 0 var(--dark-grey);
+    /* Outline effect */
+}
+
+.nav-header h1,
+.nav-header small {
+    font-family: 'Caveat';
+}
+
+.nav-header h1 {
+    font-size: 3rem;
+    color: var(--green);
+    margin-top: -0.5rem;
+}
+
+.nav-header small {
+    font-size: 1.75rem;
+    color: var(--orange);
+    text-align: right;
+    width: 150px;
+    margin-top: -1rem;
+}
+
+/* Sidebar Links */
+.nav-menu {
+    flex: 1 1 0;
+    overflow: auto;
+    margin-top: 1rem;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: var(--green);
+    font: 500 1.25rem 'EB Garamond';
+    transition: all 0.3s ease;
+}
+
+.nav-menu a:hover {
+    color: var(--white);
+    background-color: var(--green);
+}
+
+.nav-menu a.active {
+    color: var(--white);
+    background-color: var(--green);
+}
+
+.nav-menu a i {
+    padding: 1rem 1rem 1rem 2rem;
+    margin-right: 1rem;
+}
+
+/* Main content area */
+main {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.top-accent {
+    background-color: var(--light-green);
+    height: 2rem;
+    max-height: 30px;
+    border-bottom: 1px solid var(--grey);
+    flex-shrink: 0;
+}
+
+.page-header {
+    background-color: var(--white);
+    height: 6rem;
+    max-height: 100px;
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid var(--light-grey);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.page-header h2 {
+    font-family: 'EB Garamond';
+    font-size: 2rem;
+    color: var(--grey);
+}
+
+.page-header p {
+    font-family: 'Roboto';
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--grey);
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1 1 auto;
+    padding: 1rem 2rem;
+    min-height: 0;
+}
+
+.bottom-accent {
+    background-color: var(--white);
+    height: 2rem;
+    max-height: 30px;
+    border-top: 1px solid var(--grey);
+    flex-shrink: 0;
+}
+
+/* Modal Background */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    z-index: 1000;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.active {
+    visibility: visible;
+    opacity: 1;
+}

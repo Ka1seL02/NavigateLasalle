@@ -1,0 +1,319 @@
+.news-toolbar {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    width: 100%;
+    font-family: 'Roboto';
+    flex-shrink: 0;
+}
+
+.news-toolbar input {
+    width: 250px;
+    border: none;
+    border-bottom: 1px solid var(--grey);
+    padding: 0.3rem 1rem;
+    font-family: 'Roboto';
+    font-style: italic;
+    margin-right: auto;
+    overflow-x: auto;
+    border-radius: 5px 5px 0 0;
+}
+
+.news-toolbar select {
+    padding-left: 10px;
+    border-radius: 5px;
+    color: var(--grey);
+}
+
+#open-add-news-modal-btn {
+    background-color: var(--green);
+    color: var(--white);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 500;
+    font-family: 'Roboto';
+}
+
+.news-list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+    min-height: 0;
+}
+
+.news-list-item {
+    display: flex;
+    background-color: var(--white);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--light-grey);
+    border-radius: 5px;
+    gap: 1rem;
+    font-family: 'Roboto';
+    color: var(--grey);
+}
+
+/* News Image */
+.news-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+/* News Details */
+.news-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.news-title {
+    font-family: 'EB Garamond';
+    font-size: 1.5rem;
+    color: var(--black);
+}
+
+.news-lead,
+.news-description,
+.news-date,
+.news-tags {
+    font-family: 'Roboto';
+    font-size: 0.9rem;
+    color: var(--grey);
+}
+
+/* News actions */
+.news-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.news-actions button {
+    border: 1px solid var(--dark-green);
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--dark-green);
+    transition: all 0.3s ease;
+}
+
+#edit-btn:hover {
+    background-color: var(--orange);
+    color: var(--white);
+    border: 1px solid var(--orange);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#delete-btn:hover {
+    background-color: var(--red);
+    color: var(--white);
+    border: 1px solid var(--red);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal container */
+.modal-content {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 900px;
+    position: relative;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal.active .modal-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Close button */
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--dark-grey);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: var(--red);
+}
+
+/* Modal Elements */
+/* Header */
+.modal-content h2 {
+    font-family: 'EB Garamond';
+    font-size: 2rem;
+    color: var(--dark-green);
+}
+
+.modal-content p {
+    font-family: 'EB Garamond';
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--dark-grey);
+    margin-bottom: 1rem;
+}
+
+#add-news-form {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+/* Form layouts */
+.img-section {
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+    padding-right: 1rem;
+}
+
+.detail-section {
+    display: flex;
+    flex-direction: column;
+    width: 65%;
+    padding-left: 1rem;
+    border-left: 1px solid var(--light-grey);
+}
+
+/* Image preview */
+.upload-area {
+    border: 1px dashed var(--grey);
+    border-radius: 4px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.upload-area i {
+    font-size: 2rem;
+    color: var(--grey);
+}
+
+input[type='file'] {
+    align-self: center;
+}
+
+/* Details section */
+/* Label left,inputs right */
+.form-row {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+}
+
+.field-label {
+    width: 20%;
+    padding-top: 0.75rem;
+    padding-right: 1rem;
+    text-align: right;
+    font-weight: bold;
+    color: var(--dark-green);
+}
+
+.field-input {
+    width: 80%;
+}
+
+/* Form inputs */
+.field-input input,
+textarea,
+.field-input select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--grey);
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.field-input select {
+    width: 50%;
+    color: var(--dark-grey);
+    font-family: 'EB Garamond';
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+textarea[name='lead'] {
+    min-height: 75px;
+    resize: none;
+}
+
+textarea[name='description'] {
+    min-height: 200px;
+    resize: none;
+}
+
+/* Form buttons */
+.button-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    gap: 0.5rem;
+    justify-content: right;
+}
+
+.button-row button {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    border: none;
+    padding: 1rem 1rem;
+    font-weight: 500;
+    font-family: 'Roboto';
+    font-size: 1rem;
+}
+
+button[type='submit'] {
+    background-color: var(--green);
+    color: var(--white);
+
+}
+
+button[type='submit']:hover {
+    background-color: var(--dark-green);
+    cursor: pointer;
+}
+
+button[type='button'] {
+    background-color: var(--dark-red);
+    color: var(--white);
+}
+
+button[type='button']:hover {
+    background-color: var(--red);
+    cursor: pointer;
+}

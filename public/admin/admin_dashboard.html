@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle | Dashboard</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/root.css">
+    <link rel="stylesheet" href="../css/admin_common.css">
+    <link rel="stylesheet" href="../css/admin_dashboard.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav></nav>
+
+    <main>
+        <div class="top-accent"></div>
+        <div class="page-header">
+            <h2>Dashboard</h2>
+            <p>Welcome back, Admin!</p>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content"></div>
+        <div class="bottom-accent"></div>
+    </main>
+</body>
+
+<script>
+    fetch('sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector('nav').innerHTML = data;
+
+            // After sidebar is loaded, set active link
+            const page = location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                if (link.getAttribute('href') === page) {
+                    link.classList.add('active');
+                }
+            });
+        });
+</script>
+
+</html>

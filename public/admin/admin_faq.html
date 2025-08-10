@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle | Dashboard</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/root.css">
+    <link rel="stylesheet" href="../css/admin_common.css">
+    <link rel="stylesheet" href="../css/admin_faq.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav></nav>
+
+    <main>
+        <div class="top-accent"></div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2>FAQ Manager</h2>
+            <p>Manage frequently asked questions — add, edit, or remove entries.</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- FAQ Tab -->
+            <div class="faq-toolbar">
+                <input type="text" placeholder="Search FAQs...">
+                <button id="open-faq-modal-btn">Add FAQ</button>
+            </div>
+            <!-- FAQ List -->
+            <div class="faq-list">
+                <!-- Sample FAQ Items -->
+                <!-- Each FAQ item will be dynamically inserted here -->
+                <!-- Example of a FAQ item:
+                <div class="faq-list-item">
+                    <div class="faq-details">
+                        <h3 class="faq-question">What is Navigate La Salle?</h3>
+                        <p class="faq-answer">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Debitis
+                            molestiae optio, quo est maxime iure incidunt autem aliquam voluptatibus, labore asperiores
+                            architecto earum id ex esse necessitatibus, a ea consequuntur! Lorem ipsum dolor, sit amet
+                            consectetur adipisicing elit. Debitis
+                            molestiae optio, quo est maxime iure incidunt autem aliquam voluptatibus, labore asperiores
+                            architecto earum id ex esse necessitatibus, a ea consequuntur!</p>
+                    </div>
+                    <div class="faq-actions">
+                        <button class="edit-faq-btn"><i class="bx bxs-edit"></i></button>
+                        <button class="delete-faq-btn"><i class="bx bx-trash-alt"></i></button>
+                    </div>
+                </div>
+                -- >
+            </div>
+        </div>
+
+        <!-- Add FAQ Modal -->
+        <div class="modal" id="add-faq-modal">
+            <div class="modal-content">
+                <span class="close-btn"><i class="bx bx-x"></i></span>
+                <h2>Add FAQ</h2>
+                <form id="add-faq-form">
+                    <div class="form-row">
+                        <label class="field-label" for="question">Question:</label>
+                        <div class="field-input">
+                            <input type="text" id="add-question" name="question" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="field-label" for="answer">Answer:</label>
+                        <div class="field-input">
+                            <textarea id="add-answer" name="answer" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button type="submit" id="add-faq-btn">Add FAQ</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit FAQ Modal -->
+        <div class="modal" id="edit-faq-modal">
+            <div class="modal-content">
+                <span class="close-btn"><i class="bx bx-x"></i></span>
+                <h2>Edit FAQ</h2>
+                <form id="edit-faq-form">
+                    <div class="form-row">
+                        <label class="field-label" for="question">Question:</label>
+                        <div class="field-input">
+                            <input type="text" id="edit-question" name="question" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="field-label" for="answer">Answer:</label>
+                        <div class="field-input">
+                            <textarea id="edit-answer" name="answer" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button type="submit" id="edit-faq-btn">Save Changes</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="bottom-accent"></div>
+    </main>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.querySelector('nav').innerHTML = data;
+                // After sidebar is loaded, set active link
+                const page = location.pathname.split('/').pop();
+                document.querySelectorAll('.nav-menu a').forEach(link => {
+                    if (link.getAttribute('href') === page) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        // Fetch FAQs from your API
+        fetch('/api/faq')
+            .then(response => response.json())
+            .then(data => {
+                const faqList = document.querySelector('.faq-list');
+                faqList.innerHTML = ''; // Clear existing items
+
+                if (data.length === 0) {
+                    faqList.innerHTML = '<p>No FAQs found.</p>';
+                    return;
+                }
+
+                data.forEach(faq => {
+                    const faqItem = document.createElement('div');
+                    faqItem.className = 'faq-list-item';
+                    faqItem.innerHTML = `
+                        <div class="faq-details">
+                            <h3 class="faq-question">${faq.question}</h3>
+                            <p class="faq-answer">${faq.answer}</p>
+                        </div>
+                        <div class="faq-actions">
+                            <button class="edit-faq-btn"><i class="bx bxs-edit"></i></button>
+                            <button class="delete-faq-btn"><i class="bx bx-trash-alt"></i></button>
+                        </div>
+                    `;
+                    faqList.appendChild(faqItem);
+                });
+            })
+            .catch(err => {
+                const faqList = document.querySelector('.faq-list');
+                faqList.innerHTML = '<p>Error loading FAQs.</p>';
+                console.error(err);
+            });
+
+        // Get modal elements
+        const addFaqModal = document.getElementById('add-faq-modal');
+        const editFaqModal = document.getElementById('edit-faq-modal');
+
+        // Open Add FAQ Modal
+        document.getElementById('open-faq-modal-btn').addEventListener('click', function () {
+            addFaqModal.classList.add('active');
+        });
+
+        // Open Edit FAQ Modal
+        document.querySelectorAll('.edit-faq-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                editFaqModal.classList.add('active');
+            });
+        });
+
+        // Close modal
+        document.querySelectorAll('.close-btn, .cancel-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                button.closest('.modal').classList.remove('active');
+            });
+        });
+    });
+</script>

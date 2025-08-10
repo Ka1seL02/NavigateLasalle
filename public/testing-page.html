@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FAQ Test</title>
+</head>
+<body>
+  <h1>FAQ List</h1>
+  <ul id="faq-list"></ul>
+
+  <script>
+    // Fetch FAQs from your API
+    fetch('/api/faq')
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById('faq-list');
+        if (data.length === 0) {
+          list.innerHTML = '<li>No FAQs found.</li>';
+          return;
+        }
+        data.forEach(faq => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>Q:</strong> ${faq.question} <br><strong>A:</strong> ${faq.answer}`;
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        document.getElementById('faq-list').innerHTML = '<li>Error loading FAQs.</li>';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
