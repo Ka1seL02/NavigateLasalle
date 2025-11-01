@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/a_global.css">
+    <link rel="stylesheet" href="css/a_accounts.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <!-- Sidebar to be loaded here -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main>
+        <div class="breadcrumb-nav">
+            <a href=""><i class="bx bxs-user"></i>Account Panel</a>
+        </div>
+
+        <div class="content-section">
+            <!-- Content Header -->
+            <!-- Contains the button/function that create accounts and print account list -->
+            <div class="content-header">
+                <h1>Manage Admin Accounts</h1>
+                <div class="button-group">
+                    <button class="button print-account-report">Export CSV</button>
+                    <button class="button create-account-button">Add Account</button>
+                </div>
+            </div>
+
+            <!-- Filter controls (As of now only search box) -->
+            <div class="filter-group">
+                <div class="search-box">
+                    <i class="bx bx-search"></i>
+                    <input type="text" placeholder="Search accounts...">
+                </div>
+
+                <p class="entries-count">Showing 51-60 of 255 entries</p>
+            </div>
+
+            <!-- Table list of all admin accounts -->
+            <div class="table-container">
+                <table class="accounts-list">
+                    <thead>
+                        <tr>
+                            <th data-sort="si">SI <i class="bx bx-sort-alt-2"></i></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th data-sort="created">Created <i class="bx bx-sort-alt-2"></i></th>
+                            <th data-sort="lastlogin">Last Login <i class="bx bx-sort-alt-2"></i></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td>John Doe</td>
+                            <td>john@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Jul 23, 2025</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Today</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>02</td>
+                            <td>Mary Jane</td>
+                            <td>mary@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Jun 17, 2025</span><br>
+                                    <span class="time">09:30</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">2 days ago</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>03</td>
+                            <td>Alex Cruz</td>
+                            <td>alex@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Mar 12, 2025</span><br>
+                                    <span class="time">13:45</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Last week</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>04</td>
+                            <td>Alex Cruz</td>
+                            <td>alex@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Mar 12, 2025</span><br>
+                                    <span class="time">13:45</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Last week</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>05</td>
+                            <td>Alex Cruz</td>
+                            <td>alex@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Mar 12, 2025</span><br>
+                                    <span class="time">13:45</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Last week</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>06</td>
+                            <td>Alex Cruz</td>
+                            <td>alex@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Mar 12, 2025</span><br>
+                                    <span class="time">13:45</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Last week</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>07</td>
+                            <td>Alex Cruz</td>
+                            <td>alex@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Mar 12, 2025</span><br>
+                                    <span class="time">13:45</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Last week</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td>08</td>
+                            <td>Alex Cruz</td>
+                            <td>alex@example.com</td>
+                            <td>
+                                <div class="date-display">
+                                    <span class="date">Mar 12, 2025</span><br>
+                                    <span class="time">13:45</span>
+                                </div>
+                            </td>
+                            <td><span class="relative-time">Last week</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- Pagennation Navigation -->
+            <div class="pagination-container">
+                <div class="pagination">
+                    <button class="pagination-button" title="First page" disabled>
+                        <i class='bx bx-chevrons-left'></i>
+                    </button>
+                    <button class="pagination-button" title="Previous page" disabled>
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+                    <span class="page-number">1</span>
+                    <button class="pagination-button" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                    <button class="pagination-button" title="Last page">
+                        <i class='bx bx-chevrons-right'></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Load sidebar
+        fetch('a_sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+
+                // Highlight active link
+                const currentPage = window.location.pathname.split('/').pop();
+                const links = document.querySelectorAll('.sidebar-menu li a');
+
+                links.forEach(link => {
+                    if (link.getAttribute('href') === currentPage) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+    </script>
+
+</body>
+
+</html>

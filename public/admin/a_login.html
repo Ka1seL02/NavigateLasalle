@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/a_login.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <form action="a_login_process.php" method="POST" class="login-form">
+            <div class="login-header">
+                <img src="../shared/images/system_logo2.png" class="logo">
+                <h2>NAVIGATE</h2>
+                <h3>LA SALLE</h3>
+                <p>Control panel login</p>
+            </div>
+
+            <div class="input-box">
+                <i class='bx bxs-user'></i>
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-box">
+                <i class='bx bxs-lock-alt'></i>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+
+            <input type="submit" value="Login" class="login-button" name="login">
+        </form>
+    </div>
+</body>
+
+</html>

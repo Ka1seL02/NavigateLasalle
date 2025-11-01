@@ -1,0 +1,46 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+/* Main Content Area */
+.content-section {
+    padding: 15px 35px;
+    background-color: var(--dirty-white);
+}
+
+/* Content Header */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--shadow);
+}
+
+.content-header h1 {
+    color: var(--dark-green);
+    letter-spacing: 1px;
+    font-size: 22px;
+}
+
+.button {
+    border: transparent;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+/* Post News Button */
+.create-news-button {
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-weight: 500;
+}
