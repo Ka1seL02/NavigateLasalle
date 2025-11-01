@@ -26,19 +26,256 @@
         <div class="content-section">
             <!-- Content Header -->
             <div class="content-header">
-                <h1>Manage News</h1>
-                <button class="button create-news-button">Post News</button>
+                <div class="header-left">
+                    <h1>Manage News</h1>
+                    <button class="button create-news-button">Add News</button>
+                </div>
+                <div class="status-tabs">
+                    <button class="status active">All</button>
+                    <button class="status">Posted</button>
+                    <button class="status">Scheduled</button>
+                    <button class="status">Drafts</button>
+                </div>
             </div>
 
-            <!-- Filter controls (As of now only search box) -->
+            <!-- Filter controls -->
             <div class="filter-group">
-
+                <!-- News date filter -->
+                <input type="date" class="news-date-filter" value="2025-05-03">
+                <!-- Categories filter -->
+                <select class="news-category-filter">
+                    <option>All Categories</option>
+                    <option>Announcements</option>
+                    <option>Events</option>
+                    <option>Updates</option>
+                </select>
+                <!-- Tags filter -->
+                <select class="news-category-filter">
+                    <option>All Tags</option>
+                    <option>Academic</option>
+                    <option>Sports</option>
+                    <option>Campus</option>
+                </select>
             </div>
 
             <!-- Table list of all news posts -->
             <div class="table-container">
                 <table class="news-list">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-column">
+                                <input type="checkbox" class="select-all">
+                            </th>
+                            <th>Title/Description</th>
+                            <th>Category</th>
+                            <th>Tags</th>
+                            <th>Date Posted <i class="bx bx-sort-alt-2"></i></th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Campus Renovation Updates</h3>
+                                    <p class="news-description">Get the latest updates on the campus...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">01/02/03</span><br>
+                                    <span class="time">10:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge posted">Posted</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Upcoming Sports Fest 2025</h3>
+                                    <p class="news-description">Join us in celebrating athletic excellence...</p>
+                                </div>
+                            </td>
+                            <td>Events</td>
+                            <td>Sports</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">05/26/25</span><br>
+                                    <span class="time">02:30</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge scheduled">Scheduled</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+
+                        <tr>
+                            <td class="checkbox-column"><input type="checkbox" class="select-news"></td>
+                            <td>
+                                <div class="tbl-text news-info">
+                                    <h3 class="news-title">Dean’s List Announcement</h3>
+                                    <p class="news-description">Congratulations to the students who made it...</p>
+                                </div>
+                            </td>
+                            <td>Announcements</td>
+                            <td>Academic</td>
+                            <td>
+                                <div class="tbl-text date-display">
+                                    <span class="date">11/19/19</span><br>
+                                    <span class="time">16:00</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge draft">Draft</span></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+                    </tbody>
                 </table>
+            </div>
+
+            <!-- Table Navigation -->
+            <div class="table-navigation">
+                <p class="entries-count">Showing 1-9 of 255 entries</p>
+                <div class="pagination">
+                    <button class="pagination-button" title="First page" disabled>
+                        <i class='bx bx-chevrons-left'></i>
+                    </button>
+                    <button class="pagination-button" title="Previous page" disabled>
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+                    <span class="page-number">1</span>
+                    <button class="pagination-button" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                    <button class="pagination-button" title="Last page">
+                        <i class='bx bx-chevrons-right'></i>
+                    </button>
+                </div>
             </div>
         </div>
     </main>

@@ -1,17 +1,23 @@
 body {
     display: flex;
     min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     font-family: 'Poppins', sans-serif;
 }
 
 main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
 /* Main Content Area */
 .content-section {
     padding: 15px 35px;
-    background-color: var(--dirty-white);
+    overflow-y: auto;
+    flex: 1;
 }
 
 /* Content Header */
@@ -21,6 +27,14 @@ main {
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--shadow);
+}
+
+/* Header Left Section */
+/* Contains the title and create news button */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .content-header h1 {
@@ -43,4 +57,149 @@ main {
     background-color: var(--dark-green);
     color: var(--white);
     font-weight: 500;
+}
+
+/* Status Tabs */
+.status-tabs {
+    display: flex;
+    gap: 5px;
+}
+
+.status {
+    color: var(--grey);
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+.status.active {
+    font-weight: bold;
+    color: var(--dark-green);
+    border-bottom: 2px solid var(--dark-green);
+}
+
+/* Filter controls */
+.filter-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+}
+
+.news-date-filter,
+.news-category-filter {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--shadow);
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--dark-green);
+    background-color: var(--white);
+    outline: none;
+}
+
+/* Table Styles */
+.table-container {
+    width: 100%;
+    border: 1px solid var(--shadow);
+}
+
+/* News List Table */
+.news-list {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+/* Table Header */
+.news-list thead {
+    background-color: var(--dirty-white);
+    text-align: left;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+.news-list th,
+.news-list td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--shadow);
+}
+
+/* Remove border from last row */
+.news-list tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Specific text style for items inside the table */
+.news-list .news-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark-green);
+}
+
+/* Sub-text styles */
+.tbl-text {
+    line-height: 1.1;
+}
+
+.tbl-text .news-description,
+.tbl-text .time {
+    color: var(--grey);
+}
+
+/* Footer Table Styles */
+/* Table Navigation Controls */
+.table-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/* Entries Count */
+.entries-count {
+    font-size: 13px;
+    color: var(--grey);
+}
+
+/* Pagenation Styles */
+.pagination-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 5px;
+    padding: 10px 0;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination button {
+    border: 1px solid var(--shadow);
+    border-radius: 3px;
+    background-color: var(--white);
+    color: var(--dark-green);
+    font-size: 16px;
+    font-weight: bold;
+    padding: 4px 10px;
+}
+
+.pagination button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination .page-number {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark-green);
+    padding: 4px 10px;
 }
