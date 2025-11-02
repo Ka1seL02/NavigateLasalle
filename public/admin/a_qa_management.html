@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/a_global.css">
+    <link rel="stylesheet" href="css/a_qa_management.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <!-- Sidebar to be loaded here -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main>
+        <div class="breadcrumb-nav">
+            <a href=""><i class='bx bx-message-dots'></i> Q&A Management Panel</a>
+        </div>
+    </main>
+
+    <script>
+        // Load sidebar
+        fetch('a_sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+
+                // Highlight active link
+                const currentPage = window.location.pathname.split('/').pop();
+                const links = document.querySelectorAll('.sidebar-menu li a');
+
+                links.forEach(link => {
+                    if (link.getAttribute('href') === currentPage) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+    </script>
+<body>
+</html>
