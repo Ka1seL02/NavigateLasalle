@@ -1,11 +1,31 @@
+/* Contains global styles for common elements used across the admin panel */
+/* This includes the Global Styles which are Reset(*), body, and main */
+/* Sidebar and Breadcrumb Navigation */
+/* and; Buttons, Tables, Modals, Pagenation and Entries Count */
+
+/* --------------------- Global Styles ----------------- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     scroll-behavior: smooth;
 }
+body {
+    display: flex;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
 
-/* Sidebar */
+/* --------------------- Sidebar Styles ----------------- */
+/* Sidebar Layout */
 nav {
     width: 300px;
     height: 100vh;
@@ -15,89 +35,98 @@ nav {
     border-right: 1px solid var(--shadow);
     font-family: 'Poppins', sans-serif;
     background-color: var(--dirty-white);
+    transition: width 0.3s ease;
+    overflow: hidden;
 }
-
 /* Sidebar Header */
 .sidebar-header {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: row;
-    padding: 30px 10px;
+    padding: 20px 10px;
     gap: 20px;
     border-bottom: 1px solid var(--shadow);
 }
-
+/* Sidebar Logo */
 .sidebar-header img {
     width: 50px;
+    min-width: 50px;
 }
-
+/* Sidebar Logo Text */
 .sidebar-header span {
     text-align: center;
+    transition: opacity 0.3s ease;
 }
-
 .sidebar-header span h2 {
     color: var(--dark-green);
     letter-spacing: 5px;
     margin-bottom: -10px;
 }
-
 .sidebar-header span h3 {
     color: var(--light-green);
     letter-spacing: 3px;
 }
-
 .sidebar-header span p {
     font-size: 12px;
     color: var(--grey);
     font-family: 'Montserrat', sans-serif;
 }
-
-/* Sidebar Navigation Items */
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    font-size: 22px;
+    color: var(--dark-green);
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+/* Sidebar Navigation Menu */
 .sidebar-menu {
     list-style: none;
     flex-grow: 1;
-    padding: 20px 20px;
+    padding: 10px 20px;
     margin: 0;
 }
-
+/* Sidebar Menu Headers/Main Categories */
 .menu-header {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
     color: var(--light-grey);
     text-transform: uppercase;
     margin-bottom: 10px;
     font-family: 'Montserrat', sans-serif;
+    margin-top: 10px;
 }
-
-.menu-header:not(:first-child) {
-    margin-top: 30px;
+.menu-header span {
+    transition: opacity 0.3s ease;
 }
-
+/* Sidebar Menu Items */
 .sidebar-menu li a {
     display: flex;
     align-items: center;
     text-decoration: none;
     color: var(--light-grey);
     padding: 10px 15px;
+    white-space: nowrap;
 }
-
 .sidebar-menu li a i {
     margin-right: 15px;
-    font-size: 18px;
+    font-size: 14px;
+    min-width: 14px;
 }
-
+.sidebar-menu li a span {
+    transition: opacity 0.3s ease;
+}
+/* Sidebar Active/Selected Menu Item */
 .sidebar-menu li a.active {
     border: 1px solid var(--light-green);
     color: var(--black);
 }
-
-/* Sidebar Footer (The Logout Button) */
+/* Sidebar Footer Container */
 .sidebar-footer {
     border-top: 1px solid var(--shadow);
-    padding: 30px 15px;
+    padding: 20px 15px;
 }
-
+/* Logout Button Style */
 .logout-button {
     display: flex;
     width: 100%;
@@ -110,26 +139,63 @@ nav {
     border: 1px solid transparent;
     background-color: transparent;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
-
 .logout-button i {
     margin: 0 15px 0 20px;
     font-size: 18px;
 }
-
-.logout-button:hover {
-    color: var(--red);
-    cursor: pointer;
+.logout-button span {
+    transition: opacity 0.3s ease;
+}
+/* ----- Collapsed Sidebar Styles ----- */
+nav.collapsed {
+    width: 80px;
+}
+nav.collapsed .sidebar-text,
+nav.collapsed .menu-header span,
+nav.collapsed .sidebar-menu li a span,
+nav.collapsed .logout-button span {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+nav.collapsed .sidebar-menu li a {
+    justify-content: center;
+    padding: 10px;
+}
+nav.collapsed .sidebar-menu li a i {
+    margin-right: 0;
+}
+nav.collapsed .logout-button {
+    justify-content: center;
+}
+nav.collapsed .logout-button i {
+    margin: 0;
+}
+nav.collapsed .sidebar-toggle {
+    transform: rotate(180deg);
+}
+nav.collapsed .sidebar-header {
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+}
+nav.collapsed .sidebar-header {
+    justify-content: center;
+    padding: 20px 5px;
+    gap: 0;
 }
 
-/* Breadcrumb Navigation */
+/* --------------------- Breadcrumb Navigation Styles ----------------- */
+/* Breadcrumb Navigation Bar */
 .breadcrumb-nav {
     padding: 10px 20px;
     border-bottom: 1px solid var(--shadow);
     font-family: 'Montserrat', sans-serif;
     background-color: var(--white);
 }
-
+/* Breadcrumb Link Style */
 .breadcrumb-nav a {
     text-decoration: none;
     color: var(--grey);
@@ -140,4 +206,175 @@ nav {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+/* --------------------- Content Section Styles ----------------- */
+/* Content Section Layout */
+.content-section {
+    padding: 15px 35px;
+    overflow-y: auto;
+    flex: 1;
+}
+/* Header Section */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--shadow);
+}
+/* Content Header Main Title */
+.header-title {
+    line-height: 1;
+}
+.header-title h2 {
+    color: var(--dark-green);
+    font-size: 24px;
+}
+.header-title p {
+    color: var(--grey);
+    font-size: 14px;
+    margin-top: 5px;
+}
+/* Button Styles */
+.button {
+    border: transparent;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+/* Primary Button Style */
+.normal-button {
+    color: var(--dark-grey);
+    background-color: var(--white);
+    border: 1px solid var(--shadow);
+    font-weight: bold;
+}
+/* Green Button Style */
+.green-button {
+    background-color: var(--dark-green);
+    color: var(--white);
+    font-weight: 500;
+}
+/* Table Style Layout */
+/* Table Container */
+.table-container {
+    margin-top: 10px;
+    width: 100%;
+    border: 1px solid var(--shadow);
+}
+/* Table Style */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+/* Table Header & Items */
+.table thead {
+    background-color: var(--dirty-white);
+    color: var(--dark-green);
+    text-align: left;
+    font-weight: 600;
+}
+.table th, .table td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--shadow);
+}
+/* Removing border of the last row */
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+/* Specific text style for some items inside the table */
+/* Custom Title-Description & Date-Time Style */
+.table .item-title {
+    line-height: 1;
+}
+.table .item-title .sub-text {
+    color: var(--grey);
+    font-size: 12px;
+}
+/* Action column style */
+.table .actions {
+    position: relative;
+}
+/* Small dropdown menu for actions */
+.table .actions-menu {
+    position: absolute;
+    top: 140%;
+    right: 100%;
+    transform: translateY(-50%);
+    background-color: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 130px;
+    display: none;
+}
+.actions-menu.active {
+    display: block; 
+}
+/* Action Menu Items */
+.actions-menu-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--dark-green);
+    border-bottom: 1px solid var(--shadow);
+    transition: background-color 0.2s ease;
+}
+.actions-menu-item:last-child {
+    border-bottom: none;
+}
+.actions-menu-item:hover {
+    background-color: var(--dirty-white);
+}
+/* Different color for delete */
+.actions-menu-item.delete {
+    color: var(--red);
+}
+
+/* --------------------- Table Footer Styles ----------------- */
+/* Table Footer Container */
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    padding: 10px 0;
+}
+/* Entries Count */
+.entries-count {
+    font-size: 13px;
+    color: var(--grey);
+}
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* Pagination Button Styles */
+.pagination button {
+    border: 1px solid var(--shadow);
+    background-color: var(--dirty-white);
+    color: var(--dark-green);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    font-size: 16px;
+}
+.pagination button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.pagination .page-number {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark-green);
+    padding: 4px 10px;
 }

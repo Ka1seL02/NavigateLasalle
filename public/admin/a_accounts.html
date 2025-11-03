@@ -27,29 +27,27 @@
             <!-- Content Header -->
             <!-- Contains the button/function that create accounts and print account list -->
             <div class="content-header">
-                <h1>Manage Admin Accounts</h1>
+                <div class="header-title">
+                    <h2>Admin Accounts</h2>
+                    <p>View, add, or manage administrator access within the system.</p>
+                </div>
+
                 <div class="button-group">
-                    <button class="button print-account-report">Export CSV</button>
-                    <button class="button create-account-button">Add Account</button>
+                    <button class="button normal-button">Export CSV</button>
+                    <button class="button green-button">Add Account</button>
                 </div>
             </div>
-
-            <!-- Filter controls (As of now only search box) -->
-            <div class="filter-group">
-                <div class="search-box">
-                    <i class="bx bx-search"></i>
-                    <input type="text" placeholder="Search accounts...">
-                </div>
-
-                <p class="entries-count">Showing 51-60 of 255 entries</p>
+            <!-- Search Box -->
+            <div class="search-box">
+                <i class="bx bx-search"></i>
+                <input type="text" placeholder="Search accounts...">
             </div>
-
             <!-- Table list of all admin accounts -->
             <div class="table-container">
-                <table class="accounts-list">
+                <table class="table">
                     <thead>
                         <tr>
-                            <th data-sort="si">SI <i class="bx bx-sort-alt-2"></i></th>
+                            <th data-sort="si">SI<i class="bx bx-sort-alt-2"></i></th>
                             <th>Name</th>
                             <th>Email</th>
                             <th data-sort="created">Created <i class="bx bx-sort-alt-2"></i></th>
@@ -58,125 +56,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>01</td>
-                            <td>John Doe</td>
-                            <td>john@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">16:00</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Today</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>02</td>
-                            <td>Mary Jane</td>
-                            <td>mary@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">09:30</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">2 days ago</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>03</td>
-                            <td>Alex Cruz</td>
-                            <td>alex@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">13:45</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Last week</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>04</td>
-                            <td>Alex Cruz</td>
-                            <td>alex@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">13:45</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Last week</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>05</td>
-                            <td>Alex Cruz</td>
-                            <td>alex@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">13:45</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Last week</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>06</td>
-                            <td>Alex Cruz</td>
-                            <td>alex@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">13:45</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Last week</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>07</td>
-                            <td>Alex Cruz</td>
-                            <td>alex@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">13:45</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Last week</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
-
-                        <tr>
-                            <td>08</td>
-                            <td>Alex Cruz</td>
-                            <td>alex@example.com</td>
-                            <td>
-                                <div class="date-display">
-                                    <span class="date">11/19/19</span><br>
-                                    <span class="time">13:45</span>
-                                </div>
-                            </td>
-                            <td><span class="relative-time">Last week</span></td>
-                            <td class="actions">⋮</td>
-                        </tr>
+                        <!-- Script will populate this with list of all accounts -->
                     </tbody>
-
                 </table>
 
             </div>
 
-            <!-- Pagennation Navigation -->
-            <div class="pagination-container">
+            <!-- Table Footer -->
+            <div class="table-footer">
+                <!-- Entries Count -->
+                <p class="entries-count">Showing 1-9 of 255 entries</p>
+                <!-- Table Navigation -->
                 <div class="pagination">
                     <button class="pagination-button" title="First page" disabled>
                         <i class='bx bx-chevrons-left'></i>
@@ -197,23 +87,43 @@
         </div>
     </main>
 
+    <!-- External Scripts -->
+    <script src="js/a_sidebar.js"></script>
+    <script src="js/a_accounts.js"></script>
+    <!-- Inline Scripts -->
     <script>
-        // Load sidebar
-        fetch('a_sidebar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('sidebar-container').innerHTML = data;
-
-                // Highlight active link
-                const currentPage = window.location.pathname.split('/').pop();
-                const links = document.querySelectorAll('.sidebar-menu li a');
-
-                links.forEach(link => {
-                    if (link.getAttribute('href') === currentPage) {
-                        link.classList.add('active');
+        // Actions Dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuHTML = `
+            <div class="actions-menu">
+                <div class="actions-menu-item reset">Reset</div>
+                <div class="actions-menu-item deactivate">Deactivate</div>
+                <div class="actions-menu-item delete">Delete</div>
+            </div>
+            `;
+            // Inject menu into each actions cell
+            document.querySelectorAll('.actions').forEach(cell => {
+                cell.innerHTML = '⋮' + menuHTML;
+                const menu = cell.querySelector('.actions-menu');
+                cell.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent document click from firing
+                    const isActive = menu.classList.contains('active');
+                    // Close all other menus
+                    document.querySelectorAll('.actions-menu').forEach(m => m.classList.remove('active'));
+                    // Toggle the clicked one
+                    if (!isActive) {
+                        menu.classList.add('active');
                     }
                 });
             });
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.actions')) {
+                    document.querySelectorAll('.actions-menu').forEach(m => m.classList.remove('active'));
+                }
+            });
+        });
+
     </script>
 
 </body>
