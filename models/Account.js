@@ -1,6 +1,4 @@
-// models/Account.js
 const mongoose = require('mongoose');
-
 const accountSchema = new mongoose.Schema({
   si: {
     type: Number,
@@ -34,7 +32,7 @@ const accountSchema = new mongoose.Schema({
     default: 'active'
   }
 }, {
-  collection: 'accounts' // explicitly set collection name
+  collection: 'accounts'
 });
 
 module.exports = mongoose.model('Account', accountSchema);
