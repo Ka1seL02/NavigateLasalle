@@ -1,21 +1,26 @@
-const express = require('express');
-const connectDB = require('./db');
-const accountRoutes = require('./routes/api/accounts');
 require('dotenv').config();
+
+const express = require('express');
+const path = require('path');
+const connectDB = require('./db');
+const faqRoutes = require('./routes/api/faqs');
+const accountRoutes = require('./routes/api/accounts');
 
 const app = express();
 
 connectDB();
 
-app.use(express.json());
+// Middleware for parsing information to be passed or fetch from DB
+app.use(express.json()); // For parsing JSON Data
+app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
 
-// Serve API routes
+// Routes
+app.use('/api/faqs', faqRoutes);
 app.use('/api/accounts', accountRoutes);
 
-// Serve static frontend files from public folder
-app.use(express.static('public'));
+// Optional: serve static frontend
+app.use(express.static(path.join(__dirname, 'public')));
 
+// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

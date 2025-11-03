@@ -290,7 +290,10 @@ nav.collapsed .sidebar-header {
 /* Specific text style for some items inside the table */
 /* Custom Title-Description & Date-Time Style */
 .table .item-title {
-    line-height: 1;
+    line-height: 1.2;
+}
+.table .item-title .main-text {
+    color: var(--dark-green);
 }
 .table .item-title .sub-text {
     color: var(--grey);

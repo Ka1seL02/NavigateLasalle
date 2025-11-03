@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const buildingSchema = new mongoose.Schema({
+const facilitySchema = new mongoose.Schema({
     id : {
         type: String,
         required: true,
@@ -26,7 +26,7 @@ const buildingSchema = new mongoose.Schema({
         unique: true
     }
 }, {
-    collection: 'building-infos'
+    collection: 'facilities'
 });
 
-module.exports = mongoose.model('Building-Info', buildingSchema);
+module.exports = mongoose.model('Facility', facilitySchema);

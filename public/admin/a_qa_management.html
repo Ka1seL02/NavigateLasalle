@@ -26,13 +26,16 @@
         <div class="content-section">
             <!-- Content Header -->
             <div class="content-header">
-                <h1>Q&A Management</h1>
-                <button class="button create-qa-button">New Q&A</button>
+                <div class="header-title">
+                    <h2>Manage FQA Items</h2>
+                    <p>Organize and respond to frequently asked questions from students and visitors.</p>
+                </div>
+                <button class="button green-button">New Q&A</button>
             </div>
 
             <!-- Q&A List Section -->
             <div class="table-container">
-                <table class="qa-list">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Question & Answer</th>
@@ -40,57 +43,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="tbl-text qa-item">
-                                    <h3 class="qa-question">How do I reset my password?</h3>
-                                    <p class="qa-answer">To reset your password, click on the 'Forgot Password' link on the login page and follow the instructions sent to your registered email address.</p>
-                                </div>
-                            </td>
-                            <td class="actions">⋮</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="tbl-text qa-item">
-                                    <h3 class="qa-question">Where can I find the campus map?</h3>
-                                    <p class="qa-answer">The campus map is available on the Interactive Map section of our website. You can access it from the main menu or directly via the link provided in the footer.</p>
-                                </div>
-                            </td>
-                            <td class="actions">⋮</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="tbl-text qa-item">
-                                    <h3 class="qa-question">What are the library hours?</h3>
-                                    <p class="qa-answer">The library is open from 8:00 AM to 10:00 PM on weekdays and from 9:00 AM to 6:00 PM on weekends. Please check the library website for any holiday schedule changes.</p>
-                                </div>
-                            </td>
-                            <td class="actions">⋮</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="tbl-text qa-item">
-                                    <h3 class="qa-question">How can I contact technical support?</h3>
-                                    <p class="qa-answer">You can contact technical support by emailing</p>
-                                </div>
-                            </td>
-                            <td class="actions">⋮</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="tbl-text qa-item">
-                                    <h3 class="qa-question">What are the library hours?</h3>
-                                    <p class="qa-answer">The library is open from 8:00 AM to 10:00 PM on weekdays and from 9:00 AM to 6:00 PM on weekends. Please check the library website for any holiday schedule changes.</p>
-                                </div>
-                            </td>
-                            <td class="actions">⋮</td>
-                        </tr>
+                        <td>
+                            <!-- Script will populate this with list of all FQA Items -->
+                        </td>
                     </tbody>
                 </table>
             </div>
 
             <!-- Table Navigation -->
-            <div class="table-navigation">
+            <div class="table-footer">
                 <p class="entries-count">Showing 1-9 of 255 entries</p>
                 <div class="pagination">
                     <button class="pagination-button" title="First page" disabled>
@@ -110,24 +71,12 @@
             </div>
         </div>
     </main>
-
+    <!-- External Scripts -->
+    <script src="js/a_sidebar.js"></script>
+    <script src="js/a_qa_management.js"></script>
+    <!-- Inline Scripts -->
     <script>
-        // Load sidebar
-        fetch('a_sidebar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('sidebar-container').innerHTML = data;
-
-                // Highlight active link
-                const currentPage = window.location.pathname.split('/').pop();
-                const links = document.querySelectorAll('.sidebar-menu li a');
-
-                links.forEach(link => {
-                    if (link.getAttribute('href') === currentPage) {
-                        link.classList.add('active');
-                    }
-                });
-            });
+        
     </script>
 
     <body>

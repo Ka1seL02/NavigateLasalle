@@ -1,5 +1,4 @@
-// a_accounts.js - Frontend logic for accounts page
-const API_URL = 'http://localhost:3000/api'; // Change for production
+const API_URL = 'http://localhost:3000/api';
 
 let currentPage = 1;
 let itemsPerPage = 8;
