@@ -32,9 +32,9 @@ nav {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-right: 1px solid var(--shadow);
+    border-right: 1px solid var(--green);
     font-family: 'Poppins', sans-serif;
-    background-color: var(--dirty-white);
+    background-color: var(--dirty-green);
     transition: width 0.3s ease;
     overflow: hidden;
 }
@@ -107,6 +107,7 @@ nav {
     color: var(--light-grey);
     padding: 10px 15px;
     white-space: nowrap;
+    border: 1px solid transparent;
 }
 .sidebar-menu li a i {
     margin-right: 15px;
@@ -193,19 +194,26 @@ nav.collapsed .sidebar-header {
     padding: 10px 20px;
     border-bottom: 1px solid var(--shadow);
     font-family: 'Montserrat', sans-serif;
-    background-color: var(--white);
+    background-color: var(--dark-green  );
+    display: flex;
+    align-items: center;
 }
 /* Breadcrumb Link Style */
 .breadcrumb-nav a {
     text-decoration: none;
-    color: var(--grey);
+    color: var(--white);
     font-size: 14px;
     font-weight: 600;
-    border-left: 2px solid var(--shadow);
-    padding: 0 20px;
-    display: flex;
+    padding: 0 10px;
+    display: inline-flex;
     align-items: center;
     gap: 5px;
+}
+.breadcrumb-nav a:first-child {
+    border-left: 2px solid var(--shadow);
+}
+.breadcrumb-nav i {
+    color: var(--white);
 }
 
 /* --------------------- Content Section Styles ----------------- */
@@ -214,6 +222,7 @@ nav.collapsed .sidebar-header {
     padding: 15px 35px;
     overflow-y: auto;
     flex: 1;
+    background-color: var(--dirty-white);
 }
 /* Header Section */
 .content-header {
@@ -222,7 +231,7 @@ nav.collapsed .sidebar-header {
     align-items: center;
     padding-bottom: 10px;
     margin-bottom: 10px;
-    border-bottom: 1px solid var(--shadow);
+    border-bottom: 1px solid var(--dark-green);
 }
 /* Content Header Main Title */
 .header-title {
@@ -352,7 +361,7 @@ nav.collapsed .sidebar-header {
 /* Entries Count */
 .entries-count {
     font-size: 13px;
-    color: var(--grey);
+    color: var(--dark-green);
 }
 /* Pagination Styles */
 .pagination {
@@ -362,7 +371,7 @@ nav.collapsed .sidebar-header {
 }
 /* Pagination Button Styles */
 .pagination button {
-    border: 1px solid var(--shadow);
+    border: 1px solid var(--green);
     background-color: var(--dirty-white);
     color: var(--dark-green);
     padding: 5px 10px;

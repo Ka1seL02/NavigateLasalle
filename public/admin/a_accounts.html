@@ -34,13 +34,20 @@
 
                 <div class="button-group">
                     <button class="button normal-button">Export CSV</button>
-                    <button class="button green-button">Add Account</button>
+                    <button class="button green-button" id="createAccount">Add Account</button>
                 </div>
             </div>
             <!-- Search Box -->
-            <div class="search-box">
-                <i class="bx bx-search"></i>
-                <input type="text" placeholder="Search accounts...">
+            <div class="filter-group">
+                <div class="search-box">
+                    <i class="bx bx-search"></i>
+                    <input type="text" placeholder="Search accounts...">
+                </div>
+                <div class="status-tabs">
+                    <button class="status active">All</button>
+                    <button class="status">Active</button>
+                    <button class="status">Deactivated</button>
+                </div>
             </div>
             <!-- Table list of all admin accounts -->
             <div class="table-container">

@@ -15,8 +15,8 @@ app.use(express.json()); // For parsing JSON Data
 app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
 
 // Routes
-app.use('/api/faqs', faqRoutes);
 app.use('/api/accounts', accountRoutes);
+app.use('/api/faqs', faqRoutes);
 
 // Optional: serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
