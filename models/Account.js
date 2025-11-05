@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const accountSchema = new mongoose.Schema({
-  si: {
-    type: Number,
-    required: true,
-    unique: true
-  },
   name: {
     type: String,
     required: true
@@ -33,5 +29,7 @@ const accountSchema = new mongoose.Schema({
 }, {
   collection: 'accounts'
 });
+
+accountSchema.plugin(AutoIncrement, { inc_field: 'si' });
 
 module.exports = mongoose.model('Account', accountSchema);

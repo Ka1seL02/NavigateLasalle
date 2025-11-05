@@ -12,4 +12,26 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Inputting/Creating new Account
+router.post('/', async (req, res) => {
+    try {
+        const { 
+            name,
+            email,
+            password,
+        } = req.body;
+
+        const newAccount = new Account({
+            name,
+            email,
+            password
+        });
+
+        await newAccount.save();
+        res.status(201).json({ message: 'Account added successfully', data: newAccount });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
