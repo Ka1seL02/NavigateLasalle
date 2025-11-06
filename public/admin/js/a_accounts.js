@@ -152,6 +152,7 @@ async function loadAccounts(searchTerm = '', status = 'all', sort = currentSort)
         // Render rows
         paginatedAccounts.forEach(account => {
             const created = formatDateSpans(account.created);
+            const statusLabel = account.isActive ? 'Deactivate' : 'Activate';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${account.si}</td>
@@ -162,7 +163,13 @@ async function loadAccounts(searchTerm = '', status = 'all', sort = currentSort)
                     <span class="sub-text">${created.time}</span>
                 </td>
                 <td>${account.lastLogin || '—'}</td>
-                <td class="actions">⋮</td>
+                <td class="actions" data-si="${account.si}" data-active="${account.isActive}">⋮
+                    <div class="actions-menu">
+                        <div class="actions-menu-item reset">Reset</div>
+                        <div class="actions-menu-item toggle">${statusLabel}</div>
+                        <div class="actions-menu-item delete">Delete</div>
+                    </div>
+                </td>
             `;
             tableBody.appendChild(tr);
         });
@@ -179,7 +186,8 @@ async function loadAccounts(searchTerm = '', status = 'all', sort = currentSort)
     }
 }
 
-// ===== Actions Dropdown =====
+// =========================================
+// Actions Dropdown - Assigning
 document.addEventListener('click', (e) => {
     const cell = e.target.closest('.actions');
     if (!cell) {
@@ -204,10 +212,56 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.actions-menu').forEach(m => m.classList.remove('active'));
     if (!isActive) menu.classList.add('active');
 });
+// Actions Deactivate, Reset, Delete
+document.addEventListener('click', async (e) => {
+    const actionItem = e.target.closest('.actions-menu-item');
+    if (!actionItem) return;
 
-// ======================================================
+    const cell = e.target.closest('.actions');
+    const si = cell.dataset.si;
+
+    if (actionItem.classList.contains('reset')) {
+        if (confirm('Reset password to default?')) {
+            const res = await fetch(`/api/accounts/${si}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reset' })
+            });
+            const data = await res.json();
+            alert(data.message);
+        }
+    }
+
+    if (actionItem.classList.contains('toggle')) {
+        const currentlyActive = cell.dataset.active === 'true';
+        const confirmMsg = currentlyActive
+            ? 'Are you sure you want to deactivate this account?'
+            : 'Are you sure you want to activate this account?';
+        if (confirm(confirmMsg)) {
+            const res = await fetch(`/api/accounts/${si}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'deactivate' })
+            });
+            const data = await res.json();
+            alert(data.message);
+            loadAccounts(currentSearch, currentStatus, currentSort);
+        }
+    }
+
+    if (actionItem.classList.contains('delete')) {
+        if (confirm('Delete this account permanently?')) {
+            const res = await fetch(`/api/accounts/${si}`, { method: 'DELETE' });
+            const data = await res.json();
+            alert(data.message);
+            loadAccounts(currentSearch, currentStatus, currentSort);
+        }
+    }
+});
+
+
+// =========================================
 // DOMContentLoaded — unified for both pages
-// ======================================================
 document.addEventListener('DOMContentLoaded', () => {
     const isAccountListPage = document.querySelector('.table');
     const isAccountCreatePage = document.getElementById('createAccountForm');

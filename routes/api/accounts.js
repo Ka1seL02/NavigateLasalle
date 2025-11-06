@@ -44,4 +44,43 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Delete User
+router.delete('/:si', async (req, res) => {
+    try {
+        const deletedAccount = await Account.findOneAndDelete({ si: req.params.si });
+        if (!deletedAccount) return res.status(404).json({ message: 'Account not found' });
+        res.json({ message: 'Account deleted successfully '});
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.patch('/:si', async (req, res) => {
+    try {
+        const { action } = req.body;
+        const account = await Account.findOne({ si: req.params.si });
+        if (!account) return res.status(404).json({ message: 'Account not found' });
+
+        if (action === 'deactivate') {
+            account.isActive = !account.isActive;
+            await account.save();
+            return res.json({
+                message: `Account ${account.isActive ? 'activated' : 'deactivated'} successfully`,
+                isActive: account.isActive
+            });
+        }
+
+        if (action === 'reset') {
+            account.password = 'admin12345';
+            account.markModified('password');
+            await account.save();
+            return res.json({ message: 'Password reset to default (admin12345)' });
+        }
+
+        return res.status(400).json({ message: 'Invalid action specified' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
