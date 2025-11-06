@@ -20,16 +20,12 @@ function maskEmail(email) {
 // Custom Date Formatting
 function formatDateSpans(dateString) {
     if (!dateString) return { date: '—', time: '' };
-
     const date = new Date(dateString);
-
     const month = date.toLocaleString('en-US', { month: 'short' });
     const day = String(date.getDate()).padStart(2, '0');
     const year = date.getFullYear();
-
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-
     return {
         date: `${month} ${day}, ${year}`,
         time: `${hours}:${minutes}`
