@@ -95,43 +95,9 @@
     </main>
 
     <!-- External Scripts -->
-    <script src="js/a_sidebar.js"></script>
+    <script src="js/a_global.js"></script>
     <script src="js/a_accounts.js"></script>
     <!-- Inline Scripts -->
-    <script>
-        // Actions Dropdown
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuHTML = `
-            <div class="actions-menu">
-                <div class="actions-menu-item reset">Reset</div>
-                <div class="actions-menu-item deactivate">Deactivate</div>
-                <div class="actions-menu-item delete">Delete</div>
-            </div>
-            `;
-            // Inject menu into each actions cell
-            document.querySelectorAll('.actions').forEach(cell => {
-                cell.innerHTML = '⋮' + menuHTML;
-                const menu = cell.querySelector('.actions-menu');
-                cell.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent document click from firing
-                    const isActive = menu.classList.contains('active');
-                    // Close all other menus
-                    document.querySelectorAll('.actions-menu').forEach(m => m.classList.remove('active'));
-                    // Toggle the clicked one
-                    if (!isActive) {
-                        menu.classList.add('active');
-                    }
-                });
-            });
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.actions')) {
-                    document.querySelectorAll('.actions-menu').forEach(m => m.classList.remove('active'));
-                }
-            });
-        });
-
-    </script>
 
 </body>
 
