@@ -5,7 +5,17 @@ const Account = require('../../models/Account');
 // Fetching all FAQ items
 router.get('/', async (req, res) => {
     try {
-        const accounts = await Account.find();
+        const { search, status } = req.query;
+        let query = {};
+        // Search Filter
+        if (search && search.trim() !== '') {
+            query.name = { $regex: search, $options: 'i'};
+        }
+        // Status filter
+        if (status === 'active') query.isActive = true;
+        if (status === 'deactivated') query.isActive = false;
+
+        const accounts = await Account.find(query).sort({ si: 1 });
         res.status(200).json(accounts);
     } catch (err) {
         res.status(500).json({ error: err.message });

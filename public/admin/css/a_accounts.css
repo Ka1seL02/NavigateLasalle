@@ -49,6 +49,12 @@
     color: var(--dark-green);
     border-bottom: 2px solid var(--dark-green);
 }
+/* No accounts found text */
+.no-accounts {
+    text-align: center;
+    color: var(--grey);
+    font-size: 14px;
+}
 
 /* -------------------- FORM STYLE -------------------- */
 /* Form Container */

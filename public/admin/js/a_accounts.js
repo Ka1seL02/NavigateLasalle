@@ -9,40 +9,87 @@ const cancelBtn = document.getElementById('cancel');
 if (cancelBtn) {
     cancelBtn.onclick = () => (window.location.href = 'a_accounts.html');
 }
-
 // Back-end logics
 // Populating the table with list of accounts
-document.addEventListener('DOMContentLoaded', async () => {
+async function loadAccounts(searchTerm = '', status = 'all') {
     try {
-        const res = await fetch('/api/accounts');
+        const queryParams = new URLSearchParams();
+        if (searchTerm) queryParams.append('search', searchTerm);
+        if (status !== 'all') queryParams.append('status', status);
+
+        const res = await fetch(`/api/accounts?${queryParams.toString()}`);
         const accounts = await res.json();
 
         const tableBody = document.querySelector('.table tbody');
         tableBody.innerHTML = '';
 
-        accounts.forEach(account => {
-            const tr = document.createElement('tr');
-            const createdDate = new Date(account.created).toLocaleDateString();
-            const lastLogin = account.lastLogin
-                ? new Date(account.lastLogin).toLocaleDateString()
-                : '—';
+        if (accounts.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="no-accounts"> No Accounts. Click "Add Account" to create one. </td>
+                </tr>
+            `
+        } else {
+            accounts.forEach(account => {
+                const tr = document.createElement('tr');
+                const createdDate = new Date(account.created).toLocaleDateString();
+                const lastLogin = account.lastLogin
+                    ? new Date(account.lastLogin).toLocaleDateString()
+                    : '—';
 
-            tr.innerHTML = `
-                <td>${account.si}</td>
-                <td>${account.name}</td>
-                <td>${account.email}</td>
-                <td>${createdDate}</td>
-                <td>${lastLogin}</td>
-                <td class="actions">
-                    <i class='bx bx-dots-vertical-rounded'></i>
-                </td>
-            `;
+                tr.innerHTML = `
+                    <td>${account.si}</td>
+                    <td>${account.name}</td>
+                    <td>${account.email}</td>
+                    <td>${createdDate}</td>
+                    <td>${lastLogin}</td>
+                    <td class="actions">
+                        <i class='bx bx-dots-vertical-rounded'></i>
+                    </td>
+                `;
 
-            tableBody.appendChild(tr);
-        });
+                tableBody.appendChild(tr);
+            });
+        }
+
     } catch (err) {
-        console.error('Error fetching accounts:', err);
+        alert('Error fetching accounts:' + err.message);
     }
+}
+// Debounce function to limit API calls
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+// Load accounts on page load
+document.addEventListener('DOMContentLoaded', () => {
+    let currentStatus = 'all';
+    let currentSearch = '';
+    // Populate
+    loadAccounts(currentSearch, currentStatus);
+    // Search functionality
+    const searchInput = document.querySelector('.search-box input');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            currentSearch = e.target.value;
+            loadAccounts(currentSearch, currentStatus);
+        }, 300)); // Wait 300ms after user stops typing before searching/filtering the table
+    }
+    // Status tabs
+    const statusButtons = document.querySelectorAll('.status-tabs .status');
+    statusButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update UI active
+            statusButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            // Update filter
+            currentStatus = button.textContent.trim().toLowerCase();
+            loadAccounts(currentSearch, currentStatus);
+        })
+    });
 });
 
 // Creating the Account
