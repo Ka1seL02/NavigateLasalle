@@ -11,25 +11,18 @@ function debounce(func, delay) {
 // Email masking
 function maskEmail(email) {
     const [name, domain] = email.split('@');
-    if (name.length <= 2) return email; // small emails stay as is
-    const visibleChars = 2; // first 2 chars visible
-    const masked = name.slice(0, visibleChars) + '*'.repeat(name.length - visibleChars);
-    return masked + '@' + domain;
+    const masked = name[0] + '***' + name.slice(-1);
+    return `${masked}@${domain}`;
 }
 
 // Custom Date Formatting
 function formatDateSpans(dateString) {
     if (!dateString) return { date: '—', time: '' };
     const date = new Date(dateString);
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return {
-        date: `${month} ${day}, ${year}`,
-        time: `${hours}:${minutes}`
-    };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString(undefined, options);
+    const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return { date: formattedDate, time: formattedTime };
 }
 
 // DOM Ready Utility
@@ -41,6 +34,7 @@ function onDOMReady(callback) {
     }
 }
 
+// ====================================
 // Sidebar Logic    
 onDOMReady(() => {
     const sidebarContainer = document.getElementById('sidebar-container');
@@ -69,3 +63,45 @@ onDOMReady(() => {
         })
         .catch(err => console.error('Sidebar load failed:', err));
 });
+
+// ====================================
+// Global Pagination Utilities
+
+let currentPage = 1;
+let entriesPerPage = 8; // default, can be overridden
+
+function getTotalPages(totalEntries) {
+    return Math.ceil(totalEntries / entriesPerPage);
+}
+
+// Slice an array for current page
+function paginateArray(array, customEntriesPerPage) {
+    const perPage = customEntriesPerPage || entriesPerPage;
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    return array.slice(start, end);
+}
+
+// Update Pagination Buttons (requires buttons in DOM)
+function updatePaginationUI(totalEntries, onPageChange) {
+    const totalPages = getTotalPages(totalEntries);
+    const buttons = document.querySelectorAll('.pagination .pagination-button');
+    const pageNumberSpan = document.querySelector('.pagination .page-number');
+
+    if (pageNumberSpan) pageNumberSpan.textContent = currentPage;
+
+    buttons[0].disabled = currentPage === 1;
+    buttons[1].disabled = currentPage === 1;
+    buttons[2].disabled = currentPage === totalPages;
+    buttons[3].disabled = currentPage === totalPages;
+
+    if (buttons[0]) buttons[0].onclick = () => { currentPage = 1; onPageChange(); };
+    if (buttons[1]) buttons[1].onclick = () => { if (currentPage > 1) { currentPage--; onPageChange(); } };
+    if (buttons[2]) buttons[2].onclick = () => { if (currentPage < totalPages) { currentPage++; onPageChange(); } };
+    if (buttons[3]) buttons[3].onclick = () => { currentPage = totalPages; onPageChange(); };
+}
+
+// Reset page when filtering/searching
+function resetPagination() {
+    currentPage = 1;
+}

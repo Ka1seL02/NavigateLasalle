@@ -20,28 +20,73 @@
     <!-- Main Content -->
     <main>
         <div class="breadcrumb-nav">
-            <a href=""><i class="bx bx-comment-detail"></i>Feedback</a>
+            <a href="a_feedback.html"><i class="bx bx-comment-detail"></i>Feedback</a>
+        </div>
+
+        <div class="content-section">
+            <!-- Content Header -->
+            <div class="content-header">
+                <div class="header-title">
+                    <h2>Feedbacks</h2>
+                    <p>See and review feedbacks sent by users.</p>
+                </div>
+
+                <div class="button-group">
+                    <button class="button normal-button">Export CSV</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <input type="date" class="news-date-filter" value="2025-05-03">
+                <div class="status-tabs">
+                    <button class="status active">All</button>
+                    <button class="status">Read</button>
+                    <button class="status">Unread</button>
+                </div>
+            </div>
+            <!-- Table list of all feedbacks -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Feedback</th>
+                            <th data-sort="rating">Rating<i class="bx bx-sort-alt-2"></i></th>
+                            <th data-sort="dateSubmitted">Date Submitted<i class="bx bx-sort-alt-2"></i></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Script will popiulate this with list of all accounts -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer -->
+            <div class="table-footer">
+                <!-- Entries Count -->
+                <p class="entries-count">Showing 1-9 of 255 entries</p>
+                <!-- Table Navigation -->
+                <div class="pagination">
+                    <button class="pagination-button" title="First page" disabled>
+                        <i class='bx bx-chevrons-left'></i>
+                    </button>
+                    <button class="pagination-button" title="Previous page" disabled>
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+                    <span class="page-number">1</span>
+                    <button class="pagination-button" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                    <button class="pagination-button" title="Last page">
+                        <i class='bx bx-chevrons-right'></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 
-    <script>
-        // Load sidebar
-        fetch('a_sidebar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('sidebar-container').innerHTML = data;
-
-                // Highlight active link
-                const currentPage = window.location.pathname.split('/').pop();
-                const links = document.querySelectorAll('.sidebar-menu li a');
-
-                links.forEach(link => {
-                    if (link.getAttribute('href') === currentPage) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-    </script>
+    <!-- External Scripts -->
+    <script src="js/a_global.js"></script>
+    <script src="js/a_feedbacks.js"></script>
 
 </body>
 

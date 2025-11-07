@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Account = require('../../models/Account');
 
-// Fetching all FAQ items
+// Fetching all Accounts
 router.get('/', async (req, res) => {
     try {
         const { search, status } = req.query;
@@ -55,6 +55,7 @@ router.delete('/:si', async (req, res) => {
     }
 });
 
+// Change status or reset password
 router.patch('/:si', async (req, res) => {
     try {
         const { action } = req.body;

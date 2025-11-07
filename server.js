@@ -3,8 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const connectDB = require('./db');
+
 const faqRoutes = require('./routes/api/faqs');
 const accountRoutes = require('./routes/api/accounts');
+const feedbackRoutes = require('./routes/api/feedbacks');
 
 const app = express();
 
@@ -16,6 +18,7 @@ app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
 
 // Routes
 app.use('/api/accounts', accountRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/faqs', faqRoutes);
 
 // Optional: serve static frontend

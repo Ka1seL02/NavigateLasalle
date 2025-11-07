@@ -11,6 +11,10 @@ const feedbackSchema = new mongoose.Schema({
     dateSubmitted : {
         type: Date,
         required: true
+    },
+    isRead : {
+        type: Boolean,
+        default: false
     }
 }, {
     collection: 'feedbacks'
