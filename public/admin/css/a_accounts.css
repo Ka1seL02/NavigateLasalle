@@ -1,9 +1,4 @@
-/* Button Group Container */
-.button-group {
-    display: flex;
-    gap: 10px;
-}
-/* Search Bar Style */
+/* --------------------- Search Bar Style --------------------- */
 /* Search Container */
 .search-box {
     display: flex;
@@ -14,6 +9,7 @@
     border-radius: 5px;
     gap: 10px;
     color: var(--dark-green);
+    background-color: var(--white);
 }
 /* Search Input Field */
 .search-box input {
@@ -22,48 +18,8 @@
     font-family: 'Poppins', sans-serif;
     background-color: transparent;
 }
-/* Filter Group Container */
-.filter-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    margin-top: 10px;
-    padding-bottom: 10px;
-}
-/* Status Filter */
-.status-tabs {
-    display: flex;
-    gap: 5px;
-}
-.status {
-    color: var(--grey);
-    border: 1px solid transparent;
-    background: transparent;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-size: 13px;
-}
-.status.active {
-    font-weight: bold;
-    color: var(--dark-green);
-    border-bottom: 2px solid var(--dark-green);
-}
-/* No accounts found text */
-.no-accounts {
-    text-align: center;
-    color: var(--grey);
-    font-size: 14px;
-}
-
 /* -------------------- FORM STYLE -------------------- */
-/* Form Container */
-.form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-/* Form */
+/* Form (Inside the modal) */
 form {
     display: flex;
     flex-direction: column;
@@ -81,22 +37,4 @@ form input {
     border-radius: 10px;
     font-family: 'Poppins', sans-serif;
     width: 400px;
-}
-.password-input-wrapper {
-    position: relative;
-    width: 400px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
-.password-input-wrapper input {
-    width: 400px;
-    padding: 10px 40px 10px 10px;
-    margin-bottom: 0;
-}
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    font-size: 20px;
-    color: var(--dark-green);
 }

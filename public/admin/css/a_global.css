@@ -22,6 +22,7 @@ main {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow: hidden;
 }
 
 /* --------------------- Sidebar Styles ----------------- */
@@ -38,7 +39,7 @@ nav {
     transition: width 0.3s ease;
     overflow: hidden;
 }
-/* Sidebar Header */
+/* Header */
 .sidebar-header {
     display: flex;
     justify-content: center;
@@ -48,12 +49,12 @@ nav {
     gap: 20px;
     border-bottom: 1px solid var(--shadow);
 }
-/* Sidebar Logo */
+/* Logo */
 .sidebar-header img {
     width: 50px;
     min-width: 50px;
 }
-/* Sidebar Logo Text */
+/* Logo Text */
 .sidebar-header span {
     text-align: center;
     transition: opacity 0.3s ease;
@@ -72,21 +73,21 @@ nav {
     color: var(--grey);
     font-family: 'Montserrat', sans-serif;
 }
-/* Sidebar Toggle Button */
+/* Toggle Button */
 .sidebar-toggle {
     font-size: 22px;
     color: var(--dark-green);
     margin-left: auto;
     transition: transform 0.3s ease;
 }
-/* Sidebar Navigation Menu */
+/* Navigation Menu */
 .sidebar-menu {
     list-style: none;
     flex-grow: 1;
     padding: 10px 20px;
     margin: 0;
 }
-/* Sidebar Menu Headers/Main Categories */
+/* Menu Headers */
 .menu-header {
     font-size: 12px;
     font-weight: bold;
@@ -99,7 +100,7 @@ nav {
 .menu-header span {
     transition: opacity 0.3s ease;
 }
-/* Sidebar Menu Items */
+/* Menu Items */
 .sidebar-menu li a {
     display: flex;
     align-items: center;
@@ -117,17 +118,17 @@ nav {
 .sidebar-menu li a span {
     transition: opacity 0.3s ease;
 }
-/* Sidebar Active/Selected Menu Item */
+/* Active Menu Item */
 .sidebar-menu li a.active {
     border: 1px solid var(--light-green);
     color: var(--black);
 }
-/* Sidebar Footer Container */
+/* Footer */
 .sidebar-footer {
     border-top: 1px solid var(--shadow);
     padding: 20px 15px;
 }
-/* Logout Button Style */
+/* Logout Button */
 .logout-button {
     display: flex;
     width: 100%;
@@ -149,7 +150,7 @@ nav {
 .logout-button span {
     transition: opacity 0.3s ease;
 }
-/* ----- Collapsed Sidebar Styles ----- */
+/* Collapsed Style */
 nav.collapsed {
     width: 80px;
 }
@@ -189,7 +190,7 @@ nav.collapsed .sidebar-header {
 }
 
 /* --------------------- Breadcrumb Navigation Styles ----------------- */
-/* Breadcrumb Navigation Bar */
+/* Navigation Bar */
 .breadcrumb-nav {
     padding: 10px 20px;
     border-bottom: 1px solid var(--shadow);
@@ -198,7 +199,7 @@ nav.collapsed .sidebar-header {
     display: flex;
     align-items: center;
 }
-/* Breadcrumb Link Style */
+/* Link */
 .breadcrumb-nav a {
     text-decoration: none;
     color: var(--white);
@@ -217,14 +218,16 @@ nav.collapsed .sidebar-header {
 }
 
 /* --------------------- Content Section Styles ----------------- */
-/* Content Section Layout */
+/* Layout */
 .content-section {
-    padding: 15px 35px;
-    overflow-y: auto;
     flex: 1;
+    padding: 15px 35px;
     background-color: var(--dirty-white);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
-/* Header Section */
+/* Container */
 .content-header {
     display: flex;
     justify-content: space-between;
@@ -233,7 +236,7 @@ nav.collapsed .sidebar-header {
     margin-bottom: 10px;
     border-bottom: 1px solid var(--dark-green);
 }
-/* Content Header Main Title */
+/* Header */
 .header-title {
     line-height: 1;
 }
@@ -246,7 +249,12 @@ nav.collapsed .sidebar-header {
     font-size: 14px;
     margin-top: 5px;
 }
-/* Button Styles */
+/* Button Container */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+/* Button Generic Style */
 .button {
     border: transparent;
     padding: 8px 15px;
@@ -267,125 +275,271 @@ nav.collapsed .sidebar-header {
     color: var(--white);
     font-weight: 500;
 }
-/* Table Style Layout */
-/* Table Container */
-.table-container {
-    margin-top: 10px;
-    width: 100%;
-    border: 1px solid var(--shadow);
-}
-/* Table Style */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-}
-/* Table Header & Items */
-.table thead {
-    background-color: var(--dirty-white);
-    color: var(--dark-green);
-    text-align: left;
-    font-weight: 600;
-}
-.table th, .table td {
-    padding: 10px 10px;
-    border-bottom: 1px solid var(--shadow);
-}
-/* Removing border of the last row */
-.table tbody tr:last-child td {
-    border-bottom: none;
-}
-/* Specific text style for some items inside the table */
-/* Custom Title-Description & Date-Time Style */
-.table .item-title {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-}
-.table .item-title .sub-text {
-    color: var(--grey);
-    font-size: 12px;
-}
-/* Action column style */
-.table .actions {
-    position: relative;
-}
-/* Small dropdown menu for actions */
-.table .actions-menu {
-    position: absolute;
-    top: 140%;
-    right: 100%;
-    transform: translateY(-50%);
-    background-color: var(--white);
-    border: 1px solid var(--shadow);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    min-width: 130px;
-    display: none;
-}
-.actions-menu.active {
-    display: block; 
-}
-/* Action Menu Items */
-.actions-menu-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 12px;
-    color: var(--dark-green);
-    border-bottom: 1px solid var(--shadow);
-    transition: background-color 0.2s ease;
-}
-.actions-menu-item:last-child {
-    border-bottom: none;
-}
-.actions-menu-item:hover {
-    background-color: var(--dirty-white);
-}
-/* Different color for delete */
-.actions-menu-item.delete {
-    color: var(--red);
-}
 
-/* --------------------- Table Footer Styles ----------------- */
-/* Table Footer Container */
-.table-footer {
+/* --------------------- Filter Group Layout --------------------- */
+/* Container */
+.filter-group {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
+}
+.filter-group input[type='date'],
+.filter-group select {
+    padding: 8px 12px;
+    border: 1px solid var(--shadow);
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--dark-green);
+    background-color: var(--white);
+    outline: none;
+}
+/* Status Filter */
+.status-tabs {
+    display: flex;
+    gap: 5px;
+}
+/* Status */
+.status {
+    color: var(--grey);
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+.status.active {
+    font-weight: bold;
+    color: var(--dark-green);
+    border-bottom: 2px solid var(--dark-green);
+}
+
+/* --------------------- Table Control Bar --------------------- */
+/* Container */
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid var(--shadow);
+    border-bottom: none;
+    background-color: var(--white);
+    padding: 5px 10px;
+}
+.controls-left,
+.controls-right {
+    display: flex;
     align-items: center;
-    margin-top: 5px;
-    padding: 10px 0;
+    gap: 15px;
+}
+.controls-left button,
+.controls-right button {
+    color: var(--dark-green);
+    padding: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: bolder;
 }
 /* Entries Count */
 .entries-count {
     font-size: 13px;
     color: var(--dark-green);
 }
-/* Pagination Styles */
-.pagination {
+.controls-left .disabled,
+.controls-right .disabled {
+    opacity: 0.5;
+}
+
+/* --------------------- Table Style Styles --------------------- */
+/* Table Container */
+.table-container {
+    width: 100%;
+    border: 1px solid var(--shadow);
+    border-top: none;
+    overflow-y: auto;
+    overflow-x: auto;
+    max-height: calc(100vh - 250px);
+    min-height: 80px;
+    height: auto;
+    background-color: var(--white);
+}
+/* Table Style */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+/* Table Header & Items */
+.table th {
+    background-color: var(--dark-green);
+    color: var(--white);
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.table th, .table td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--shadow);
+}
+.table td {
+    background-color: var(--white);
+}
+/* Removing border of the last row */
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+/* Scrollbar Style */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.table-container::-webkit-scrollbar-track {
+    background: var(--dirty-white);
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--shadow);
+    border-radius: 4px;
+}
+/* If no entries to populate table */
+.empty-list {
+    text-align: center;
+    color: var(--grey);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* --------------------- Details Column --------------------- */
+/* Detail Row */
+.detail-content {
+    padding: 10px 40px;
+    font-size: 12px;
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+    align-items: start;
+}
+.detail-content p {
+    display: contents; /* Makes children act as direct grid items */
+    margin: 0;
+}   
+.detail-content strong {
+    color: var(--dark-green);
+    font-weight: 600;
+}
+/* Detail Button */
+.details-button-group {
     display: flex;
-    align-items: center;
+    justify-content: flex-end;
     gap: 10px;
 }
-/* Pagination Button Styles */
-.pagination button {
-    border: 1px solid var(--green);
-    background-color: var(--dirty-white);
+.details-button-group button {
+    padding: 5px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
     color: var(--dark-green);
-    padding: 5px 10px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+/* --------------------- Modal Styles --------------------- */
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+/* Modal Container */
+.modal {
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: auto;
+    height: auto;
+    max-width: 90vw;
+    max-height: 85vh;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--shadow);
+    background-color: var(--dark-green);
+}
+.modal-header h3 {
+    color: var(--white);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--white);
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+/* Body */
+.modal-body {
+    padding: 25px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+}
+/* Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 25px;
+    border-top: 1px solid var(--shadow);
+    background-color: var(--dirty-white);
+}
+/* Buttons */
+.modal-button {
+    padding: 10px 20px;
+    border: none;
     border-radius: 5px;
     font-family: 'Poppins', sans-serif;
-    cursor: pointer;
-    font-size: 16px;
-}
-.pagination button:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-.pagination .page-number {
     font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.modal-button.cancel {
+    background-color: var(--white);
+    color: var(--dark-grey);
+    border: 1px solid var(--shadow);
+}
+.modal-button.submit {
+    background-color: var(--dark-green);
+    color: var(--white);
     font-weight: 500;
-    color: var(--dark-green);
-    padding: 4px 10px;
+}
+/* Hidden by default */
+.modal-overlay.hidden {
+    display: none;
 }

@@ -1,39 +1,15 @@
-/* Filter Group Container */
-.filter-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    margin-top: 10px;
-    padding-bottom: 10px;
-}
-/* Date Input */
-.news-date-filter {
+.filter-group input[type='date'] {
     width: 300px;
-    padding: 8px 12px;
-    border: 1px solid var(--shadow);
-    border-radius: 5px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 13px;
-    color: var(--dark-green);
-    background-color: var(--white);
-    outline: none;
 }
-/* Status Filter */
-.status-tabs {
-    display: flex;
-    gap: 5px;
+.modal {
+    width: 400px;
+    color: var(--dark-grey);
 }
-.status {
-    color: var(--grey);
-    border: 1px solid transparent;
-    background: transparent;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-size: 13px;
+.modal-header {
+    background-color: var(--red);
 }
-.status.active {
-    font-weight: bold;
-    color: var(--dark-green);
-    border-bottom: 2px solid var(--dark-green);
+.modal-footer .delete {
+    background-color: var(--red);
+    color: var(--white);
+    font-weight: 600;
 }

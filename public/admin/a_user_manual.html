@@ -20,28 +20,22 @@
     <!-- Main Content -->
     <main>
         <div class="breadcrumb-nav">
-            <a href=""><i class="bx bxs-dashboard"></i>Dashboard</a>
+            <a href=""><i class='bx bx bx-book'></i>User Manual</a>
+        </div>
+
+        <div class="content-section">
+            <!-- Content Header -->
+            <div class="content-header">
+                <div class="header-title">
+                    <h2>Manage User Manual</h2>
+                    <p>Manage resources to help guide user and admin's to proficiently user the system.</p>
+                </div>
+            </div>
         </div>
     </main>
 
-    <script>
-        // Load sidebar
-        fetch('a_sidebar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('sidebar-container').innerHTML = data;
-
-                // Highlight active link
-                const currentPage = window.location.pathname.split('/').pop();
-                const links = document.querySelectorAll('.sidebar-menu li a');
-
-                links.forEach(link => {
-                    if (link.getAttribute('href') === currentPage) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-    </script>
+    <!-- Scripts -->
+    <script src="js/a_global.js"></script>
 
 </body>
 

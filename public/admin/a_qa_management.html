@@ -32,52 +32,89 @@
                 </div>
                 <button class="button green-button">New Q&A</button>
             </div>
+            <!-- Table Control Bar -->
+            <div class="table-controls">
+                <!-- Left: selection + actions -->
+                <div class="controls-left">
+                    <input type="checkbox" class="select-all-toolbar" title="Select all">
+                    <button class="control-action" id="refresh-table" title="Refresh">
+                        <i class='bx bx-refresh'></i>
+                    </button>
+                    <span class="disabled">|</span>
+                    <button class="control-action" id="activate-selected" title="Activate">
+                        <i class='bx bx-check-circle'></i>
+                    </button>
+                    <button class="control-action" id="deactivate-selected" title="Deactivate">
+                        <i class='bx bx-block'></i>
+                    </button>
+                    <button class="control-action" id="delete-selected" title="Delete">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+                <!-- Right: entries count + simple pagination -->
+                <div class="controls-right">
+                    <span class="entries-count">1-50 of 808</span>
+                    <button class="pagination-button" id="prev-page" title="Previous page">
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+                    <button class="pagination-button" id="next-page" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+            </div>
 
             <!-- Q&A List Section -->
             <div class="table-container">
                 <table class="table">
+                    <colgroup>
+                        <col style="width: 40px;"> <!-- Checkbox -->
+                        <col style="min-width:250px; max-width:1000px;"> <!-- FAQ -->
+                        <col style="width:40px;"> <!-- Dropdown -->
+                        <col style="width: 40px;"> <!-- Action -->
+                    </colgroup>
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Question & Answer</th>
+                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <td>
-                            <!-- Script will populate this with list of all FQA Items -->
-                        </td>
+                        <tr class="main-row">
+                            <td class="checkbox-column">
+                                <input type="checkbox" class="select-news">
+                            </td>
+                            <td>
+                                <span class="question">What are the library opening hours?</span>
+                                <span class="answer">The library is open from 8:00 AM to 9:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends.</span>
+                            </td>
+                            <td class="dropdown"><i class="bx bx-caret-down"></i></td>
+                            <td class="actions">⋮</td>
+                        </tr>
+                        <tr class="detail-row">
+                            <td colspan="4">    
+                                <div class="detail-content">
+                                    <p><strong>Question:</strong>What are the library opening hours?</p>
+                                    <p><strong>Answer:</strong>The library is open from 8:00 AM to 9:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends.</p>
+                                </div>
+                                <div class="details-button-group">
+                                    <button class="detail-button delete">DELETE</button>
+                                    <button class="detail-button close">CLOSE</button>
+                                </div>      
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="empty-list">No Account Found.</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- Table Navigation -->
-            <div class="table-footer">
-                <p class="entries-count">Showing 1-9 of 255 entries</p>
-                <div class="pagination">
-                    <button class="pagination-button" title="First page" disabled>
-                        <i class='bx bx-chevrons-left'></i>
-                    </button>
-                    <button class="pagination-button" title="Previous page" disabled>
-                        <i class='bx bx-chevron-left'></i>
-                    </button>
-                    <span class="page-number">1</span>
-                    <button class="pagination-button" title="Next page">
-                        <i class='bx bx-chevron-right'></i>
-                    </button>
-                    <button class="pagination-button" title="Last page">
-                        <i class='bx bx-chevrons-right'></i>
-                    </button>
-                </div>
-            </div>
         </div>
     </main>
-    <!-- External Scripts -->
-    <script src="js/a_sidebar.js"></script>
-    <script src="js/a_qa_management.js"></script>
-    <!-- Inline Scripts -->
-    <script>
-        
-    </script>
+
+    <!-- Scripts -->
+    <script src="js/a_global.js"></script>
 
     <body>
 

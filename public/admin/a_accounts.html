@@ -25,19 +25,17 @@
 
         <div class="content-section">
             <!-- Content Header -->
-            <!-- Contains the button/function that create accounts and print account list -->
             <div class="content-header">
                 <div class="header-title">
                     <h2>Admin Accounts</h2>
                     <p>View, add, or manage administrator access within the system.</p>
                 </div>
-
                 <div class="button-group">
                     <button class="button normal-button">Export CSV</button>
                     <button class="button green-button" id="createAccount">Add Account</button>
                 </div>
             </div>
-            <!-- Search Box -->
+            <!-- Filter Group -->
             <div class="filter-group">
                 <div class="search-box">
                     <i class="bx bx-search"></i>
@@ -49,11 +47,52 @@
                     <button class="status">Deactivated</button>
                 </div>
             </div>
+            <!-- Table Control Bar -->
+            <div class="table-controls">
+                <!-- Left: selection + actions -->
+                <div class="controls-left">
+                    <input type="checkbox" class="select-all-toolbar" title="Select all">
+                    <button class="control-action" id="refresh-table" title="Refresh">
+                        <i class='bx bx-refresh'></i>
+                    </button>
+                    <span class="disabled">|</span>
+                    <button class="control-action" id="activate-selected" title="Activate">
+                        <i class='bx bx-check-circle'></i>
+                    </button>
+                    <button class="control-action" id="deactivate-selected" title="Deactivate">
+                        <i class='bx bx-block'></i>
+                    </button>
+                    <button class="control-action" id="delete-selected" title="Delete">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+                <!-- Right: entries count + simple pagination -->
+                <div class="controls-right">
+                    <span class="entries-count">1-50 of 808</span>
+                    <button class="pagination-button" id="prev-page" title="Previous page">
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+                    <button class="pagination-button" id="next-page" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+            </div>
+
             <!-- Table list of all admin accounts -->
             <div class="table-container">
                 <table class="table">
+                    <colgroup>
+                        <col style="width: 40px;"> <!-- Checkbox -->
+                        <col style="width: 50px;"> <!-- SI -->
+                        <col style="min-width:150px; max-width:300px;"> <!-- Name -->
+                        <col style="min-width:180px; max-width:400px;"> <!-- Email -->
+                        <col style="width:110px;"> <!-- Created -->
+                        <col style="width:100px;"> <!-- Last Login -->
+                        <col style="width:40px;"> <!-- Actions -->
+                    </colgroup>
                     <thead>
                         <tr>
+                            <th></th>
                             <th data-sort="si">SI<i class="bx bx-sort-alt-2"></i></th>
                             <th>Name</th>
                             <th>Email</th>
@@ -64,39 +103,59 @@
                     </thead>
                     <tbody>
                         <!-- Script will populate this with list of all accounts -->
+                        <!-- Sample Look Layout -->
+                        <tr>
+                            <td class="checkbox-column">
+                                <input type="checkbox" class="select-account">
+                            </td>
+                            <td>1</td>
+                            <td>Gian Klyde Lazaro</td>
+                            <td>Email@email.com</td>
+                            <td>Nov. 29</td>
+                            <td>1 day ago</td>
+                            <td>⋮</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7" class="empty-list">No Account Found.</td>
+                        </tr>
                     </tbody>
                 </table>
-
             </div>
+        </div>
 
-            <!-- Table Footer -->
-            <div class="table-footer">
-                <!-- Entries Count -->
-                <p class="entries-count">Showing 1-9 of 255 entries</p>
-                <!-- Table Navigation -->
-                <div class="pagination">
-                    <button class="pagination-button" title="First page" disabled>
-                        <i class='bx bx-chevrons-left'></i>
-                    </button>
-                    <button class="pagination-button" title="Previous page" disabled>
-                        <i class='bx bx-chevron-left'></i>
-                    </button>
-                    <span class="page-number">1</span>
-                    <button class="pagination-button" title="Next page">
-                        <i class='bx bx-chevron-right'></i>
-                    </button>
-                    <button class="pagination-button" title="Last page">
-                        <i class='bx bx-chevrons-right'></i>
+        <!-- Create Account Modal -->
+        <div class="modal-overlay hidden" id="accountModal">
+            <div class="modal">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h3>Add New Account</h3>
+                    <button class="modal-close" id="closeModal">
+                        <i class='bx bx-x'></i>
                     </button>
                 </div>
-            </div>
 
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="accountForm">
+                        <label for="accountName">Full Name</label>
+                        <input type="text" id="accountName" placeholder="Enter full name" required>
+
+                        <label for="accountEmail">Email Address</label>
+                        <input type="email" id="accountEmail" placeholder="Enter email address" required>
+                    </form>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button class="modal-button cancel" id="cancelBtn">Cancel</button>
+                    <button class="modal-button submit" id="submitBtn">Create Account</button>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- External Scripts -->
+    <!-- Scripts -->
     <script src="js/a_global.js"></script>
-    <script src="js/a_accounts.js"></script>
 
 </body>
 
