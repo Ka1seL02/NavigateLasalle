@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const connectDB = require('./db');
+
 // Import route modules for handling API endpoints
 const accountRoutes = require('./routes/api/accounts');
 const feedbackRoutes = require('./routes/api/feedbacks');
@@ -17,7 +18,6 @@ connectDB();
 // Middleware for parsing information to be passed or fetch from DB
 app.use(express.json()); // For parsing JSON Data
 app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
-
 // Routes
 app.use('/api/accounts', accountRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
