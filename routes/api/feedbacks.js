@@ -55,15 +55,15 @@ router.get('/', async (req, res) => {
 // Change status of feedback to Unread
 router.patch('/:_id', async (req, res) => {
     try {
-        const feedback = await Feedback.findOne({ _id: req.params._id });
+        const feedback = await Feedback.findById(req.params._id);
         if (!feedback) return res.status(404).json({ message: 'Feedback not found' });
-        
-        if(!feedback.isRead) { 
-            feedback.isRead = true 
+
+        if (typeof req.body.isRead === 'boolean') {
+            feedback.isRead = req.body.isRead;
             await feedback.save();
         }
 
-        res.status(200).json({ message: 'Feedback marked as read successfully' });
+        res.status(200).json({ message: `Feedback marked as ${feedback.isRead ? 'read' : 'unread'} successfully` });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
