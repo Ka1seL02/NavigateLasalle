@@ -1,249 +1,313 @@
-// a_accounts.js
+// ---------------- Modal Elements ----------------
+const accountModal = document.getElementById('accountModal');
+const accountForm = document.getElementById('accountForm');
+const createAccountBtn = document.getElementById('createAccount');
+const closeModalBtn = document.getElementById('closeModal');
+const cancelBtn = document.getElementById('cancelBtn');
+const submitBtn = document.getElementById('submitBtn');
 
-let currentSearch = '';
-let currentStatus = 'all';
-let currentSort = { column: 'si', order: 'asc' };
-let accountsData = []; // Store all fetched accounts
+// ---------------- Modal Functions ----------------
+const toggleModal = (show) => {
+    accountModal.classList.toggle('hidden', !show);
+    if (!show) accountForm.reset();
+};
 
-// ========================
-// Load Accounts
-async function loadAccounts() {
+// Open modal
+createAccountBtn.addEventListener('click', () => toggleModal(true));
+
+// Close modal
+[closeModalBtn, cancelBtn].forEach(btn => btn.addEventListener('click', () => toggleModal(false)));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleModal(false); });
+
+// ---------------- Account Form Submission ----------------
+submitBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const name = accountForm.accountName.value.trim();
+    const email = accountForm.accountEmail.value.trim();
+
+    if (!name || !email) return alert('Please fill in all fields');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Please enter a valid email');
+
     try {
-        const queryParams = new URLSearchParams();
-        if (currentSearch) queryParams.append('search', currentSearch);
-        if (currentStatus !== 'all') queryParams.append('status', currentStatus);
+        const res = await fetch('/api/accounts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password: 'admin12345' })
+        });
+        const data = await res.json();
 
-        const res = await fetch(`/api/accounts?${queryParams.toString()}`);
-        accountsData = await res.json();
-
-        renderAccounts();
-    } catch (err) {
-        alert('Error fetching accounts: ' + err.message);
-    }
-}
-
-// ========================
-// Render Accounts Table
-function renderAccounts() {
-    const tableBody = document.querySelector('.table tbody');
-    tableBody.innerHTML = '';
-
-    if (!accountsData.length) {
-        tableBody.innerHTML = `<tr><td colspan="6" class="no-accounts">No accounts found.</td></tr>`;
-        document.querySelector('.entries-count').textContent = 'Showing 0 of 0 entries';
-        updatePaginationUI(0, renderAccounts);
-        return;
-    }
-
-    // Apply status filter
-    let filtered = accountsData;
-    if (currentStatus === 'active') filtered = filtered.filter(acc => acc.isActive);
-    if (currentStatus === 'deactivated') filtered = filtered.filter(acc => !acc.isActive);
-
-    // Sort
-    filtered.sort((a, b) => {
-        let valA = a[currentSort.column];
-        let valB = b[currentSort.column];
-        if (currentSort.column === 'created' || currentSort.column === 'lastLogin') {
-            valA = valA ? new Date(valA).getTime() : 0;
-            valB = valB ? new Date(valB).getTime() : 0;
+        if (res.ok) {
+            alert('Account created successfully!');
+            toggleModal(false);
+            currentPage = 1; // reset to first page
+            loadAccounts(...Object.values(getFilters()));
+        } else {
+            alert(`Error: ${data.error || 'Failed to create account'}`);
         }
-        if (valA < valB) return currentSort.order === 'asc' ? -1 : 1;
-        if (valA > valB) return currentSort.order === 'asc' ? 1 : -1;
-        return 0;
-    });
+    } catch (err) {
+        console.error(err);
+        alert('An error occurred while creating the account');
+    }
+});
 
-    // Paginate
-    const paginated = paginateArray(filtered);
+// ---------------- Table & Pagination Setup ----------------
+const tbody = document.querySelector('.table tbody');
+const searchInput = document.querySelector('.search-box input');
+const statusTabsContainer = document.querySelector('.status-tabs');
+const refreshBtn = document.getElementById('refresh-table');
 
-    // Render rows
-    paginated.forEach(acc => {
-        const created = formatDateSpans(acc.created);
-        const statusLabel = acc.isActive ? 'Deactivate' : 'Activate';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${acc.si}</td>
-            <td>${acc.name}</td>
-            <td>${maskEmail(acc.email)}</td>
-            <td class="item-title">
-                <span class="main-text">${created.date}</span>
-                <span class="sub-text">${created.time}</span>
-            </td>
-            <td>${acc.lastLogin || '—'}</td>
-            <td class="actions" data-si="${acc.si}" data-active="${acc.isActive}">⋮
-                <div class="actions-menu">
-                    <div class="actions-menu-item reset">Reset</div>
-                    <div class="actions-menu-item toggle">${statusLabel}</div>
-                    <div class="actions-menu-item delete">Delete</div>
-                </div>
-            </td>
-        `;
-        tableBody.appendChild(tr);
-    });
+const selectAllToolbar = document.querySelector('.select-all-toolbar');
+const activateSelectedBtn = document.getElementById('activate-selected');
+const deactivateSelectedBtn = document.getElementById('deactivate-selected');
+const deleteSelectedBtn = document.getElementById('delete-selected');
 
-    const countText = document.querySelector('.entries-count');
-    const startIdx = (currentPage - 1) * entriesPerPage;
-    const endIdx = startIdx + paginated.length;
-    countText.textContent = `Showing ${startIdx + 1}-${startIdx + paginated.length} of ${filtered.length} entries`;
+const prevPageBtn = document.getElementById('prev-page');
+const nextPageBtn = document.getElementById('next-page');
+const entriesCount = document.querySelector('.entries-count');
 
-    updatePaginationUI(filtered.length, renderAccounts);
+let currentPage = 1;
+const maxPerPage = 50; // for testing, change to 50 later
+
+// ---------------- Helper Functions ----------------
+const getFilters = () => {
+    const search = searchInput?.value || '';
+    const activeTab = document.querySelector('.status.active');
+    const status = activeTab?.textContent.toLowerCase() === 'active' ? 'active'
+                 : activeTab?.textContent.toLowerCase() === 'deactivated' ? 'deactivated'
+                 : '';
+    return { search, status };
+};
+
+function getSelectedSIs() {
+    return Array.from(document.querySelectorAll('.select-account:checked'))
+        .map(cb => cb.dataset.si);
 }
 
-// ========================
-// Action Buttons (Delegated)
-document.addEventListener('click', async (e) => {
-    // Toggle actions menu
-    const cell = e.target.closest('.actions');
-    if (cell && !e.target.closest('.actions-menu-item')) {
-        document.querySelectorAll('.actions-menu').forEach(m => m.classList.remove('active'));
-        const menu = cell.querySelector('.actions-menu');
-        if (menu) menu.classList.toggle('active');
-        return;
+// ---------------- Load Accounts Table ----------------
+async function loadAccounts(search = '', status = '') {
+    try {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (status) params.append('status', status);
+        const query = params.toString();
+
+        const res = await fetch(`/api/accounts${query ? '?' + query : ''}`);
+        if (!res.ok) throw new Error('Failed to fetch accounts');
+
+        const allAccounts = await res.json();
+
+        // --- Simulate pagination ---
+        const totalAccounts = allAccounts.length;
+        const totalPages = Math.ceil(totalAccounts / maxPerPage);
+        const paginatedAccounts = allAccounts.slice((currentPage - 1) * maxPerPage, currentPage * maxPerPage);
+
+        // --- Populate table ---
+        tbody.innerHTML = paginatedAccounts.length
+            ? paginatedAccounts.map(a => {
+                const created = formatDate(a.created || a.createdAt);
+                const lastLogin = a.lastLogin ? formatDate(a.lastLogin) : 'Never';
+                return `
+                    <tr>
+                        <td class="checkbox-column"><input type="checkbox" class="select-account" data-si="${a.si}"></td>
+                        <td>${a.si}</td>
+                        <td>${a.name}</td>
+                        <td>${maskEmail(a.email)}</td>
+                        <td>${created}</td>
+                        <td>${lastLogin}</td>
+                        <td class="actions"><button data-si="${a.si}">⋮</button></td>
+                    </tr>`;
+            }).join('')
+            : '<tr><td colspan="7" class="empty-list">No Account Found.</td></tr>';
+
+        // --- Update entries count ---
+        const start = paginatedAccounts.length ? (currentPage - 1) * maxPerPage + 1 : 0;
+        const end = start + paginatedAccounts.length - 1;
+        entriesCount.textContent = `${start}-${end} of ${totalAccounts}`;
+
+        // --- Update pagination buttons ---
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+
+        // Reset select-all checkbox
+        selectAllToolbar.checked = false;
+        selectAllToolbar.indeterminate = false;
+
+        resetActionButtons();
+
+    } catch (err) {
+        console.error(err);
+        alert('Failed to load accounts');
     }
+}
 
-    // Action items: Reset / Toggle / Delete
-    const actionItem = e.target.closest('.actions-menu-item');
-    if (!actionItem) return;
+// ---------------- Pagination Button Listeners ----------------
+prevPageBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        loadAccounts(...Object.values(getFilters()));
+    }
+});
 
-    const parentCell = e.target.closest('.actions');
-    const si = parentCell.dataset.si;
+nextPageBtn.addEventListener('click', () => {
+    currentPage++;
+    loadAccounts(...Object.values(getFilters()));
+});
 
-    if (actionItem.classList.contains('reset')) {
-        if (confirm('Reset password to default?')) {
-            const res = await fetch(`/api/accounts/${si}`, {
+// ---------------- Table Controls ----------------
+
+// Select All Checkbox
+selectAllToolbar?.addEventListener('change', (e) => {
+    const checkboxes = document.querySelectorAll('.select-account');
+    checkboxes.forEach(cb => cb.checked = e.target.checked);
+});
+
+// Update select-all when individual checkboxes change
+tbody.addEventListener('change', (e) => {
+    if (e.target.classList.contains('select-account')) {
+        const allCheckboxes = document.querySelectorAll('.select-account');
+        const checkedCount = document.querySelectorAll('.select-account:checked').length;
+        selectAllToolbar.checked = checkedCount === allCheckboxes.length;
+        selectAllToolbar.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
+    }
+});
+
+// Activate Selected
+activateSelectedBtn?.addEventListener('click', async () => {
+    const selectedSIs = getSelectedSIs();
+    if (selectedSIs.length === 0) return alert('Please select at least one account');
+
+    try {
+        const res = await fetch('/api/accounts');
+        const allAccounts = await res.json();
+
+        const accountsToActivate = selectedSIs.filter(si => {
+            const acc = allAccounts.find(a => a.si == si);
+            return acc && !acc.isActive;
+        });
+
+        if (accountsToActivate.length === 0) return alert('All selected accounts are already active');
+        if (!confirm(`Activate ${accountsToActivate.length} account(s)?`)) return;
+
+        await Promise.all(accountsToActivate.map(si => 
+            fetch(`/api/accounts/${si}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'reset' })
-            });
-            const data = await res.json();
-            alert(data.message);
-            loadAccounts();
-        }
-    }
+                body: JSON.stringify({ action: 'activate' })
+            })
+        ));
 
-    if (actionItem.classList.contains('toggle')) {
-        const currentlyActive = parentCell.dataset.active === 'true';
-        const confirmMsg = currentlyActive
-            ? 'Are you sure you want to deactivate this account?'
-            : 'Are you sure you want to activate this account?';
-        if (confirm(confirmMsg)) {
-            const res = await fetch(`/api/accounts/${si}`, {
+        alert('Accounts activated successfully!');
+        loadAccounts(...Object.values(getFilters()));
+
+    } catch (err) {
+        console.error(err);
+        alert('Failed to activate accounts');
+    }
+});
+
+// Deactivate Selected
+deactivateSelectedBtn?.addEventListener('click', async () => {
+    const selectedSIs = getSelectedSIs();
+    if (selectedSIs.length === 0) return alert('Please select at least one account');
+
+    try {
+        const res = await fetch('/api/accounts');
+        const allAccounts = await res.json();
+
+        const accountsToDeactivate = selectedSIs.filter(si => {
+            const acc = allAccounts.find(a => a.si == si);
+            return acc && acc.isActive;
+        });
+
+        if (accountsToDeactivate.length === 0) return alert('All selected accounts are already deactivated');
+        if (!confirm(`Deactivate ${accountsToDeactivate.length} account(s)?`)) return;
+
+        await Promise.all(accountsToDeactivate.map(si => 
+            fetch(`/api/accounts/${si}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'deactivate' })
-            });
-            const data = await res.json();
-            alert(data.message);
-            loadAccounts();
-        }
-    }
+            })
+        ));
 
-    if (actionItem.classList.contains('delete')) {
-        if (confirm('Delete this account permanently?')) {
-            const res = await fetch(`/api/accounts/${si}`, { method: 'DELETE' });
-            const data = await res.json();
-            alert(data.message);
-            loadAccounts();
-        }
+        alert('Accounts deactivated successfully!');
+        loadAccounts(...Object.values(getFilters()));
+
+    } catch (err) {
+        console.error(err);
+        alert('Failed to deactivate accounts');
     }
 });
 
-// ========================
-// DOM Ready
-document.addEventListener('DOMContentLoaded', () => {
-    const isAccountListPage = document.querySelector('.table');
-    const isAccountCreatePage = document.getElementById('createAccountForm');
+// Delete Selected
+deleteSelectedBtn?.addEventListener('click', async () => {
+    const selectedSIs = getSelectedSIs();
+    if (selectedSIs.length === 0) return alert('Please select at least one account');
 
-    if (isAccountListPage) {
-        loadAccounts();
+    if (!confirm(`Delete ${selectedSIs.length} account(s)? This action cannot be undone.`)) return;
 
-        // Search
-        const searchInput = document.querySelector('.search-box input');
-        if (searchInput) searchInput.addEventListener('input', debounce(e => {
-            currentSearch = e.target.value.trim();
-            resetPagination();
-            loadAccounts();
-        }, 300));
+    try {
+        await Promise.all(selectedSIs.map(si => 
+            fetch(`/api/accounts/${si}`, { method: 'DELETE' })
+        ));
 
-        // Status tabs
-        document.querySelectorAll('.status-tabs .status').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.status-tabs .status').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentStatus = btn.textContent.trim().toLowerCase();
-                resetPagination();
-                loadAccounts();
-            });
-        });
+        alert('Accounts deleted successfully!');
+        loadAccounts(...Object.values(getFilters()));
 
-        // Column sorting
-        document.querySelectorAll('.table th[data-sort]').forEach(th => {
-            th.addEventListener('click', () => {
-                const column = th.getAttribute('data-sort');
-                if (currentSort.column === column) currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
-                else currentSort.column = column, currentSort.order = 'asc';
-                resetPagination();
-                loadAccounts();
-            });
-        });
-
-        // Create account button
-        const createAccountBtn = document.getElementById('createAccount');
-        if (createAccountBtn) createAccountBtn.onclick = () => window.location.href = 'a_accounts_create.html';
-    }
-
-    if (isAccountCreatePage) {
-        const createAccountForm = document.getElementById('createAccountForm');
-        createAccountForm.addEventListener('submit', async e => {
-            e.preventDefault();
-            const formData = new FormData(createAccountForm);
-            const data = Object.fromEntries(formData.entries());
-
-            if (data.password !== data.confirm_password) {
-                alert('Passwords do not match.');
-                return;
-            }
-
-            const { confirm_password, ...payload } = data;
-            try {
-                const res = await fetch('/api/accounts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await res.json();
-
-                if (res.status === 500 && result.error?.includes('duplicate key')) {
-                    alert('Email already exists.');
-                    return;
-                }
-
-                if (res.ok) {
-                    alert('Account created successfully!');
-                    window.location.href = 'a_accounts.html';
-                } else {
-                    alert(result.error || 'Something went wrong.');
-                }
-            } catch (err) {
-                alert('Network/server error: ' + err.message);
-            }
-        });
-
-        const cancelBtn = document.getElementById('cancelCreate');
-        if (cancelBtn) cancelBtn.onclick = () => window.location.href = 'a_accounts.html';
-
-        // Toggle password visibility
-        document.querySelectorAll('.toggle-password').forEach(icon => {
-            icon.addEventListener('click', () => {
-                const target = document.getElementById(icon.dataset.target);
-                if (target.type === 'password') {
-                    target.type = 'text';
-                    icon.classList.replace('bx-hide', 'bx-show');
-                } else {
-                    target.type = 'password';
-                    icon.classList.replace('bx-show', 'bx-hide');
-                }
-            });
-        });
+    } catch (err) {
+        console.error(err);
+        alert('Failed to delete accounts');
     }
 });
+
+// --------------- Function Buttons ----------------
+function updateTableActionButtons() {
+    const anyChecked = document.querySelectorAll('.select-account:checked').length > 0;
+    activateSelectedBtn.disabled = !anyChecked;
+    deactivateSelectedBtn.disabled = !anyChecked;
+    deleteSelectedBtn.disabled = !anyChecked;
+}
+
+// Call on checkbox change
+tbody.addEventListener('change', e => {
+    if (e.target.classList.contains('select-account')) {
+        const allCheckboxes = document.querySelectorAll('.select-account');
+        const checkedCount = document.querySelectorAll('.select-account:checked').length;
+
+        // Update select-all checkbox
+        selectAllToolbar.checked = checkedCount === allCheckboxes.length;
+        selectAllToolbar.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
+
+        // Update action buttons
+        updateTableActionButtons();
+    }
+});
+
+// Also update when select-all toolbar is clicked
+selectAllToolbar?.addEventListener('change', () => updateTableActionButtons());
+
+// Reset buttons on table reload
+function resetActionButtons() {
+    activateSelectedBtn.disabled = true;
+    deactivateSelectedBtn.disabled = true;
+    deleteSelectedBtn.disabled = true;
+}
+
+// ---------------- Filters & Refresh ----------------
+searchInput?.addEventListener('input', () => {
+    currentPage = 1;
+    loadAccounts(...Object.values(getFilters()));
+});
+
+statusTabsContainer?.addEventListener('click', e => {
+    if (!e.target.classList.contains('status')) return;
+    statusTabsContainer.querySelectorAll('.status').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentPage = 1;
+    loadAccounts(...Object.values(getFilters()));
+});
+
+refreshBtn?.addEventListener('click', () => loadAccounts(...Object.values(getFilters())));
+
+// ---------------- Initial Load ----------------
+loadAccounts(...Object.values(getFilters()));
