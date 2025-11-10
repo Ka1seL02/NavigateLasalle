@@ -41,12 +41,6 @@
                         <i class='bx bx-refresh'></i>
                     </button>
                     <span class="disabled">|</span>
-                    <button class="control-action" id="activate-selected" title="Activate">
-                        <i class='bx bx-check-circle'></i>
-                    </button>
-                    <button class="control-action" id="deactivate-selected" title="Deactivate">
-                        <i class='bx bx-block'></i>
-                    </button>
                     <button class="control-action" id="delete-selected" title="Delete">
                         <i class='bx bx-trash'></i>
                     </button>
@@ -87,21 +81,23 @@
                             </td>
                             <td>
                                 <span class="question">What are the library opening hours?</span>
-                                <span class="answer">The library is open from 8:00 AM to 9:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends.</span>
+                                <span class="answer">The library is open from 8:00 AM to 9:00 PM on weekdays and 9:00 AM
+                                    to 5:00 PM on weekends.</span>
                             </td>
                             <td class="dropdown"><i class="bx bx-caret-down"></i></td>
                             <td class="actions">⋮</td>
                         </tr>
                         <tr class="detail-row">
-                            <td colspan="4">    
+                            <td colspan="4">
                                 <div class="detail-content">
                                     <p><strong>Question:</strong>What are the library opening hours?</p>
-                                    <p><strong>Answer:</strong>The library is open from 8:00 AM to 9:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends.</p>
+                                    <p><strong>Answer:</strong>The library is open from 8:00 AM to 9:00 PM on weekdays
+                                        and 9:00 AM to 5:00 PM on weekends.</p>
                                 </div>
                                 <div class="details-button-group">
                                     <button class="detail-button delete">DELETE</button>
                                     <button class="detail-button close">CLOSE</button>
-                                </div>      
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -110,11 +106,43 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Create FAQ Modal -->
+            <div class="modal-overlay hidden" id="faqModal">
+                <div class="modal">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h3>Add New FAQ</h3>
+                        <button class="modal-close" id="closeFaqModal">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <form id="faqForm">
+                            <label for="faqQuestion">Question</label>
+                            <input type="text" id="faqQuestion" placeholder="Enter your question" required>
+
+                            <label for="faqAnswer">Answer</label>
+                            <textarea id="faqAnswer" placeholder="Enter the answer" rows="4" required></textarea>
+                        </form>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button class="modal-button cancel" id="cancelFaqBtn">Cancel</button>
+                        <button class="modal-button submit" id="submitFaqBtn">Add FAQ</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <!-- Scripts -->
     <script src="js/a_global.js"></script>
+    <script src="js/a_qa_management.js"></script>
 
     <body>
 
