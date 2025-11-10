@@ -348,6 +348,7 @@ nav.collapsed .sidebar-header {
 .controls-left .disabled,
 .controls-right .disabled {
     opacity: 0.5;
+    pointer-events: none;
 }
 
 /* --------------------- Table Style Styles --------------------- */
@@ -402,6 +403,14 @@ nav.collapsed .sidebar-header {
 .table-container::-webkit-scrollbar-thumb {
     background: var(--shadow);
     border-radius: 4px;
+}
+.actions button {
+    background-color: transparent;
+    border: transparent;
+}
+.control-action:disabled,
+.pagination-button:disabled {
+    opacity: 0.3;
 }
 /* If no entries to populate table */
 .empty-list {
