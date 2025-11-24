@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/u_global.css">
+    <link rel="stylesheet" href="css/u_dashboard.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <main>
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <img src="images/dlsud_logo_2.png">
+        </div>
+        <div class="dashboard-grid">
+            <!-- Featured News Section -->
+            <div class="main-section">
+                <!-- News Carousel -->
+                <div class="news-carousel">
+                    <button class="carousel-nav prev">
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+                    <!-- News Detail Section -->
+                    <div class="news-content">
+                        <div class="news-image">
+                            <img src="../shared/images/news/news_3.jpg">
+                        </div>
+                        <div class="news-details">
+                            <div class="news-meta">
+                                <i class="bx bx-calendar"></i>
+                                <span class="news-date">APRIL 3, 2024</span>
+                                <i class="bx bxs-purchase-tag"></i>
+                                <span class="news-tag">NEWS</span>
+                            </div>
+                            <h2 class="news-title">DLSU-D joins Study Abroad Fair in Taiwan</h2>
+                            <p class="news-description">
+                                DLSU-D's Linkages and Scholarship Office recently participated in the Partner Day and
+                                Study Abroad Fair organized by Providence University in Taiwan. This event provided an
+                                excellent platform for DLSU-D to showcase its academic programs and foster international
+                                collaborations. Representatives from DLSU-D engaged with prospective students and
+                                academic partners, highlighting the university's commitment to global education and
+                                cultural exchange.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="carousel-nav next">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+
+                <!-- Carousel Dots -->
+                <div class="carousel-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <!-- View All News Button -->
+                <button id="viewAllNews">View All News</button>
+            </div>
+
+            <div class="side-section">
+                <!-- Time & Date -->
+                <div class="top-box">
+                    <span id="clockText"></span>
+                    <span id="dateText"></span>
+                </div>
+                <!-- Weather -->
+                <div class="middle-box">
+
+                </div>
+                <!-- 2X2 Grid Section -->
+                <div class="grid-2x2 upper">
+                    <div class="small-box about">
+                        <img src="images/i_about.png"/>
+                        <p>About DLSU-D</p>
+                    </div>
+                    <div class="small-box map">
+                        <img src="images/i_map.png"/>
+                        <p>Interactive Map</p>
+                    </div>
+                </div>
+                <div class="grid-2x2 lower">
+                    <div class="small-box virtual">
+                        <img src="images/i_virtual.png"/>
+                        <p>Virtual Tour</p>
+                    </div>
+                    <div class="small-box help">
+                        <img src="images/i_help.png"/>
+                        <p>Help</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Buttons -->
+        <div class="floating-buttons">
+            <button class="float-btn feedback-float-btn">
+                <i class='bx bx-message-square-dots'></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/u_global.js"></script>
+    <script src="js/u_dashboard.js"></script>
+
+</body>
+
+</html>
