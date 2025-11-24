@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="css/u_global.css">
+    <link rel="stylesheet" href="css/u_help.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <main>
+        <!-- Page Banner -->
+        <section class="help-banner">
+
+            <!-- Back to Dashboard -->
+            <button class="back-to-dashboard">
+                <i class='bx bx-home-alt'></i>
+                <span>Back to Dashboard</span>
+            </button>
+
+            <!-- Banner Text -->
+            <h1>Help Center</h1>
+            <p>
+                Find answers, guides, and assistance for using the Navigate La Salle Kiosk.
+            </p>
+
+            <!-- Search Box -->
+            <div class="search-box">
+                <i class="bx bx-search"></i>
+                <input type="text" placeholder="Search your keyword..." id="helpSearch">
+            </div>
+
+            <!-- FAQ Categories -->
+            <div class="faq-category">
+                <button data-category="General">Getting Started</button>
+                <button data-category="News">News</button>
+                <button data-category="Interactive Map">Interactive Map</button>
+                <button data-category="Virtual Tour">Virtual Tour</button>
+                <button data-category="Feedback">Feedback</button>
+            </div>
+
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <!-- This is a FAQ Item put for visual -->
+            <!-- The FAQ Items are dynamically loaded and this single FAQ item is removed -->
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How to navigate the campus using the kiosk?</span>
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+                <div class="faq-answer">
+                    <p>To navigate the campus using the kiosk, start by selecting your current location and your desired
+                        destination. The kiosk will then provide you with a detailed map and step-by-step directions to
+                        help you reach your destination easily.</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Feedback Section -->
+        <section class="feedback-section">
+            <h2>Help Us Improve This Kiosk?</h2>
+            <p>Help us improve this kiosk by sending your suggestions or reporting an issue. Your input is valuable!
+            </p>
+            <button>
+                <i class='bx bx-edit-alt'></i>
+                <span>Submit Feedback</span>
+            </button>
+        </section>
+
+        <!-- Footer -->
+        <section class="faq-footer">
+            <div class="faq-footer-container">
+                <i class='bx bx-info-circle'></i>
+                <span>Last updated: Nov 2025 | Kiosk Version 2.1</span>
+            </div>
+        </section>
+
+        <!-- Floating Action Buttons -->
+        <div class="floating-buttons">
+            <button class="float-btn scroll-top-btn">
+                <i class='bx bx-chevron-up'></i>
+            </button>
+            <button class="float-btn feedback-float-btn">
+                <i class='bx bx-message-square-dots'></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/u_global.js"></script>
+    <script src="js/u_help.js"></script>
+
+</body>
+
+</html>
