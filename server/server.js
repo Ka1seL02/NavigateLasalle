@@ -7,7 +7,9 @@ const path = require('path');
 const connectDB = require('./config/db.js');
 
 // Import route modules for handling API endpoints
-const accountRoutes = require('./routes/accounts.js')
+const accountRoutes = require('./routes/accounts.js');
+const faqRoutes = require('./routes/faqs.js');
+const feedbackRoutes = require('./routes/feedbacks.js');
 
 // App setup
 const app = express();
@@ -32,6 +34,8 @@ app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
 
 // Routes
 app.use('/api/accounts', accountRoutes);
+app.use('/api/faqs', faqRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Optional: serve static frontend
 app.use(express.static(path.join(__dirname, '../public')));
