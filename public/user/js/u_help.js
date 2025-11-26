@@ -1,4 +1,4 @@
-// Back to Dashboard
+// Back to Dashboard Button
 const backToDashboardBtn = document.querySelector('.back-to-dashboard');
 if (backToDashboardBtn) {
     backToDashboardBtn.addEventListener('click', () => {
