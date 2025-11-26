@@ -5,7 +5,6 @@ const Account = require('../models/Account');
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const sendEmail = require('../utils/sendEmail');
 
-const bcrypt = require('bcryptjs'); // Password hashing
 const crypto = require('crypto');   // Token creation
 
 // LOGIN
