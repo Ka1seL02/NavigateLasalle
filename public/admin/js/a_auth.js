@@ -53,12 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = loginForm.querySelector('input[type="text"]').value.trim();
             const password = loginForm.querySelector('input[type="password"]').value.trim();
-
+            // Validation
             if (!email || !password) {
-                customNotification('error', 'Login Failed', 'Please enter both email and password.');
+                customNotification('error', 'Login Failed', 'Please fill the necessary fields.');
                 return;
             }
-
+            // Request
             try {
                 const response = await fetch('/api/accounts/login', {
                     method: 'POST',
@@ -72,12 +72,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     customNotification('success', 'Login Successful', `Welcome back, ${data.user.name}!`);
                     // Redirect to dashboard after short delay
                     setTimeout(() => {
-                        window.location.href = '/admin/a_dashboard.html'; // Change if your dashboard has a different name
+                        window.location.href = '/admin/a_dashboard.html';
                     }, 1500);
                 } else {
+                    // Wrong Credentials or DB Error Related
                     customNotification('error', 'Login Failed', data.message);
                 }
             } catch (err) {
+                // Error if there is something wrong with the request
                 console.error(err);
                 customNotification('error', 'Error', 'Something went wrong. Please try again.');
             }
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -------------------- Reset Password Form -------------------- //
     if (resetForm) {
-        // DISABLE FORM IMMEDIATELY on page load
+        // Form disabled on page load
         resetForm.style.pointerEvents = 'none';
         resetForm.style.opacity = '0.5';
 
@@ -142,12 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
         (async function validateToken() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
-
+            // If no token
             if (!token) {
                 showModal('Invalid Link', 'No reset token provided. You will be redirected to the login page.');
                 return;
             }
-
+            
             try {
                 const response = await fetch('/api/accounts/verify-reset-token', {
                     method: 'POST',
@@ -158,9 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (!response.ok || !data.success) {
+                    // Token Experired or already resetted/changed password
                     showModal('Invalid or Expired Link', data.message || 'This reset link is invalid or has expired.');
                 } else {
-                    // Token is valid - ENABLE THE FORM
+                    // Token is valid
                     resetForm.style.pointerEvents = 'auto';
                     resetForm.style.opacity = '1';
                 }
@@ -180,15 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 customNotification('error', 'Error', 'Please fill in all fields.');
                 return;
             }
-
             if (newPassword !== confirmPassword) {
                 customNotification('error', 'Error', 'Passwords do not match.');
                 return;
             }
 
-            // At this point, token is already valid, so just grab it once
+            // Get the token
             const token = new URLSearchParams(window.location.search).get('token');
-
+            // Use the token to verify who needs the reset
             try {
                 const response = await fetch('/api/accounts/reset-password', {
                     method: 'POST',
