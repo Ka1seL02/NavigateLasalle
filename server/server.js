@@ -24,7 +24,8 @@ app.use(session({
     cookie: { 
         secure: false, // false if Local, true if HTTPS is enabled
         httpOnly: true,
-        maxAge: 60 * 60 * 1000 // Lifetime of a cookie after inactivity (1 hour)
+        maxAge: 24 * 60 * 60 * 1000, // Lifetime of a cookie after inactivity (24 hours)
+        sameSite: 'lax'
     }
 }));
 

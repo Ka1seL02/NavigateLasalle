@@ -182,6 +182,6 @@ const virtualBox = document.querySelector('.small-box.virtual');
 const helpBox = document.querySelector('.small-box.help');
 
 aboutBox.addEventListener('click', () => { window.location.href = 'u_about.html'; });
-mapBox.addEventListener('click', () => { window.location.href = 'u_interactive_map.html'; });
+mapBox.addEventListener('click', () => { window.location.href = './virtualtour/u_virtual-tour.html'; });
 virtualBox.addEventListener('click', () => { window.location.href = 'u_virtual_tour.html'; });
 helpBox.addEventListener('click', () => { window.location.href = 'u_help.html'; });
