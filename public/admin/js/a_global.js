@@ -1,3 +1,4 @@
+// ==================== CUSTOM FUNCTIONS ==================== //
 // Email masking
 function maskEmail(email) {
     const [name, domain] = email.split('@');
@@ -33,7 +34,6 @@ function formatDate(dateString) {
 }
 
 // ==================== AUTH CHECK FUNCTIONS ==================== //
-
 // Check if user is authenticated
 async function checkAuth() {
     try {
