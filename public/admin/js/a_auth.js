@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = loginForm.querySelector('input[type="text"]').value.trim();
-            const password = loginForm.querySelector('input[type="password"]').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
             // Validation
             if (!email || !password) {
                 customNotification('error', 'Login Failed', 'Please fill the necessary fields.');
