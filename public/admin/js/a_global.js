@@ -32,41 +32,35 @@ function formatDate(dateString) {
     return fetchDate.toLocaleDateString('en-GB'); // "dd/mm/yyyy" format
 }
 
-// DOM Ready Utility
-function onDOMReady(callback) {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', callback);
-    } else {
-        callback();
+// ==================== AUTH CHECK FUNCTIONS ==================== //
+
+// Check if user is authenticated
+async function checkAuth() {
+    try {
+        const response = await fetch('/api/accounts/check-session');
+        const data = await response.json();
+        
+        return data.isAuthenticated;
+    } catch (error) {
+        console.error('Auth check error:', error);
+        return false;
     }
 }
 
-// ====================================
-// Sidebar Logic    
-onDOMReady(() => {
-    const sidebarContainer = document.getElementById('sidebar-container');
-    if (!sidebarContainer) return; // Failsafe just incase this script is used in pages with no a_sidebar element
+// Protect pages that require authentication
+async function protectPage() {
+    const isAuthenticated = await checkAuth();
+    
+    if (!isAuthenticated) {
+        window.location.href = '/admin/a_login.html';
+    }
+}
 
-    fetch('a_sidebar.html')
-        .then(response => response.text())
-        .then(data => {
-            sidebarContainer.innerHTML = data;
-            // Highlight active link
-            const currentPage = window.location.pathname.split('/').pop();
-            const links = document.querySelectorAll('.sidebar-menu li a');
-            links.forEach(link => {
-                if (link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                }
-            });
-            // Sidebar collapse logic
-            const sidebar = document.querySelector('nav');
-            const toggle = document.querySelector('.sidebar-toggle');
-            if (sidebar && toggle) {
-                toggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('collapsed');
-                });
-            }
-        })
-        .catch(err => console.error('Sidebar load failed:', err));
-});
+// Redirect if already logged in (for login/register pages)
+async function redirectIfAuthenticated() {
+    const isAuthenticated = await checkAuth();
+    
+    if (isAuthenticated) {
+        window.location.href = '/admin/a_dashboard.html';
+    }
+}

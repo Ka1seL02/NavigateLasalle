@@ -22,6 +22,7 @@
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
 }
+
 /* ----- FEEDBACK MODAL ----- */
 .modal-content {
     position: relative;
