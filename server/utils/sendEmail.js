@@ -1,19 +1,18 @@
-// server/utils/sendEmail.js
+// Load environment varibles from .env file
 require('dotenv').config();
 const https = require('https');
 
-/**
- * Send an email using Brevo API
- */
+// Async function to send email using Brevo API
+// Supports template, HTML, or plain text emails
 const sendEmail = async ({ to, subject, htmlContent, textContent, templateId, params = {} }) => {
   return new Promise((resolve, reject) => {
     try {
       const emailData = {
-        sender: { 
-          name: 'Navigate La Salle', 
-          email: 'navigatelasalle@gmail.com'
+        sender: {
+          name: 'Navigate La Salle',          // Display name for sender
+          email: 'navigatelasalle@gmail.com' // Sender email
         },
-        to: [{ email: to, name: params.FIRSTNAME || '' }]
+        to: [{ email: to, name: params.FIRSTNAME || '' }] // Recepient details
       };
 
       if (subject) {
@@ -38,9 +37,10 @@ const sendEmail = async ({ to, subject, htmlContent, textContent, templateId, pa
       }
 
       const postData = JSON.stringify(emailData);
-      
+
       console.log('Email data being sent:', postData);
 
+      // Request for Brevo API
       const options = {
         hostname: 'api.brevo.com',
         port: 443,
@@ -60,6 +60,7 @@ const sendEmail = async ({ to, subject, htmlContent, textContent, templateId, pa
           data += chunk;
         });
 
+        // Response completion
         res.on('end', () => {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             console.log('Email sent successfully:', data);
@@ -71,6 +72,7 @@ const sendEmail = async ({ to, subject, htmlContent, textContent, templateId, pa
         });
       });
 
+      // Handle network/request errors
       req.on('error', (error) => {
         console.error('Request error:', error);
         reject(error);
