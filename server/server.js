@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
 // Routes
 app.use('/api/accounts', accountRoutes);
 app.use('/api/faqs', faqRoutes);
-app.use('/api/feedback', feedbackRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 
 // Optional: serve static frontend
 app.use(express.static(path.join(__dirname, '../public')));
