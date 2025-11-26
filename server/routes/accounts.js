@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
         user.lastLogin = Date.now();
         await user.save();
 
-        // Create session
+        // Create new session
         req.session.userId = user._id;
         req.session.userName = user.name;
         req.session.userEmail = user.email;
@@ -77,7 +77,7 @@ router.post('/logout', (req, res) => {
                 message: 'Error logging out.'
             });
         }
-        res.clearCookie('connect.sid'); // Clear session cookie
+        res.clearCookie('connect.sid');
         return res.status(200).json({
             success: true,
             message: 'Logged out successfully.'
@@ -110,7 +110,14 @@ router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
 
-        const user = await Account.findOne({ email }); // FIXED
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email is required'
+            });
+        }
+
+        const user = await Account.findOne({ email });
 
         if (user) {
             const resetToken = crypto.randomBytes(32).toString("hex");
@@ -191,6 +198,13 @@ router.post('/verify-reset-token', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
+
+        if (!token || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Token and new password are required.'
+            });
+        }
 
         // Hash the token from URL to match what's in DB
         const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
