@@ -1,4 +1,4 @@
-// Middleware to check if user is authenticated
+// Check if user is auntheticated (did they login yet?)
 const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.userId) {
         return next();
@@ -10,13 +10,13 @@ const isAuthenticated = (req, res, next) => {
     });
 };
 
-// Middleware to check if user is already logged in (for login/register pages)
+// Check if user logged out (did they logout yet?)
 const isNotAuthenticated = (req, res, next) => {
     if (req.session && req.session.userId) {
         return res.status(200).json({
             success: false,
             message: 'Already logged in.',
-            redirect: '/admin/a_dashboard.html' // Change to your dashboard page
+            redirect: '/admin/a_dashboard.html'
         });
     }
     return next();
