@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+// Import modules
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -8,18 +9,20 @@ const connectDB = require('./config/db.js');
 // Import route modules for handling API endpoints
 const accountRoutes = require('./routes/accounts.js')
 
+// App setup
 const app = express();
 connectDB();
 
 // Session configuration
 app.use(session({
-    secret: 'process.env.SESSION_SECRET',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: { 
-        secure: false, // Set to true if using HTTPS
+        secure: false, // false if Local, true if HTTPS is enabled
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 60 * 60 * 1000 // Lifetime of a cookie after inactivity (1 hour)
     }
 }));
 
