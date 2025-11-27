@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="../shared/css/root.css">
+    <link rel="stylesheet" href="../shared/css/s_notification.css">
+    <link rel="stylesheet" href="../shared/css/s_modal.css">
+    <!-- Admin Page Styles -->
+    <link rel="stylesheet" href="css/a_global.css">
+    <link rel="stylesheet" href="css/a_accounts.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <main>
+        <div class="breadcrumb">
+            <div class="profile-section">
+                <div class="profile-initials">AB</div>
+                <div class="profile-info">
+                    <span class="profile-name">Alice Brown</span>
+                    <small class="profile-role">Super Admin</small>
+                </div>
+                <i class='bx bx-chevron-down'></i>
+            </div>
+        </div>
+        <div class="main-content">
+            <h2>Admin Account</h2>
+            <p>Keep track of all admin users and their account details.</p>
+
+            <div class="action-bar">
+                <div class="search-box">
+                    <i class="bx bx-search"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+
+                <div class="buttons">
+                    <button class="button" id="showCreateAccountModal">
+                        <i class="bx bx-user-plus"></i>Create Account
+                    </button>
+                    <button class="button export-table">Export</button>
+                </div>
+            </div>
+
+            <div class="table-controls">
+                <!-- Left side: select all and operations -->
+                <div class="controls-left">
+                    <input type="checkbox" class="select-all-toolbar" title="Select all">
+                    <button class="control-action" id="refresh-table" title="Refresh">
+                        <i class='bx bx-refresh'></i>
+                    </button>
+                    <span class="divider">|</span>
+                    <button class="control-action" id="delete-selected" title="Delete">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+
+                <!-- Right side: entries info + pagination -->
+                <div class="controls-right">
+                    <span class="entries-info">Showing <span id="start-entry">1</span> - <span id="end-entry">50</span>
+                        of
+                        <span id="total-entries">808</span> entries</span>
+
+                    <button class="pagination-button" id="prev-page" title="Previous page">
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+
+                    <div class="page-input">
+                        <input type="number" id="current-page" value="1" min="1">
+                        <span>/ <span id="total-pages">16</span></span>
+                    </div>
+
+                    <button class="pagination-button" id="next-page" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Created</th>
+                            <th>Active</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Alice Brown</td>
+                            <td>alice@example.com</td>
+                            <td>2025-01-15</td>
+                            <td>Yes</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Bob Smith</td>
+                            <td>bob@example.com</td>
+                            <td>2025-02-02</td>
+                            <td>No</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Charlie Davis</td>
+                            <td>charlie@example.com</td>
+                            <td>2025-03-10</td>
+                            <td>Yes</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Diana Evans</td>
+                            <td>diana@example.com</td>
+                            <td>2025-04-18</td>
+                            <td>No</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Edward Fox</td>
+                            <td>edward@example.com</td>
+                            <td>2025-05-22</td>
+                            <td>Yes</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Fiona Green</td>
+                            <td>fiona@example.com</td>
+                            <td>2025-06-05</td>
+                            <td>Yes</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>George Hill</td>
+                            <td>george@example.com</td>
+                            <td>2025-07-12</td>
+                            <td>No</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Hannah Ivy</td>
+                            <td>hannah@example.com</td>
+                            <td>2025-08-03</td>
+                            <td>Yes</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Ian Jones</td>
+                            <td>ian@example.com</td>
+                            <td>2025-09-21</td>
+                            <td>No</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>Jane King</td>
+                            <td>jane@example.com</td>
+                            <td>2025-10-30</td>
+                            <td>Yes</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <!-- Important Arrangement -->
+    <script src="js/a_global.js"></script>
+    <script>protectPage();</script>
+    <script src="../shared/js/s_notification.js"></script>
+    <script src="js/a_accounts.js"></script>
+
+</body>
+
+</html>
