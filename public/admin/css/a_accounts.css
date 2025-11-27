@@ -68,10 +68,7 @@
     font-size: 14px;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-<<<<<<< HEAD
     cursor: pointer;
-=======
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
 }
 .buttons button:hover {
     background-color: var(--grey);
@@ -80,11 +77,7 @@
 #showCreateAccountModal {
     background-color: var(--green);
     color: var(--white);
-<<<<<<< HEAD
     transition: background-color 0.3s ease;
-=======
-    transition: background-color 0.3 ease;
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
 }
 #showCreateAccountModal i {
     font-size: 18px;
@@ -104,7 +97,6 @@
     width: 100px;
 }
 
-<<<<<<< HEAD
 /* ================= CONTROL BUTTONS DISABLED STATE ================= */
 .pagination-button:disabled {
     opacity: 0.5;
@@ -116,9 +108,6 @@
 }
 
 /* ================= INVITE MODAL ================= */
-=======
-/* ================= CREATE ACCOUNT MODAL ================= */
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
 .invite-modal {
     width: 400px;
     text-align: center;
@@ -139,7 +128,6 @@
     font-size: 30px;
     color: var(--dark-green);
 }
-<<<<<<< HEAD
 .invite-modal h2 {
     margin-bottom: 10px;
     color: var(--dark-green);
@@ -159,26 +147,10 @@
     font-size: 14px;
 }
 .invite-modal input:focus {
-=======
-.invite-modal input {
-    width: 100%;
-    padding: 20px;
-    font-family: 'Inter', sans-serif;
-    margin-top: 25px;
-    border: 1px solid var(--light-grey);
-    outline: none;
-    border-radius: 5px;
-}
-.invite-modal input:focus {
-    width: 100%;
-    font-family: 'Inter', sans-serif;
-    margin-top: 25px;
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
     border-color: var(--green);
     background-color: var(--white);
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
-<<<<<<< HEAD
 .invite-modal .modal-buttons {
     display: flex;
     flex-direction: column;
@@ -188,24 +160,12 @@
 .invite-modal .modal-buttons .btn {
     flex: 1;
     padding: 12px;
-=======
-.modal-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 30px;
-}
-.modal-buttons .btn {
-    flex: 1;
-    padding: 10px;
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
     border-radius: 5px;
     border: 1px solid transparent;
     background-color: var(--dirty-white);
     font-family: 'Inter', sans-serif;
     font-weight: bolder;
     color: var(--dark-green);
-<<<<<<< HEAD
     transition: all 0.3s ease;
     cursor: pointer;
     font-size: 14px;
@@ -218,19 +178,10 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
-=======
-    transition: all 0.5s ease;
-}
-.modal-buttons .btn:hover {
-    background-color: var(--light-grey);
-    color: var(--cream);
-}
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
 #confirmInviteBtn {
     background-color: var(--green);
     color: var(--cream);
 }
-<<<<<<< HEAD
 #confirmInviteBtn:hover:not(:disabled) {
     background-color: var(--dark-green);
 }
@@ -247,8 +198,4 @@
 }
 .account-context-menu .menu-item:hover {
     background-color: var(--cream);
-=======
-#confirmInviteBtn:hover {
-    background-color: var(--orange);
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
 }
