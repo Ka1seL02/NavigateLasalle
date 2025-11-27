@@ -1,0 +1,51 @@
+.breadcrumb {
+    justify-content: space-between;
+}
+
+/* ================= SEARCH BAR ================= */
+.search-bar {
+    position: relative;
+}
+.search-bar input {
+    padding: 15px 32px 15px 20px;
+    border-radius: 15px;
+    border: 1px solid var(--light-grey);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    width: 20vw;
+    min-width: 275px;
+    background-color: var(--dirty-white);
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+.search-bar input:focus {
+    border-color: var(--green);
+    background-color: var(--white);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+.search-bar input::placeholder {
+    color: var(--light-grey);
+    font-style: italic;
+}
+.search-bar i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-grey);
+}
+
+/* ================= DASHBOARD CONTENT ================= */
+.main-content h2 {
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-green);
+    font-size: 30px;
+}
+
+.main-content p {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--grey);
+    font-style: italic;
+    font-size: 14px;
+}
