@@ -214,11 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         const profileInitials = document.querySelector('.profile-initials');
         const profileName = document.querySelector('.profile-name');
-<<<<<<< HEAD
         const profileRole = document.querySelector('.profile-role');
-=======
-        const profileRole = document.querySelector('profile-role');
->>>>>>> 186ba7b9dc0c010c7023167bd64051afc15f7d8d
 
         if (profileInitials) {
             const initials = user.name.split(' ')
