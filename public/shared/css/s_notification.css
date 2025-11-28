@@ -18,7 +18,6 @@
     max-width: 400px;
     border-left: 4px solid;
 }
-
 .custom-notification.show {
     transform: translateX(0);
     opacity: 1;
@@ -28,7 +27,6 @@
 .custom-notification.success {
     border-left-color: var(--green);
 }
-
 .custom-notification.success .notification-icon {
     background: var(--sage-green);
     color: var(--dark-green);
@@ -38,7 +36,6 @@
 .custom-notification.error {
     border-left-color: var(--red);
 }
-
 .custom-notification.error .notification-icon {
     background: var(--cream);
     color: var(--dark-red);
@@ -54,11 +51,9 @@
     font-size: 24px;
     flex-shrink: 0;
 }
-
 .notification-content {
     flex: 1;
 }
-
 .notification-title {
     font-weight: 600;
     font-size: 16px;
@@ -66,14 +61,12 @@
     margin-bottom: 4px;
     font-family: 'EB Garamond', sans-serif;
 }
-
 .notification-message {
     font-size: 14px;
     color: var(--light-grey);
     font-family: 'Poppins', sans-serif;
     line-height: 1.4;
 }
-
 .notification-close {
     background: transparent;
     border: none;
@@ -87,7 +80,6 @@
     transition: color 0.2s;
     align-self: flex-start;
 }
-
 .notification-close:active {
     transform: scale(0.9);
 }

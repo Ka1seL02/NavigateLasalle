@@ -1,5 +1,5 @@
 /* ========== UNIVERSAL MODAL STYLES ========== */
-/* Modal Overlay (Black back) */
+/* MODAL OVERLAY */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -13,11 +13,9 @@
     align-items: center;
     z-index: 9999;
 }
-
 .modal-overlay.show {
     display: flex;
 }
-
 .modal {
     background-color: var(--white);
     padding: 30px;
@@ -25,12 +23,11 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.45s ease;
 }
-
 .modal.closing {
     animation: slideDown 0.45s ease forwards;
 }
 
-/* Animations */
+/* ANIMATIONS */
 @keyframes slideUp {
     from {
         transform: translateY(100px);
