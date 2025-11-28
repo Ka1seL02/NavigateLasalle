@@ -8,10 +8,11 @@ let selectedAccounts = new Set();
 document.addEventListener('DOMContentLoaded', () => {
     loadAccounts();
     loadInviteModal();
+    loadConfirmModal();
     initializeEventListeners();
 });
 
-// ==================== LOAD INVITE MODAL COMPONENT ==================== //
+// ==================== LOAD MODAL COMPONENTS ==================== //
 async function loadInviteModal() {
     try {
         const response = await fetch('./component/m_send_invite.html');
@@ -21,6 +22,83 @@ async function loadInviteModal() {
     } catch (error) {
         console.error('Error loading invite modal:', error);
     }
+}
+
+async function loadConfirmModal() {
+    try {
+        const response = await fetch('./component/m_confirm.html');
+        const html = await response.text();
+        document.body.insertAdjacentHTML('beforeend', html);
+        initializeConfirmModal();
+    } catch (error) {
+        console.error('Error loading confirm modal:', error);
+    }
+}
+
+// ==================== INITIALIZE UNIVERSAL CONFIRM MODAL ==================== //
+let confirmModalCallback = null;
+
+function initializeConfirmModal() {
+    const overlay = document.getElementById('confirmModal');
+    if (!overlay) return;
+
+    const confirmBtn = document.getElementById('confirmActionBtn');
+    const cancelBtn = document.getElementById('cancelActionBtn');
+
+    function closeModal() {
+        const modal = overlay.querySelector('.modal');
+        if (!modal) return;
+        modal.classList.add('closing');
+        modal.addEventListener('animationend', () => {
+            modal.classList.remove('closing');
+            overlay.classList.remove('show');
+            confirmModalCallback = null; // Clear callback
+        }, { once: true });
+    }
+
+    cancelBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+    });
+
+    confirmBtn.addEventListener('click', async () => {
+        if (confirmModalCallback) {
+            await confirmModalCallback(confirmBtn);
+            closeModal();
+        }
+    });
+}
+
+// ==================== SHOW UNIVERSAL CONFIRM MODAL ==================== //
+function showConfirmModal({ icon, iconColor, title, message, confirmText, confirmColor, onConfirm }) {
+    const overlay = document.getElementById('confirmModal');
+    if (!overlay) return;
+
+    // Update modal content
+    const iconElement = overlay.querySelector('#confirmIcon i');
+    const iconContainer = overlay.querySelector('#confirmIcon');
+    const titleElement = overlay.querySelector('#confirmTitle');
+    const messageElement = overlay.querySelector('#confirmMessage');
+    const confirmBtn = overlay.querySelector('#confirmActionBtn');
+
+    if (iconElement) {
+        iconElement.className = `bx ${icon}`;
+    }
+    if (iconContainer && iconColor) {
+        iconContainer.style.backgroundColor = iconColor;
+    }
+    if (titleElement) titleElement.textContent = title;
+    if (messageElement) messageElement.textContent = message;
+    if (confirmBtn) {
+        confirmBtn.textContent = confirmText;
+        confirmBtn.style.backgroundColor = confirmColor || 'var(--green)';
+    }
+
+    // Set callback
+    confirmModalCallback = onConfirm;
+
+    // Show modal
+    overlay.classList.add('show');
 }
 
 // ==================== INITIALIZE INVITE MODAL ==================== //
@@ -193,10 +271,37 @@ async function loadAccounts(search = '') {
     }
 }
 
+// ==================== FORMAT DATE ==================== //
+function formatDate(dateString) {
+    if (!dateString) return false; // Meaning user has not login yet
+    const fetchDate = new Date(dateString);
+    const currentDate = new Date();
+    fetchDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+
+    const diffMs = currentDate - fetchDate;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    // Less than a year 
+    if (diffDays < 365) {
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Yesterday";
+        if (diffDays >= 2 && diffDays < 7) return `${diffDays} days ago`;
+
+        const weeks = Math.floor(diffDays / 7);
+        if (weeks >= 1 && weeks < 4) return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+
+        // For dates older than 3 weeks but less than a year
+        return fetchDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    return fetchDate.toLocaleDateString('en-GB'); // "dd/mm/yyyy"
+}
+
 // ==================== RENDER TABLE ==================== //
 function renderTable(accounts) {
     const tbody = document.querySelector('.table tbody');
-    
+
     if (accounts.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -209,17 +314,22 @@ function renderTable(accounts) {
     }
 
     tbody.innerHTML = accounts.map(account => {
-        const isActive = account.lastLogin && 
-            (Date.now() - new Date(account.lastLogin).getTime()) < 30 * 24 * 60 * 60 * 1000;
+        const lastActive = formatDate(account.lastLogin);
         const formattedDate = new Date(account.createdAt).toISOString().split('T')[0];
-        
+
+        // Determine class for lastActive
+        let lastActiveClass = 'last-active old'; // default for older dates or 'Never'
+        if (lastActive === 'Today') lastActiveClass = 'last-active today';
+        else if (lastActive === 'Yesterday') lastActiveClass = 'last-active yesterday';
+        else if (lastActive && lastActive.includes('week')) lastActiveClass = 'last-active week';
+
         return `
             <tr>
                 <td><input type="checkbox" data-id="${account._id}" ${selectedAccounts.has(account._id) ? 'checked' : ''}></td>
                 <td>${account.name}</td>
                 <td>${account.email}</td>
                 <td>${formattedDate}</td>
-                <td>${isActive ? 'Yes' : 'No'}</td>
+                <td class="${lastActiveClass}">${lastActive || 'Never'}</td>
                 <td>
                     <i class='bx bx-dots-vertical-rounded' style="cursor: pointer;" onclick="showAccountMenu(event, '${account._id}')"></i>
                 </td>
@@ -244,9 +354,9 @@ function renderTable(accounts) {
 
 // ==================== UPDATE PAGINATION ==================== //
 function updatePagination(pagination) {
-    document.getElementById('start-entry').textContent = 
+    document.getElementById('start-entry').textContent =
         pagination.total === 0 ? 0 : ((pagination.page - 1) * pagination.limit + 1);
-    document.getElementById('end-entry').textContent = 
+    document.getElementById('end-entry').textContent =
         Math.min(pagination.page * pagination.limit, pagination.total);
     document.getElementById('total-entries').textContent = pagination.total;
     document.getElementById('total-pages').textContent = pagination.pages;
@@ -263,7 +373,7 @@ function updateSelectAllCheckbox() {
     const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);
     const noneChecked = Array.from(checkboxes).every(cb => !cb.checked);
-    
+
     selectAllCheckbox.checked = allChecked;
     selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
 }
@@ -275,40 +385,55 @@ async function deleteSelectedAccounts() {
         return;
     }
 
-    if (!confirm(`Are you sure you want to delete ${selectedAccounts.size} account(s)? This action cannot be undone.`)) {
-        return;
-    }
+    showConfirmModal({
+        icon: 'bx-trash',
+        iconColor: 'var(--cream)',
+        title: 'Delete Accounts?',
+        message: `Are you sure you want to delete ${selectedAccounts.size} account(s)? This action cannot be undone.`,
+        confirmText: 'Yes, Delete',
+        confirmColor: 'var(--red)',
+        onConfirm: async (btn) => {
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
 
-    try {
-        const response = await fetch('/api/accounts', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: Array.from(selectedAccounts) })
-        });
+            try {
+                const response = await fetch('/api/accounts', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: Array.from(selectedAccounts) })
+                });
 
-        const data = await response.json();
+                const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to delete accounts');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to delete accounts');
+                }
+
+                customNotification('success', 'Success', data.message);
+                selectedAccounts.clear();
+                loadAccounts();
+
+            } catch (error) {
+                console.error('Delete accounts error:', error);
+                customNotification('error', 'Error', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Yes, Delete';
+            }
         }
-
-        customNotification('success', 'Success', data.message);
-        selectedAccounts.clear();
-        loadAccounts();
-
-    } catch (error) {
-        console.error('Delete accounts error:', error);
-        customNotification('error', 'Error', error.message);
-    }
+    });
 }
 
 // ==================== ACCOUNT MENU (for individual actions) ==================== //
 function showAccountMenu(event, accountId) {
     event.stopPropagation();
-    
+
     // Remove existing menu if any
     const existingMenu = document.querySelector('.account-context-menu');
     if (existingMenu) existingMenu.remove();
+
+    // Find account data for email
+    const account = accountsData.find(acc => acc._id === accountId);
 
     const menu = document.createElement('div');
     menu.className = 'account-context-menu';
@@ -319,13 +444,14 @@ function showAccountMenu(event, accountId) {
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 10000;
-        min-width: 150px;
-        padding: 8px 0;
+        min-width: 180px;
     `;
 
     menu.innerHTML = `
+        <div class="menu-item" onclick="sendPasswordReset('${accountId}', '${account?.email}')" style="padding: 10px 16px; cursor: pointer; transition: background 0.2s;">
+            Reset Password
+        </div>
         <div class="menu-item" onclick="deleteAccount('${accountId}')" style="padding: 10px 16px; cursor: pointer; transition: background 0.2s;">
-            <i class='bx bx-trash' style="margin-right: 8px; color: var(--red);"></i>
             Delete Account
         </div>
     `;
@@ -357,31 +483,82 @@ function showAccountMenu(event, accountId) {
     }, 0);
 }
 
-async function deleteAccount(accountId) {
-    if (!confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
-        return;
-    }
+// ==================== SEND PASSWORD RESET ==================== //
+async function sendPasswordReset(accountId, email) {
+    showConfirmModal({
+        icon: 'bx-key',
+        iconColor: 'var(--cream)',
+        title: 'Send Password Reset?',
+        message: `Send a password reset link to ${email}?`,
+        confirmText: 'Send Reset Link',
+        confirmColor: 'var(--green)',
+        onConfirm: async (btn) => {
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
 
-    try {
-        const response = await fetch('/api/accounts', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: [accountId] })
-        });
+            try {
+                const response = await fetch('/api/accounts/admin-reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accountId })
+                });
 
-        const data = await response.json();
+                const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to delete account');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to send reset link');
+                }
+
+                customNotification('success', 'Success', data.message);
+
+            } catch (error) {
+                console.error('Send reset error:', error);
+                customNotification('error', 'Error', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Reset Link';
+            }
         }
+    });
+}
 
-        customNotification('success', 'Success', data.message);
-        loadAccounts();
+async function deleteAccount(accountId) {
+    showConfirmModal({
+        icon: 'bx-trash',
+        iconColor: 'var(--cream)',
+        title: 'Delete Account?',
+        message: 'Are you sure you want to delete this account? This action cannot be undone.',
+        confirmText: 'Yes, Delete',
+        confirmColor: 'var(--red)',
+        onConfirm: async (btn) => {
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
 
-    } catch (error) {
-        console.error('Delete account error:', error);
-        customNotification('error', 'Error', error.message);
-    }
+            try {
+                const response = await fetch('/api/accounts', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: [accountId] })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to delete account');
+                }
+
+                customNotification('success', 'Success', data.message);
+                loadAccounts();
+
+            } catch (error) {
+                console.error('Delete account error:', error);
+                customNotification('error', 'Error', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Yes, Delete';
+            }
+        }
+    });
 }
 
 // ==================== EXPORT TABLE ==================== //

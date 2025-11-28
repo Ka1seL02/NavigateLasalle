@@ -567,3 +567,7 @@ input[type=number] {
     width: 50px;
     text-align: center;
 }
+/* Confirm Action Modal Button */
+#confirmActionBtn:hover {
+    background-color: var(--orange);
+}

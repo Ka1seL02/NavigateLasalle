@@ -50,7 +50,7 @@ inviteSchema.statics.createInvite = async function(email, invitedById) {
     const invite = await this.create({
         email,
         inviteToken: hashedToken,
-        inviteExpires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days
+        inviteExpires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         invitedBy: invitedById
     });
 

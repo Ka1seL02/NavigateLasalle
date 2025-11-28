@@ -199,3 +199,21 @@
 .account-context-menu .menu-item:hover {
     background-color: var(--cream);
 }
+
+/* ================= CUSTOM CONTEXT DATE ================= */
+.last-active {
+    font-weight: 700;
+}
+.last-active.today {
+    color: var(--green);
+    font-weight: bold;
+}
+.last-active.yesterday {
+    color: var(--orange);
+}
+.last-active.week {
+    color: var(--red);
+}
+.last-active.old {
+    color: var(--grey);
+}

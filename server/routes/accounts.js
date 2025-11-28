@@ -120,12 +120,18 @@ router.get('/', requireSuperAdmin, async (req, res) => {
         const search = req.query.search || '';
         const skip = (page - 1) * limit;
 
-        const query = search ? {
-            $or: [
+        // Build query to exclude current logged-in user
+        const query = {
+            _id: { $ne: req.session.userId } // Exclude self
+        };
+
+        // Add search filter if provided
+        if (search) {
+            query.$or = [
                 { name: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } }
-            ]
-        } : {};
+            ];
+        }
 
         const total = await Account.countDocuments(query);
         const accounts = await Account.find(query)
@@ -341,6 +347,56 @@ router.delete('/', requireSuperAdmin, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Server error. Please try again later.'
+        });
+    }
+});
+
+// ADMIN-INITIATED PASSWORD RESET (Super-Admin only)
+router.post('/admin-reset-password', requireSuperAdmin, async (req, res) => {
+    try {
+        const { accountId } = req.body;
+
+        if (!accountId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Account ID is required'
+            });
+        }
+
+        const user = await Account.findById(accountId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Account not found'
+            });
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+        user.resetPasswordExpires = Date.now() + 1000 * 60 * 15; // 15 minutes
+        await user.save();
+
+        // Send email
+        const resetLink = `${FRONTEND_URL}/admin/a_reset_password.html?token=${resetToken}`;
+        await sendEmail({
+            to: user.email,
+            subject: "Password Reset Request",
+            templateId: 1,
+            params: { RESET_LINK: resetLink, FIRSTNAME: user.name }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: `Password reset link sent to ${user.email}`
+        });
+
+    } catch (error) {
+        console.error("Admin reset password error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error. Please try again later."
         });
     }
 });

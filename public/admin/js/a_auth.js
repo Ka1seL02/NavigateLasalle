@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show expired session modal
     async function showExpiredSessionModal() {
         try {
-            const res = await fetch('./component/m_expired_session.html');
+            const res = await fetch('./component/m_expired_token.html');
             const html = await res.text();
             document.body.insertAdjacentHTML('beforeend', html);
             const overlay = document.querySelector('.modal-overlay');

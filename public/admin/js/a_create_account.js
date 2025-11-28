@@ -2,19 +2,43 @@
 const urlParams = new URLSearchParams(window.location.search);
 const inviteToken = urlParams.get('token');
 
+// ==================== LOAD TOKEN ERROR MODAL ==================== //
+async function loadTokenErrorModal() {
+    try {
+        const response = await fetch('./component/m_expired_token.html');
+        const html = await response.text();
+        document.body.insertAdjacentHTML('beforeend', html);
+    } catch (error) {
+        console.error('Error loading token error modal:', error);
+    }
+}
+
+// ==================== SHOW TOKEN ERROR MODAL ==================== //
+function showTokenError() {
+    const overlay = document.querySelector('.modal-overlay');
+    if (overlay) {
+        overlay.classList.add('show');
+    }
+}
+
 // ==================== VERIFY TOKEN ON LOAD ==================== //
 document.addEventListener('DOMContentLoaded', async () => {
+    // Load modal first
+    await loadTokenErrorModal();
+
+    // Check if token exists
     if (!inviteToken) {
-        customNotification('error', 'Invalid Link', 'No invitation token found.');
-        setTimeout(() => {
-            window.location.href = '/admin/a_login.html';
-        }, 2000);
+        showTokenError();
         return;
     }
 
-    await verifyInviteToken();
-    initializePasswordToggles();
-    initializeForm();
+    // Verify token
+    const isValid = await verifyInviteToken();
+    
+    if (isValid) {
+        initializePasswordToggles();
+        initializeForm();
+    }
 });
 
 // ==================== VERIFY INVITE TOKEN ==================== //
@@ -29,19 +53,18 @@ async function verifyInviteToken() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Invalid invitation link');
+            showTokenError();
+            return false;
         }
 
         // Pre-fill email field
         document.getElementById('email').value = data.email;
+        return true;
 
     } catch (error) {
         console.error('Token verification error:', error);
-        customNotification('error', 'Invalid Invitation', error.message);
-        
-        setTimeout(() => {
-            window.location.href = '/admin/a_login.html';
-        }, 3000);
+        showTokenError();
+        return false;
     }
 }
 
