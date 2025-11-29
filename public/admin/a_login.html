@@ -36,13 +36,13 @@
                 <button type="submit">Login</button>
             </form>
 
-            <!-- Forgot Password Form (hidden initially) -->
+            <!-- Forgot Password Form (Default: Hidden) -->
             <form id="forgotForm" class="form hidden">
                 <input type="email" id="forgotEmail" placeholder="Enter your email *">
                 <button type="submit">Send Reset Link</button>
             </form>
 
-            <!-- A links to move from one option to the next -->
+            <!-- Links to show Login or Forgot Password Form -->
             <a class="forgot-password">Forgot your password?</a>
             <a class="login hidden">Back to login</a>
         </div>
@@ -52,7 +52,6 @@
     <!-- Important Arrangement -->
     <script src="js/a_global.js"></script>
     <script>redirectIfAuthenticated();</script>
-
     <script src="../shared/js/s_notification.js"></script>
     <script src="js/a_auth.js"></script>
 
