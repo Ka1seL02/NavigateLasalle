@@ -91,10 +91,12 @@
 .table th:nth-child(4),
 .table td:nth-child(4) {
     width: 150px;
+    text-align: center;
 }
 .table th:nth-child(5),
 .table td:nth-child(5) {
     width: 125px;
+    text-align: center;
 }
 
 /* ================= INVITE MODAL ================= */
