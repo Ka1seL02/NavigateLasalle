@@ -8,11 +8,10 @@ let selectedAccounts = new Set();
 document.addEventListener('DOMContentLoaded', () => {
     loadAccounts();
     loadInviteModal();
-    loadConfirmModal();
     initializeEventListeners();
 });
 
-// ==================== LOAD MODAL COMPONENTS ==================== //
+// ==================== LOAD INVITE MODAL ==================== //
 async function loadInviteModal() {
     try {
         const response = await fetch('./component/m_send_invite.html');
@@ -24,112 +23,17 @@ async function loadInviteModal() {
     }
 }
 
-async function loadConfirmModal() {
-    try {
-        const response = await fetch('./component/m_confirm.html');
-        const html = await response.text();
-        document.body.insertAdjacentHTML('beforeend', html);
-        initializeConfirmModal();
-    } catch (error) {
-        console.error('Error loading confirm modal:', error);
-    }
-}
-
-// ==================== INITIALIZE UNIVERSAL CONFIRM MODAL ==================== //
-let confirmModalCallback = null;
-
-function initializeConfirmModal() {
-    const overlay = document.getElementById('confirmModal');
-    if (!overlay) return;
-
-    const confirmBtn = document.getElementById('confirmActionBtn');
-    const cancelBtn = document.getElementById('cancelActionBtn');
-
-    function closeModal() {
-        const modal = overlay.querySelector('.modal');
-        if (!modal) return;
-        modal.classList.add('closing');
-        modal.addEventListener('animationend', () => {
-            modal.classList.remove('closing');
-            overlay.classList.remove('show');
-            confirmModalCallback = null; // Clear callback
-        }, { once: true });
-    }
-
-    cancelBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closeModal();
-    });
-
-    confirmBtn.addEventListener('click', async () => {
-        if (confirmModalCallback) {
-            await confirmModalCallback(confirmBtn);
-            closeModal();
-        }
-    });
-}
-
-// ==================== SHOW UNIVERSAL CONFIRM MODAL ==================== //
-function showConfirmModal({ icon, iconColor, title, message, confirmText, confirmColor, onConfirm }) {
-    const overlay = document.getElementById('confirmModal');
-    if (!overlay) return;
-
-    // Update modal content
-    const iconElement = overlay.querySelector('#confirmIcon i');
-    const iconContainer = overlay.querySelector('#confirmIcon');
-    const titleElement = overlay.querySelector('#confirmTitle');
-    const messageElement = overlay.querySelector('#confirmMessage');
-    const confirmBtn = overlay.querySelector('#confirmActionBtn');
-
-    if (iconElement) {
-        iconElement.className = `bx ${icon}`;
-    }
-    if (iconContainer && iconColor) {
-        iconContainer.style.backgroundColor = iconColor;
-    }
-    if (titleElement) titleElement.textContent = title;
-    if (messageElement) messageElement.textContent = message;
-    if (confirmBtn) {
-        confirmBtn.textContent = confirmText;
-        confirmBtn.style.backgroundColor = confirmColor || 'var(--green)';
-    }
-
-    // Set callback
-    confirmModalCallback = onConfirm;
-
-    // Show modal
-    overlay.classList.add('show');
-}
-
 // ==================== INITIALIZE INVITE MODAL ==================== //
 function initializeInviteModal() {
-    const overlay = document.getElementById('inviteModalOverlay');
-    if (!overlay) return;
-
     const form = document.getElementById('inviteForm');
     const confirmBtn = document.getElementById('confirmInviteBtn');
     const cancelBtn = document.getElementById('cancelInviteBtn');
 
-    // Close modal function
-    function closeModal() {
-        const modal = overlay.querySelector('.modal');
-        if (!modal) return;
-        modal.classList.add('closing');
-        modal.addEventListener('animationend', () => {
-            modal.classList.remove('closing');
-            overlay.classList.remove('show');
-        }, { once: true });
-    }
+    if (!form || !confirmBtn || !cancelBtn) return;
 
-    // Cancel button
-    cancelBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', () => closeModal('sendInviteModal'));
+    initOverlayClick('sendInviteModal');
 
-    // Click outside to close
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closeModal();
-    });
-
-    // Form submit
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('inviteEmail').value.trim();
@@ -157,14 +61,14 @@ function initializeInviteModal() {
 
             customNotification('success', 'Success', data.message);
             form.reset();
-            closeModal();
+            closeModal('sendInviteModal');
 
         } catch (error) {
             console.error('Send invite error:', error);
             customNotification('error', 'Error', error.message);
         } finally {
             confirmBtn.disabled = false;
-            confirmBtn.textContent = 'Send Invitation';
+            confirmBtn.innerHTML = '<i class="bx bx-paper-plane"></i> Send Invite';
         }
     });
 }
@@ -182,13 +86,10 @@ function initializeEventListeners() {
         }, 500);
     });
 
-    // Show Invite Modal
+    // Show Invite Modal - Use global openModal helper
     const showModalBtn = document.getElementById('showCreateAccountModal');
     showModalBtn.addEventListener('click', () => {
-        const overlay = document.getElementById('inviteModalOverlay');
-        if (overlay) {
-            overlay.classList.add('show');
-        }
+        openModal('sendInviteModal');
     });
 
     // Refresh
@@ -252,7 +153,7 @@ function initializeEventListeners() {
 // ==================== LOAD ACCOUNTS ==================== //
 async function loadAccounts(search = '') {
     try {
-        const response = await fetch(`/api/accounts?page=${currentPage}&limit=50&search=${search}`);
+        const response = await fetch(`/api/accounts?page=${currentPage}&limit=20&search=${search}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -273,7 +174,7 @@ async function loadAccounts(search = '') {
 
 // ==================== FORMAT DATE ==================== //
 function formatDate(dateString) {
-    if (!dateString) return false; // Meaning user has not login yet
+    if (!dateString) return false;
     const fetchDate = new Date(dateString);
     const currentDate = new Date();
     fetchDate.setHours(0, 0, 0, 0);
@@ -282,7 +183,6 @@ function formatDate(dateString) {
     const diffMs = currentDate - fetchDate;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    // Less than a year 
     if (diffDays < 365) {
         if (diffDays === 0) return "Today";
         if (diffDays === 1) return "Yesterday";
@@ -291,11 +191,10 @@ function formatDate(dateString) {
         const weeks = Math.floor(diffDays / 7);
         if (weeks >= 1 && weeks < 4) return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
 
-        // For dates older than 3 weeks but less than a year
         return fetchDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
-    return fetchDate.toLocaleDateString('en-GB'); // "dd/mm/yyyy"
+    return fetchDate.toLocaleDateString('en-GB');
 }
 
 // ==================== RENDER TABLE ==================== //
@@ -317,11 +216,10 @@ function renderTable(accounts) {
         const lastActive = formatDate(account.lastLogin);
         const formattedDate = new Date(account.createdAt).toISOString().split('T')[0];
 
-        // Determine class for lastActive
-        let lastActiveClass = 'last-active old'; // default for older dates or 'Never'
-        if (lastActive === 'Today') lastActiveClass = 'last-active today';
-        else if (lastActive === 'Yesterday') lastActiveClass = 'last-active yesterday';
-        else if (lastActive && lastActive.includes('week')) lastActiveClass = 'last-active week';
+        let lastActiveClass = 'table-date';
+        if (lastActive === 'Today') lastActiveClass = 'table-date today';
+        else if (lastActive === 'Yesterday') lastActiveClass = 'table-date yesterday';
+        else if (lastActive && lastActive.includes('week')) lastActiveClass = 'table-date week';
 
         return `
             <tr>
@@ -329,7 +227,7 @@ function renderTable(accounts) {
                 <td>${account.name}</td>
                 <td>${account.email}</td>
                 <td>${formattedDate}</td>
-                <td class="${lastActiveClass}">${lastActive || 'Never'}</td>
+                <td><span class="${lastActiveClass}">${lastActive || 'Never'}</td>
                 <td>
                     <i class='bx bx-dots-vertical-rounded' style="cursor: pointer;" onclick="showAccountMenu(event, '${account._id}')"></i>
                 </td>
@@ -337,7 +235,6 @@ function renderTable(accounts) {
         `;
     }).join('');
 
-    // Add checkbox listeners
     const checkboxes = tbody.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
         cb.addEventListener('change', (e) => {
@@ -362,7 +259,6 @@ function updatePagination(pagination) {
     document.getElementById('total-pages').textContent = pagination.pages;
     document.getElementById('current-page').value = pagination.page;
 
-    // Disable/enable pagination buttons
     document.getElementById('prev-page').disabled = pagination.page === 1;
     document.getElementById('next-page').disabled = pagination.page === pagination.pages;
 }
@@ -424,15 +320,13 @@ async function deleteSelectedAccounts() {
     });
 }
 
-// ==================== ACCOUNT MENU (for individual actions) ==================== //
+// ==================== ACCOUNT MENU ==================== //
 function showAccountMenu(event, accountId) {
     event.stopPropagation();
 
-    // Remove existing menu if any
     const existingMenu = document.querySelector('.account-context-menu');
     if (existingMenu) existingMenu.remove();
 
-    // Find account data for email
     const account = accountsData.find(acc => acc._id === accountId);
 
     const menu = document.createElement('div');
@@ -458,12 +352,10 @@ function showAccountMenu(event, accountId) {
 
     document.body.appendChild(menu);
 
-    // Position menu
     const rect = event.target.getBoundingClientRect();
     menu.style.top = `${rect.bottom + 5}px`;
     menu.style.left = `${rect.left - menu.offsetWidth + 20}px`;
 
-    // Hover effect
     const menuItems = menu.querySelectorAll('.menu-item');
     menuItems.forEach(item => {
         item.addEventListener('mouseenter', () => {
@@ -474,7 +366,6 @@ function showAccountMenu(event, accountId) {
         });
     });
 
-    // Close menu when clicking outside
     setTimeout(() => {
         document.addEventListener('click', function closeMenu() {
             menu.remove();
@@ -522,6 +413,7 @@ async function sendPasswordReset(accountId, email) {
     });
 }
 
+// ==================== DELETE ACCOUNT ==================== //
 async function deleteAccount(accountId) {
     showConfirmModal({
         icon: 'bx-trash',
@@ -568,7 +460,6 @@ function exportTable() {
         return;
     }
 
-    // Create CSV content
     const headers = ['Name', 'Email', 'Created', 'Role', 'Last Login'];
     const rows = accountsData.map(account => [
         account.name,
@@ -583,7 +474,6 @@ function exportTable() {
         ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
-    // Download
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
