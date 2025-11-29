@@ -1,0 +1,287 @@
+.main-content h2 {
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-green);
+    font-size: 30px;
+}
+.main-content p {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--grey);
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* ================= ACTIONS BAR ================= */
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    gap: 10px;
+}
+/* SEARCH BAR */
+.search-box {
+    display: flex;
+    align-items: center;
+    width: 300px;
+    background: var(--cream);
+    border: 1px solid var(--shadow);
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: 0.2s ease;
+}
+.search-box:focus-within {
+    border-color: var(--green);
+    background: var(--white);
+}
+.search-box i {
+    font-size: 18px;
+    color: var(--light-grey);
+    margin-right: 8px;
+}
+.search-box input {
+    border: none;
+    outline: none;
+    background: none;
+    width: 100%;
+    font-size: 14px;
+    color: var(--grey);
+    font-family: "Inter", sans-serif;
+}
+.search-box input::placeholder {
+    color: var(--light-grey);
+    font-style: italic;
+}
+/* ACTION BUTTONS */
+.buttons {
+    display: flex;
+    gap: 5px;
+}
+.buttons button {
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid transparent;
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.09);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+.buttons button:hover {
+    background-color: var(--grey);
+    color: var(--cream);
+}
+#showCreateFAQModal {
+    background-color: var(--green);
+    color: var(--white);
+    transition: background-color 0.3s ease;
+}
+#showCreateFAQModal i {
+    font-size: 18px;
+    margin-right: 5px;
+}
+#showCreateFAQModal:hover {
+    background-color: var(--dark-green);
+}
+
+/* ================= CREATE FAQ MODAL ================= */
+.create-faq-modal {
+    width: 500px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-grey);
+}
+.faq-icon {
+    width: 60px;
+    height: 60px;
+    background-color: var(--dirty-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+}
+.faq-icon i {
+    font-size: 30px;
+    color: var(--dark-green);
+}
+.create-faq-modal h2 {
+    margin-bottom: 10px;
+    color: var(--dark-green);
+}
+.create-faq-modal p {
+    color: var(--grey);
+    margin-bottom: 10px;
+}
+#createFAQForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+#createFAQForm input[type="text"],
+#createFAQForm textarea,
+#createFAQForm select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--dark-grey);
+    background-color: var(--white);
+    outline: none;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    resize: none;
+}
+#createFAQForm textarea {
+    height: 120px;
+    overflow-y: auto;
+}
+#createFAQForm input:focus,
+#createFAQForm textarea:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px rgba(0, 138, 61, 0.15);
+}
+#createFAQForm input::placeholder,
+#createFAQForm textarea::placeholder {
+    color: var(--light-grey);
+    font-style: italic;
+}
+#confirmFAQBtn {
+    background-color: var(--green);
+    color: var(--white);
+}
+#confirmFAQBtn:hover {
+    background-color: var(--dark-green);
+}
+
+/* ================= SPECIFIC TABLE STYLES ================= */
+/* FAQ CUSTOM CONTENT */
+.faq-content {
+    padding: 15px 10px !important;
+}
+.faq-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+}
+.faq-item:last-of-type {
+    margin-bottom: 15px;
+}
+.faq-label {
+    font-weight: 600;
+    color: var(--dark-green);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+.faq-question,
+.faq-answer,
+.faq-category {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--grey);
+    font-size: 14px;
+    line-height: 1.5;
+    flex: 1;
+}
+.faq-question {
+    font-weight: 700;
+    color: var(--dark-grey);
+}
+/* FAQ ACTION BUTTONS */
+.faq-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+.faq-actions button {
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    color: var(--grey);
+    position: relative;
+}
+.faq-actions button:hover {
+    background: var(--cream);
+    border-color: var(--green);
+    color: var(--dark-green);
+}
+.faq-actions button[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    background: var(--dark-grey);
+    color: var(--white);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+.faq-actions button[data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-8px);
+}
+/* INLINE EDIT STYLES */
+.faq-edit-input,
+.faq-edit-textarea,
+.faq-edit-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--dark-grey);
+    background-color: var(--white);
+    outline: none;
+    transition: all 0.2s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+.faq-edit-input {
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+.faq-edit-textarea {
+    resize: none;
+    min-height: 80px;
+    line-height: 1.5;
+}
+.faq-edit-select {
+    cursor: pointer;
+}
+.faq-edit-input:focus,
+.faq-edit-textarea:focus,
+.faq-edit-select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px rgba(0, 138, 61, 0.15);
+}
+/* ALTERNATE BUTTON STYLE WHEN EDITING FOR DELETE & EDIT */
+/* THEY CHANGE INTO SAVE OR DISCARD ( X / ✓ ) */
+.faq-actions button i.bx-check {
+    color: var(--green);
+}
+.faq-actions button i.bx-x {
+    color: var(--red);
+}
+.faq-actions button:hover i.bx-check {
+    color: var(--dark-green);
+}
+.faq-actions button:hover i.bx-x {
+    color: var(--dark-red);
+}
