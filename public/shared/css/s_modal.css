@@ -27,7 +27,7 @@
     animation: slideDown 0.45s ease forwards;
 }
 
-/* ANIMATIONS */
+/* ANIMATION */
 @keyframes slideUp {
     from {
         transform: translateY(100px);
