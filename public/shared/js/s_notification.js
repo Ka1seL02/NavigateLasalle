@@ -22,14 +22,14 @@ function customNotification(type, title, message) {
     document.body.appendChild(newNotification);
     setTimeout(() => { newNotification.classList.add('show'); }, 10);
 
-    // Close button
+    // Close button (x)
     const closeBtn = newNotification.querySelector('.notification-close');
     closeBtn.addEventListener('click', () => {
         newNotification.classList.remove('show');
         setTimeout(() => newNotification.remove(), 400);
     });
 
-    // Auto close notification after 5 seconds
+    // Close notification after 5 seconds
     setTimeout(() => {
         newNotification.classList.remove('show');
         setTimeout(() => newNotification.remove(), 400);
