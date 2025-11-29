@@ -94,17 +94,7 @@
 }
 .table th:nth-child(5),
 .table td:nth-child(5) {
-    width: 100px;
-}
-
-/* ================= CONTROL BUTTONS DISABLED STATE ================= */
-.pagination-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-.pagination-button:disabled:hover {
-    background-color: var(--light-green);
-    color: var(--dark-green);
+    width: 125px;
 }
 
 /* ================= INVITE MODAL ================= */
@@ -201,19 +191,19 @@
 }
 
 /* ================= CUSTOM CONTEXT DATE ================= */
-.last-active {
-    font-weight: 700;
+.table-date {
+    background-color: var(--light-grey);
+    color: var(--white);
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-weight: 600;
 }
-.last-active.today {
-    color: var(--green);
-    font-weight: bold;
+.today {
+    background-color: var(--green);
 }
-.last-active.yesterday {
-    color: var(--orange);
+.yesterday {
+    background-color: var(--orange);
 }
-.last-active.week {
-    color: var(--red);
-}
-.last-active.old {
-    color: var(--grey);
+.week {
+    background-color: var(--dark-grey);
 }
