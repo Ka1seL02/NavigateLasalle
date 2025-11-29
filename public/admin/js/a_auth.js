@@ -1,28 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Forms
+    // ==================== ELEMENTS ==================== //
     const loginForm = document.getElementById('loginForm');
     const forgotForm = document.getElementById('forgotForm');
     const resetForm = document.getElementById('resetForm');
-    // Links
+    const createForm = document.getElementById('createForm');
+
     const forgotLink = document.querySelector('.forgot-password');
     const backLink = document.querySelector('.login');
 
     // ==================== PASSWORD TOGGLE ==================== //
-    const toggleButtons = document.querySelectorAll('.toggle-password');
-    toggleButtons.forEach(button => {
+    document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', () => {
-            const targetId = button.getAttribute('data-target');
-            const passwordInput = document.getElementById(targetId);
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                button.classList.remove('bx-hide');
-                button.classList.add('bx-show');
-            } else {
-                passwordInput.type = 'password';
-                button.classList.remove('bx-show');
-                button.classList.add('bx-hide');
-            }
+            const input = document.getElementById(button.dataset.target);
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            button.classList.toggle('bx-show', isPassword);
+            button.classList.toggle('bx-hide', !isPassword);
         });
     });
 
@@ -35,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
             forgotLink.classList.add('hidden');
             backLink.classList.remove('hidden');
         });
-
         backLink.addEventListener('click', e => {
             e.preventDefault();
             loginForm.classList.remove('hidden');
@@ -45,34 +37,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==================== LOGIN FORM SUBMIT ==================== //
+    // ==================== HELPER FUNCTIONS ==================== //
+    async function showModal(url) {
+        try {
+            const res = await fetch(url);
+            const html = await res.text();
+            document.body.insertAdjacentHTML('beforeend', html);
+        } catch (err) {
+            console.error('Failed to load modal:', err);
+        }
+    }
+
+    async function verifyToken(apiEndpoint, token) {
+        try {
+            const res = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+            return await res.json();
+        } catch (err) {
+            console.error('Token verification error:', err);
+            return { success: false };
+        }
+    }
+
+    async function checkSession() {
+        try {
+            const res = await fetch('/api/accounts/check-session');
+            return (await res.json()).isAuthenticated;
+        } catch (err) {
+            console.error('Session check failed:', err);
+            return false;
+        }
+    }
+
+    // ==================== LOGIN FORM ==================== //
     if (loginForm) {
         loginForm.addEventListener('submit', async e => {
             e.preventDefault();
             const email = loginForm.querySelector('input[type="text"]').value.trim();
             const password = document.getElementById('loginPassword')?.value.trim();
 
-            if (!email || !password) {
-                customNotification('error', 'Login Failed', 'Please fill the necessary fields.');
-                return;
-            }
+            if (!email || !password) return customNotification('error', 'Login Failed', 'Please fill the necessary fields.');
 
             try {
-                const response = await fetch('/api/accounts/login', {
+                const res = await fetch('/api/accounts/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
+                if (res.ok) {
                     customNotification('success', 'Login Successful', `Welcome back, ${data.user.name}!`);
-                    // Use replace to prevent back button from returning to login
                     setTimeout(() => window.location.replace('/admin/a_dashboard.html'), 1500);
-                } else {
-                    customNotification('error', 'Login Failed', data.message);
-                }
+                } else customNotification('error', 'Login Failed', data.message);
             } catch (err) {
                 console.error(err);
                 customNotification('error', 'Error', 'Something went wrong. Please try again.');
@@ -80,162 +100,148 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==================== FORGOT PASSWORD FORM SUBMIT ==================== //
+    // ==================== FORGOT PASSWORD ==================== //
     if (forgotForm) {
         forgotForm.addEventListener('submit', async e => {
             e.preventDefault();
             const email = document.getElementById('forgotEmail')?.value.trim();
-            if (!email) {
-                customNotification('error', 'Error', 'Please enter your email.');
-                return;
-            }
+            if (!email) return customNotification('error', 'Error', 'Please enter your email.');
 
             try {
-                const response = await fetch('/api/accounts/forgot-password', {
+                const res = await fetch('/api/accounts/forgot-password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    customNotification('success', 'Email Sent', data.message);
-                } else {
-                    customNotification('error', 'Error', data.message || 'Something went wrong.');
-                }
+                data.message
+                    ? customNotification(res.ok ? 'success' : 'error', res.ok ? 'Email Sent' : 'Error', data.message)
+                    : customNotification('error', 'Error', 'Something went wrong.');
             } catch (err) {
                 console.error(err);
-                customNotification('error', 'Error', err.message || 'Something went wrong.');
+                customNotification('error', 'Error', 'Something went wrong.');
             }
         });
     }
 
-    // ==================== RESET PASSWORD FORM PAGE ==================== //
-    // Track if password has been successfully reset
-    let passwordResetSuccessful = false;
-    // Show expired session modal
-    async function showExpiredSessionModal() {
-        try {
-            const res = await fetch('./component/m_expired_token.html');
-            const html = await res.text();
-            document.body.insertAdjacentHTML('beforeend', html);
-            const overlay = document.querySelector('.modal-overlay');
-            overlay.classList.add('show');
-        } catch (err) {
-            console.error('Failed to load expired session modal: ', err);
-        }
-    }
-    // Reset Password form submit
+    // ==================== RESET PASSWORD ==================== //
     if (resetForm) {
-        // Check if user is already authenticated (came back via browser back button)
-        (async function checkAuthAndToken() {
-            // First check if user is authenticated
-            try {
-                const authResponse = await fetch('/api/accounts/check-session');
-                const authData = await authResponse.json();
+        let resetDone = false;
 
-                if (authData.isAuthenticated) {
-                    // User is logged in, redirect to dashboard
-                    window.location.replace('/admin/a_dashboard.html');
-                    return;
-                }
-            } catch (err) {
-                console.error('Auth check error:', err);
-            }
+        (async function initReset() {
+            // Prevent logged-in user from accessing reset
+            if (await checkSession()) return window.location.replace('/admin/a_dashboard.html');
 
-            // If not authenticated, validate the reset token
+            await showModal('./component/m_expired_link.html');
+
             const token = new URLSearchParams(window.location.search).get('token');
-            if (!token) { await showExpiredSessionModal(); return; }
-
-            try {
-                const response = await fetch('/api/accounts/verify-reset-token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    await showExpiredSessionModal();
-                }
-
-            } catch (err) {
-                console.error(err);
-                await showExpiredSessionModal();
+            if (!token || !(await verifyToken('/api/accounts/verify-reset-token', token)).success) {
+                document.querySelector('.modal-overlay')?.classList.add('show');
+                return;
             }
         })();
 
-        resetForm.addEventListener('submit', async (e) => {
+        resetForm.addEventListener('submit', async e => {
             e.preventDefault();
-
-            // Prevent resubmission if password was already reset
-            if (passwordResetSuccessful) {
-                customNotification('info', 'Already Reset', 'Password has already been reset. Redirecting...');
-                setTimeout(() => window.location.replace('a_login.html'), 1000);
-                return;
-            }
+            if (resetDone) return customNotification('info', 'Already Reset', 'Password has already been reset. Redirecting...');
 
             const newPassword = document.getElementById('newPassword').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
-            if (!newPassword || !confirmPassword) {
-                customNotification('error', 'Error', 'Please fill in all fields.');
-                return;
-            }
-            if (newPassword !== confirmPassword) {
-                customNotification('error', 'Error', 'Passwords do not match.');
-                return;
-            }
+            // ==================== VALIDATION ==================== //
+            if (!newPassword || !confirmPassword)
+                return customNotification('error', 'Error', 'Please fill in all fields.');
+
+            if (newPassword.length < 8)
+                return customNotification('error', 'Weak Password', 'Password must be at least 8 characters long.');
+
+            if (newPassword !== confirmPassword)
+                return customNotification('error', 'Error', 'Passwords do not match.');
 
             const token = new URLSearchParams(window.location.search).get('token');
 
             try {
-                const response = await fetch('/api/accounts/reset-password', {
+                const res = await fetch('/api/accounts/reset-password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token, newPassword })
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    passwordResetSuccessful = true;
+                if (res.ok) {
+                    resetDone = true;
                     customNotification('success', 'Success', data.message);
                     resetForm.querySelectorAll('input, button').forEach(el => el.disabled = true);
-                    // Use replace to prevent back button from returning to reset page
                     setTimeout(() => window.location.replace('a_login.html'), 2000);
-                } else {
-                    customNotification('error', 'Error', data.message);
-                }
+                } else customNotification('error', 'Error', data.message);
             } catch (err) {
                 console.error(err);
                 customNotification('error', 'Error', 'Something went wrong.');
             }
         });
 
-        // Prevent form resubmission when page is loaded from cache
         window.addEventListener('pageshow', async function (event) {
-            if (event.persisted || passwordResetSuccessful) {
-                // Check if user is authenticated
-                try {
-                    const authResponse = await fetch('/api/accounts/check-session');
-                    const authData = await authResponse.json();
+            if (event.persisted || resetDone) {
+                if (await checkSession()) return window.location.replace('/admin/a_dashboard.html');
+                if (resetDone) window.location.replace('a_login.html');
+            }
+        });
+    }
 
-                    if (authData.isAuthenticated) {
-                        // User is logged in, redirect to dashboard
-                        window.location.replace('/admin/a_dashboard.html');
-                        return;
-                    }
-                } catch (err) {
-                    console.error('Auth check error:', err);
-                }
+    // ==================== CREATE ACCOUNT ==================== //
+    if (createForm) {
+        const inviteToken = new URLSearchParams(window.location.search).get('token');
 
-                // If not authenticated but password was reset, go to login
-                if (passwordResetSuccessful) {
-                    window.location.replace('a_login.html');
+        (async function initCreate() {
+            await showModal('./component/m_expired_link.html');
+
+            if (!inviteToken || !(await verifyToken('/api/accounts/verify-invite-token', inviteToken)).success) {
+                document.querySelector('.modal-overlay')?.classList.add('show');
+                return;
+            }
+
+            const { email } = await verifyToken('/api/accounts/verify-invite-token', inviteToken);
+            document.getElementById('email').value = email || '';
+        })();
+
+        createForm.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // ==================== VALIDATION ==================== //
+            if (!name || !email || !password || !confirmPassword)
+                return customNotification('error', 'Validation Error', 'Please fill in all fields.');
+            if (password.length < 8) return customNotification('error', 'Weak Password', 'Password must be at least 8 characters.');
+            if (password !== confirmPassword) return customNotification('error', 'Password Mismatch', 'Passwords do not match.');
+
+            const submitBtn = createForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+
+            try {
+                const res = await fetch('/api/accounts/create-from-invite', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: inviteToken, name, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    customNotification('success', 'Success', data.message);
+                    setTimeout(() => window.location.href = '/admin/a_login.html', 2000);
+                } else {
+                    throw new Error(data.message || 'Failed to create account');
                 }
+            } catch (err) {
+                console.error(err);
+                customNotification('error', 'Error', err.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
             }
         });
     }
