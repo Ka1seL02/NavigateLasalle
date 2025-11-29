@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="../shared/css/root.css">
+    <link rel="stylesheet" href="../shared/css/s_notification.css">
+    <link rel="stylesheet" href="../shared/css/s_modal.css">
+    <!-- Admin Page Styles -->
+    <link rel="stylesheet" href="css/a_global.css">
+    <link rel="stylesheet" href="css/a_feedbacks.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <main>
+        <div class="breadcrumb">
+            <div class="profile-section">
+                <div class="profile-initials">AB</div>
+                <div class="profile-info">
+                    <span class="profile-name">Alice Brown</span>
+                    <small class="profile-role">Super Admin</small>
+                </div>
+                <i class='bx bx-chevron-down'></i>
+            </div>
+        </div>
+        <div class="main-content">
+            <h2>Manage Feedback</h2>
+            <p>View and monitor all user feedback, including ratings and submission details.</p>
+
+            <div class="action-bar">
+                <div class="filter-buttons">
+                    <button class="active" data-filter="all">All</button>
+                    <button data-filter="read">Read</button>
+                    <button data-filter="unread">Unread</button>
+                </div>
+            </div>
+
+            <div class="table-controls">
+                <!-- Left side: select all and operations -->
+                <div class="controls-left">
+                    <input type="checkbox" class="select-all-toolbar" title="Select all">
+                    <button class="control-action" id="refresh-table" title="Refresh">
+                        <i class='bx bx-refresh'></i>
+                    </button>
+                    <span class="divider">|</span>
+                    <button class="control-action" id="delete-selected" title="Delete">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                    <button class="control-action" id="read-selected" title="Read">
+                        <i class='bx bx-envelope-open'></i>
+                    </button>
+                    <button class="control-action" id="unread-selected" title="Unread">
+                        <i class='bx bx-envelope'></i>
+                    </button>
+                </div>
+
+                <!-- Right side: entries info + pagination -->
+                <div class="controls-right">
+                    <span class="entries-info">Showing <span id="start-entry">1</span> - <span id="end-entry">50</span>
+                        of
+                        <span id="total-entries">808</span> entries</span>
+
+                    <button class="pagination-button" id="prev-page" title="Previous page">
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+
+                    <div class="page-input">
+                        <input type="number" id="current-page" value="1" min="1">
+                        <span>/ <span id="total-pages">16</span></span>
+                    </div>
+
+                    <button class="pagination-button" id="next-page" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th data-sort="rating">Rating</th>
+                            <th>Feedback</th>
+                            <th data-sort="date">Date</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="feedback-row unread">
+                            <td><input type="checkbox"></td>
+                            <td class="rating rating-5">5</td>
+                            <td class="feedback">
+                                I recently had the opportunity to explore the interactive map and
+                                virtual tour features of your platform, and I must say it was an incredibly immersive
+                                experience. The interface is very intuitive, allowing me to navigate through different
+                                areas effortlessly. I especially appreciated the level of detail provided for each
+                                location — from the historical background to the key facilities, everything was clearly
+                                documented and visually engaging.
+                            </td>
+                            <td class="date">Mar 21</td>
+                            <td><i class='bx bx-chevron-down'></i></td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr class="details-row">
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <p class="details-feedback">
+                                    I recently had the opportunity to explore the interactive map and virtual tour
+                                    features of your platform, and I must say it was an incredibly immersive experience.
+                                    The interface is very intuitive, allowing me to navigate through different areas
+                                    effortlessly. I especially appreciated the level of detail provided for each
+                                    location — from the historical background to the key facilities, everything was
+                                    clearly documented and visually engaging.
+
+                                    However, I did notice a few areas where improvements could be made. For instance,
+                                    some of the interactive elements took a few moments to load, which slightly
+                                    interrupted the flow of the tour. Additionally, while the search functionality is
+                                    robust, it would be helpful if there were filters or tags that allow users to narrow
+                                    down points of interest based on categories or accessibility options.
+
+                                    Overall, I am impressed with the platform’s ability to combine educational content
+                                    with an interactive experience. It is clear that a lot of effort has gone into both
+                                    the visual design and the accuracy of the information. I would highly recommend
+                                    adding more multimedia elements, such as short videos or audio guides, to further
+                                    enrich the user experience. Keep up the excellent work!
+                                </p>
+                                <br>
+                                <small class="details-timestamp">11:36 am • Yesterday</small>
+                            </td>
+                            <td></td>
+                            <td>
+                                <button data-tooltip="Delete"><i class='bx bx-trash'></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <!-- Important Arrangement -->
+    <script src="js/a_global.js"></script>
+    <script>protectPage();</script>
+    <script src="../shared/js/s_notification.js"></script>
+    <script src="js/a_feedbacks.js"></script>
+
+</body>
+
+</html>
