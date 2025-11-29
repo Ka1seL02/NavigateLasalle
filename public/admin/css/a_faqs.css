@@ -162,7 +162,7 @@
 /* ================= SPECIFIC TABLE STYLES ================= */
 /* FAQ CUSTOM CONTENT */
 .faq-content {
-    padding: 15px 10px !important;
+    padding: 15px 10px;
 }
 .faq-item {
     display: flex;
