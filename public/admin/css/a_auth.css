@@ -6,6 +6,8 @@ main {
     margin: 0;
     gap: 0;
 }
+
+/* ================= ADMIN AUTH STYLES ================= */
 .login-left,
 .login-right {
     flex: 1;
@@ -40,6 +42,7 @@ main {
     color: var(--light-grey);
     margin-top: -1.25vh;
 }
+/* INPUT STYLES */
 .form {
     margin-top: 5vh;
     display: flex;
@@ -105,10 +108,10 @@ main {
 .form button:active {
     transform: scale(0.98);
 }
+/* SWITCH FORM LINK (<a>) */
 .login-right a {
-    display: inline-block;
     margin-top: 10px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--green);
     text-decoration: none;
     transition: color 0.3s ease;
@@ -119,8 +122,8 @@ main {
     color: var(--dark-green);
     text-decoration: underline;
 }
-.hidden {
-    display: none !important;
+.login-right .hidden {
+    display: none;
 }
 .password-input-wrapper {
     position: relative;
@@ -145,4 +148,45 @@ main {
 }
 .toggle-password:hover {
     color: var(--green);
+}
+
+/* ================= TOKEN EXPIRED MODAL STYLE ================= */
+.expired-link-modal {
+    width: 300px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-grey);
+}
+.expired-icon {
+    width: 70px;
+    height: 70px;
+    background-color: var(--dirty-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+}
+.expired-icon i {
+    font-size: 40px;
+    color: var(--red);
+}
+.expired-link-modal h2{
+    margin-bottom: 10px;
+}
+.expired-link-modal button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    background-color: var(--dirty-white);
+    font-family: 'Inter', sans-serif;
+    font-weight: bolder;
+    color: var(--dark-green);
+    transition: all 0.5s ease;
+    margin-top: 30px;
+}
+.expired-link-modal button:hover {
+    background-color: var(--green);
+    color: var(--cream);
 }
