@@ -1,0 +1,28 @@
+<div class="modal-overlay" id="createFAQModal">
+    <div class="modal create-faq-modal">
+        <div class="modal-icon faq-icon">
+            <i class='bx bx-question-mark'></i>
+        </div>
+        <h2>Create New FAQ</h2>
+        <p>Enter the details for the new FAQ:</p>
+
+        <form id="createFAQForm">
+            <input type="text" id="faqQuestion" placeholder="Enter the question" />
+            <textarea id="faqAnswer" placeholder="Enter the answer" rows="4"></textarea>
+            <select id="faqCategory">
+                <option value="General">General</option>
+                <option value="News">News</option>
+                <option value="Interactive Map">Interactive Map</option>
+                <option value="Virtual Tour">Virtual Tour</option>
+                <option value="Feedback">Feedback</option>
+            </select>
+
+            <div class="modal-buttons">
+                <button type="button" class="btn cancel-faq" id="cancelFAQBtn">Cancel</button>
+                <button type="submit" class="btn confirm-faq" id="confirmFAQBtn">
+                    <i class='bx bx-save'></i> Create FAQ
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
