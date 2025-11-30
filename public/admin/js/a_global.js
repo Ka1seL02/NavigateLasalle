@@ -1,34 +1,107 @@
 // ==================== AUTH CHECK FUNCTIONS ==================== //
-// Check if there is already a logged-in
 async function checkAuth() {
     try {
         const response = await fetch('/api/accounts/check-session');
         const data = await response.json();
         return data.isAuthenticated;
-    } catch (error) {
-        console.error('Auth check error:', error);
+    } catch (err) {
+        console.error('Auth check error:', err);
         return false;
     }
 }
-// Redirect unauthorize/non-loggedin users
 async function protectPage() {
     const isAuthenticated = await checkAuth();
-
-    if (!isAuthenticated) {
-        window.location.href = '/admin/a_login.html';
-    }
+    if (!isAuthenticated) window.location.href = '/admin/a_login.html';
 }
-// Redirect if already logged in
 async function redirectIfAuthenticated() {
     const isAuthenticated = await checkAuth();
-
-    if (isAuthenticated) {
-        window.location.href = '/admin/a_dashboard.html';
-    }
+    if (isAuthenticated) window.location.href = '/admin/a_dashboard.html';
 }
 
-// ================= LOADING COMPONENTS TO HTML ================= //
-// Load sidebar and logout modal dynamically on authenticated pages
+// ==================== UNIVERSAL MODAL HELPERS ==================== //
+function openModal(id) {
+    const overlay = document.getElementById(id);
+    if (!overlay) return;
+    overlay.classList.add("show");
+}
+
+function closeModal(id) {
+    const overlay = document.getElementById(id);
+    if (!overlay) return;
+
+    const modal = overlay.querySelector(".modal");
+    if (!modal) return;
+
+    modal.classList.add("closing");
+
+    modal.addEventListener(
+        "animationend",
+        () => {
+            modal.classList.remove("closing");
+            overlay.classList.remove("show");
+        },
+        { once: true }
+    );
+}
+
+function initOverlayClick(id) {
+    const overlay = document.getElementById(id);
+    if (!overlay) return;
+
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeModal(id);
+    });
+}
+
+// ==================== UNIVERSAL CONFIRM MODAL ==================== //
+let confirmModalCallback = null;
+
+function initializeConfirmModal() {
+    const confirmBtn = document.getElementById('confirmActionBtn');
+    const cancelBtn = document.getElementById('cancelActionBtn');
+
+    if (!confirmBtn || !cancelBtn) return;
+
+    cancelBtn.addEventListener('click', () => {
+        closeModal('confirmModal');
+        confirmModalCallback = null;
+    });
+
+    confirmBtn.addEventListener('click', async () => {
+        if (confirmModalCallback) {
+            await confirmModalCallback(confirmBtn);
+            closeModal('confirmModal');
+            confirmModalCallback = null;
+        }
+    });
+
+    initOverlayClick('confirmModal');
+}
+
+function showConfirmModal({ icon, iconColor, title, message, confirmText, confirmColor, onConfirm }) {
+    const overlay = document.getElementById('confirmModal');
+    if (!overlay) return;
+
+    const iconElement = overlay.querySelector('#confirmIcon i');
+    const iconContainer = overlay.querySelector('#confirmIcon');
+    const titleElement = overlay.querySelector('#confirmTitle');
+    const messageElement = overlay.querySelector('#confirmMessage');
+    const confirmBtn = overlay.querySelector('#confirmActionBtn');
+
+    if (iconElement) iconElement.className = `bx ${icon}`;
+    if (iconContainer && iconColor) iconContainer.style.backgroundColor = iconColor;
+    if (titleElement) titleElement.textContent = title;
+    if (messageElement) messageElement.textContent = message;
+    if (confirmBtn) {
+        confirmBtn.textContent = confirmText;
+        confirmBtn.style.backgroundColor = confirmColor || 'var(--green)';
+    }
+
+    confirmModalCallback = onConfirm;
+    openModal('confirmModal');
+}
+
+// ==================== LOAD COMPONENTS ==================== //
 function loadComponents() {
     const currentPage = window.location.pathname;
     const noSidebarPages = ['a_login.html', 'a_reset_password.html'];
@@ -36,196 +109,140 @@ function loadComponents() {
 
     if (!shouldLoadSidebar) return;
 
-    // Fetch sidebar
+    // Sidebar
     fetch('./component/a_sidebar.html')
         .then(res => res.text())
         .then(html => {
             document.body.insertAdjacentHTML('afterbegin', html);
             initializeSidebar();
         })
-        .catch(error => {
-            console.error('Error loading sidebar:', error);
-        });
+        .catch(err => console.error('Error loading sidebar:', err));
 
-    // Fetch logout modal
+    // Logout modal
     fetch('./component/m_logout.html')
         .then(res => res.text())
         .then(html => {
             document.body.insertAdjacentHTML('beforeend', html);
             initializeLogoutModal();
         });
+
+    // Confirm modal (global)
+    fetch('./component/m_confirm.html')
+        .then(res => res.text())
+        .then(html => {
+            document.body.insertAdjacentHTML('beforeend', html);
+            initializeConfirmModal();
+        })
+        .catch(err => console.error('Error loading confirm modal:', err));
 }
 
-// Show logout modal
-function showLogoutModal() {
-    const overlay = document.querySelector('.modal-overlay');
-    if (!overlay) return;
-    overlay.classList.add('show');
-}
-
-// ================= INITIALIZING COMPONENTS TO HTML ================= //
-// Initialize Sidebar
+// ==================== SIDEBAR INITIALIZATION ==================== //
 function initializeSidebar() {
-    const currentPage = window.location.pathname.split('/').pop().replace('.html', '').replace('a_', '');
-
     const menuItems = document.querySelectorAll('.menu-item');
+    const currentPage = window.location.pathname.split('/').pop().replace('.html','').replace('a_','');
+
     menuItems.forEach(item => {
-        const page = item.getAttribute('data-page');
-        if (page === currentPage) {
-            item.classList.add('active');
-        }
+        if (item.getAttribute('data-page') === currentPage) item.classList.add('active');
 
-        // Add tooltips for collapsed state
         const text = item.querySelector('span')?.textContent;
-        if (text) {
-            item.setAttribute('data-tooltip', text);
-        }
+        if (text) item.setAttribute('data-tooltip', text);
 
-        // Add click handler for visual feedback
-        item.addEventListener('click', function (e) {
+        item.addEventListener('click', () => {
             menuItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
+            item.classList.add('active');
         });
     });
 
-    // ========== SIDEBAR COLLAPSE BUTTON ========== //
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.querySelector('.sidebar');
-
     if (sidebarToggle && sidebar) {
-        // Load saved state from localStorage
         const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-        if (isCollapsed) {
-            sidebar.classList.add('collapsed');
-        }
+        if (isCollapsed) sidebar.classList.add('collapsed');
 
         sidebarToggle.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-            // Save state
             localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
         });
     }
 
-    // ========== LOGOUT BUTTON (SHOWS MODAL) ========== //
     const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showLogoutModal();
-        });
-    }
+    if (logoutBtn) logoutBtn.addEventListener('click', () => openModal('logoutModal'));
 }
 
+// ==================== LOGOUT MODAL ==================== //
 function initializeLogoutModal() {
-    const overlay = document.querySelector('.modal-overlay');
-    if (!overlay) return;
+    const confirmBtn = document.getElementById("confirmLogoutBtn");
+    const cancelBtn = document.getElementById("cancelLogoutBtn");
 
-    const confirmBtn = document.getElementById('confirmLogoutBtn');
-    const cancelBtn = document.getElementById('cancelLogoutBtn');
+    if (!confirmBtn || !cancelBtn) return;
 
-    function closeModal() {
-        const modal = document.querySelector('.modal');
-        if (!modal) return;
-        modal.classList.add('closing');
-        modal.addEventListener('animationend', () => {
-            modal.classList.remove('closing');
-            overlay.classList.remove('show');
-        }, { once: true });
-    }
-
-    // Cancel button hides modal
-    cancelBtn.addEventListener('click', closeModal);
-
-    // Click outside to close
-    overlay.addEventListener('click', e => {
-        if (e.target === overlay) closeModal();
-    });
-
-    // Confirm logout
-    confirmBtn.addEventListener('click', async () => {
+    confirmBtn.addEventListener("click", async () => {
         confirmBtn.disabled = true;
-        confirmBtn.textContent = 'Logging out...';
+        confirmBtn.textContent = "Logging out...";
 
         try {
-            const response = await fetch('/api/accounts/logout', { method: 'POST' });
-            const data = await response.json();
-
-            if (response.ok) {
-                // 2️⃣ Redirect to login page
-                window.location.href = '/admin/a_login.html';
-            } else {
-                console.error('Logout failed:', data.message);
+            const res = await fetch("/api/accounts/logout", { method: "POST" });
+            if (res.ok) window.location.href = "/admin/a_login.html";
+            else {
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Yes, Logout';
+                confirmBtn.textContent = "Yes, Logout";
             }
         } catch (err) {
-            console.error('Logout error:', err);
+            console.error("Logout error:", err);
             confirmBtn.disabled = false;
-            confirmBtn.textContent = 'Yes, Logout';
+            confirmBtn.textContent = "Yes, Logout";
         }
     });
+
+    cancelBtn.addEventListener("click", () => closeModal("logoutModal"));
+    initOverlayClick("logoutModal");
 }
 
-// ========== LOAD USER INFO ========== //
+// ==================== LOAD USER INFO ==================== //
 async function loadUserInfo() {
     try {
-        const response = await fetch('/api/accounts/check-session');
-        const data = await response.json();
+        const res = await fetch("/api/accounts/check-session");
+        const data = await res.json();
 
-        const accountsMenu = document.getElementById('accountsMenu');
-        if (accountsMenu && data.user?.role !== 'super-admin') {
-            accountsMenu.style.display = 'none';
-        }
+        const accountsMenu = document.getElementById("accountsMenu");
+        if (accountsMenu && data.user?.role !== "super-admin") accountsMenu.style.display = "none";
 
         return data.user;
-
-    } catch (error) {
-        console.error('Error loading user info:', error);
+    } catch (err) {
+        console.error("Error loading user info:", err);
         return null;
     }
 }
 
 // ==================== HANDLE BACK/FORWARD CACHE ==================== //
-window.addEventListener('pageshow', function (event) {
-    // event.persisted is true when page is loaded from bfcache
+window.addEventListener("pageshow", (event) => {
     if (event.persisted) {
-        // Determine which check to run based on current page
         const currentPage = window.location.pathname;
 
-        if (currentPage.includes('a_login.html')) {
-            redirectIfAuthenticated();
-        } else if (currentPage.includes('a_dashboard.html') ||
-            currentPage.includes('a_accounts.html') ||
-            currentPage.includes('a_')) {
-            // Any admin page that requires auth
-            if (!currentPage.includes('a_reset_password.html')) {
-                protectPage();
-            }
+        if (currentPage.includes("a_login.html")) redirectIfAuthenticated();
+        else if (currentPage.includes("a_dashboard.html") ||
+                 currentPage.includes("a_accounts.html") ||
+                 currentPage.includes("a_")) {
+            if (!currentPage.includes("a_reset_password.html")) protectPage();
         }
     }
 });
 
-// ==================== LOAD ALL COMPONENTS ==================== //
-// Automatically load the components when DOM is ready
-document.addEventListener('DOMContentLoaded', async () => {
+// ==================== DOM READY ==================== //
+document.addEventListener("DOMContentLoaded", async () => {
     loadComponents();
 
     const user = await loadUserInfo();
-    if (user) {
-        const profileInitials = document.querySelector('.profile-initials');
-        const profileName = document.querySelector('.profile-name');
-        const profileRole = document.querySelector('.profile-role');
+    if (!user) return;
 
-        if (profileInitials) {
-            const initials = user.name.split(' ')
-                .map(n => n[0])
-                .join('')
-                .toUpperCase()
-                .substring(0, 2);
-            profileInitials.textContent = initials;
-        }
+    const profileInitials = document.querySelector('.profile-initials');
+    const profileName = document.querySelector('.profile-name');
+    const profileRole = document.querySelector('.profile-role');
 
-        if (profileName) { profileName.textContent = user.name; }
-        if (profileRole) { profileRole.textContent = user.role; }
+    if (profileInitials) {
+        const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+        profileInitials.textContent = initials;
     }
+    if (profileName) profileName.textContent = user.name;
+    if (profileRole) profileRole.textContent = user.role;
 });
