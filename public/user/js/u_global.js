@@ -1,8 +1,8 @@
 // Scroll to Top Button Functionality (if exists on page)
-const scrollTopBtn = document.querySelector('.scroll-top-btn');
+const scrollTopBtn = document.querySelector('.scroll-up-btn');
 if (scrollTopBtn) {
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
+        if (window.scrollY > 500) {
             scrollTopBtn.classList.add('show');
         } else {
             scrollTopBtn.classList.remove('show');
