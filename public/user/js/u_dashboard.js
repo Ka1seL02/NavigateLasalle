@@ -1,4 +1,4 @@
-// === CLOCK AND DATE (Your original code) ===
+// === CLOCK AND DATE ===
 function updateDateTime() {
     const currentDate = new Date();
 
@@ -22,6 +22,95 @@ function updateDateTime() {
 
 setInterval(updateDateTime, 1000);
 updateDateTime();
+
+// === WEATHER API ===
+async function fetchWeather() {
+    // Now calling your own backend API endpoint
+    const apiUrl = '/api/weather';
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        console.log('Weather API Response:', data); // Debug log
+
+        if (response.ok) {
+            updateWeatherUI(data);
+        } else {
+            console.error('Weather API error:', data.message);
+            displayWeatherError();
+        }
+    } catch (error) {
+        console.error('Error fetching weather:', error);
+        displayWeatherError();
+    }
+}
+
+function updateWeatherUI(data) {
+    const weatherContainer = document.querySelector('.middle-box');
+    
+    // Get weather data
+    const temp = Math.round(data.main.temp * 10) / 10; // Round to 1 decimal
+    const weatherMain = data.weather[0].main.toLowerCase();
+    const weatherIcon = data.weather[0].icon;
+    const location = 'Dasmarinas, Cavite';
+
+    // Weather messages based on condition
+    const weatherMessages = {
+        'clear': 'Sunny days are perfect for outdoor activities. Stay hydrated and have fun!',
+        'clouds': 'Partly cloudy skies today. A great day to explore the campus!',
+        'rain': 'Rainy weather ahead. Don\'t forget to bring an umbrella!',
+        'drizzle': 'Light drizzle expected. Stay dry and enjoy your day indoors!',
+        'thunderstorm': 'Thunderstorms in the area. Please stay safe indoors.',
+        'snow': 'Snow is falling! Bundle up and stay warm.',
+        'mist': 'Misty conditions outside. Drive carefully and stay safe.',
+        'fog': 'Foggy weather today. Take care when moving around campus.',
+        'haze': 'Hazy skies today. Stay indoors if you have respiratory concerns.',
+        'smoke': 'Smoky conditions detected. Limit outdoor activities if possible.',
+        'dust': 'Dusty weather outside. Keep windows closed and stay indoors.',
+        'sand': 'Sandy conditions today. Protect your eyes and stay safe.',
+        'ash': 'Volcanic ash in the air. Please stay indoors for safety.',
+        'squall': 'Strong winds expected. Secure loose items and stay safe.',
+        'tornado': 'Tornado warning! Seek shelter immediately.'
+    };
+
+    // Get appropriate message or default
+    const weatherMessage = weatherMessages[weatherMain] || 'Have a wonderful day at DLSU-D!';
+
+    // Create weather HTML
+    weatherContainer.innerHTML = `
+        <div class="weather-content">
+            <div class="weather-icon">
+                <img src="https://openweathermap.org/img/wn/${weatherIcon}@4x.png" alt="${weatherMain}">
+            </div>
+            <div class="weather-info">
+                <div class="weather-temp">${temp}°C</div>
+                <div class="weather-location">${location}</div>
+            </div>
+        </div>
+        <div class="weather-description">${weatherMessage}</div>
+    `;
+}
+
+function displayWeatherError() {
+    const weatherContainer = document.querySelector('.middle-box');
+    weatherContainer.innerHTML = `
+        <div class="weather-content">
+            <div class="weather-icon">
+                <i class='bx bx-cloud-drizzle' style="font-size: 80px; color: var(--grey);"></i>
+            </div>
+            <div class="weather-info">
+                <div class="weather-temp">--°C</div>
+                <div class="weather-location">Dasmarinas, Cavite</div>
+            </div>
+        </div>
+        <div class="weather-description">Weather Unavailable</div>
+    `;
+}
+
+// Fetch weather on load and refresh every 10 minutes
+fetchWeather();
+setInterval(fetchWeather, 600000); // 10 minutes
 
 // === CAROUSEL FUNCTIONALITY ===
 // News data array
@@ -170,18 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // View All News button
     document.getElementById('viewAllNews').addEventListener('click', () => {
-        alert('Navigate to all news page');
-        // You can replace this with actual navigation
-        // window.location.href = 'news.html';
+        window.location.href = 'u_news.html';
     });
 });
-
-const aboutBox = document.querySelector('.small-box.about');
-const mapBox = document.querySelector('.small-box.map');
-const virtualBox = document.querySelector('.small-box.virtual');
-const helpBox = document.querySelector('.small-box.help');
-
-aboutBox.addEventListener('click', () => { window.location.href = 'u_about.html'; });
-mapBox.addEventListener('click', () => { window.location.href = './virtualtour/u_virtual-tour.html'; });
-virtualBox.addEventListener('click', () => { window.location.href = 'u_virtual_tour.html'; });
-helpBox.addEventListener('click', () => { window.location.href = 'u_help.html'; });
