@@ -7,6 +7,9 @@ const path = require('path');
 const connectDB = require('./config/db.js');
 
 // Import route modules for handling API endpoints
+// Weather
+const weatherRoutes = require('./routes/weather');
+// DB Routes
 const accountRoutes = require('./routes/accounts.js');
 const faqRoutes = require('./routes/faqs.js');
 const feedbackRoutes = require('./routes/feedbacks.js');
@@ -34,6 +37,7 @@ app.use(express.json()); // For parsing JSON Data
 app.use(express.urlencoded({ extended: true })); // For parsing HTML Data
 
 // Routes
+app.use('/api/weather', weatherRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
