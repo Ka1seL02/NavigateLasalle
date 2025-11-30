@@ -15,7 +15,7 @@ main {
     min-width: 750px;
     display: flex;
 }
-/* Logo Section */
+/* LOGO SECTION */
 .logo-section {
     position: fixed;
     top: 0;
@@ -31,7 +31,7 @@ main {
     width: auto;
     object-fit: contain;
 }
-/* Main Dashboard */
+/* DASHBOARD */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 0.55fr;
@@ -49,7 +49,7 @@ main {
     grid-template-columns: 1fr 1fr;
     gap: 5px;
 }
-/* Standard style for all containers */
+/* STANDARD STYLES FOR ALL CONTAINERS */
 .main-section,
 .top-box,
 .middle-box,
@@ -63,24 +63,20 @@ main {
 .grid-2x2.lower .small-box:last-child {
     border-bottom-right-radius: 15px;
 }
-/* Featured News Section */
+/* FEATURED NEW SECTION */
 .main-section {
-    /* Layout */
     flex-direction: column;
-    /* Background */
     background:
         linear-gradient(rgba(0, 138, 61, 0.9), rgba(0, 138, 61, 0.9)),
         url(../images/u_news_section_bg.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* Radius */
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
-    /* Others */
     color: var(--white);
 }
-/* News Carousel Container */
+/* NEWS CAROUSEL */
 .news-carousel {
     display: grid;
     grid-template-columns: min(10vw, 30px) 1fr min(10vw, 30px);
@@ -88,7 +84,7 @@ main {
     width: 100%;
     height: 100%;
 }
-/* News Carousel Button */
+/* CAROUSEL BUTTON */
 .carousel-nav {
     display: flex;
     align-items: center;
@@ -155,26 +151,24 @@ main {
     font-size: 24px;
     font-weight: 600;
     text-align: justify;
-
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 .news-description {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
+    font-weight: 300;
     text-align: justify;    
-
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
     overflow: hidden;
-
     line-height: 1.4em;
     max-height: calc(1.4em * 4);
 }
-/* Carousel Dots */
+/* CAROUSEL DOTS */
 .carousel-dots {
     display: flex;
     justify-content: center;
@@ -188,32 +182,27 @@ main {
     border-radius: 50%;
     transition: 0.3s ease;
 }
-/* Active dot */
 .carousel-dots .dot.active {
     background-color: var(--white);
 }
-/* View All News Button */
+/* VIEW ALL NEWS */
 .main-section #viewAllNews {
     height: 7vh;
     min-height: 25px;
     border: none;
     background: linear-gradient(135deg, #00c853 0%, #00a043 100%);
     color: var(--white);
-    /* Typography */
     font-family: 'EB Garamond', sans-serif;
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    
-    /* Rounded bottom corners */
     border-bottom-left-radius: 15px;
-    
-    /* Shadow for depth */
     box-shadow: 
         0 4px 8px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
-/* Time and Date */
+
+/* TIME DATE CONTAINER */
 .top-box {
     flex-direction: column;
     align-items: center;
@@ -221,7 +210,7 @@ main {
     line-height: 1;
     background-color: var(--green);
     color: var(--white);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     border-top-right-radius: 15px;
 }
 .top-box #clockText {
@@ -235,15 +224,77 @@ main {
     color: var(--shadow);
     letter-spacing: 0.75px;
     font-weight: 300;
+    font-family: 'Montserrat', sans-serif;
 }
-/* Grids containing the main features */
+
+/* WEATHER WIDGET */
+.middle-box {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    gap: 10px;
+    color: var(--white);
+}
+.weather-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+}
+.weather-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+}
+.weather-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+.weather-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+}
+.weather-temp {
+    font-size: 36px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    color: var(--dark-grey);
+}
+.weather-location {
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--dark-green);
+}
+.weather-description {
+    font-size: clamp(10px, 2vh, 16px);
+    font-weight: 500;
+    font-family: 'EB Garamond', sans-serif;
+    text-align: center;
+    font-style: italic;
+    color: var(--dark-green);
+}
+
+/* 4X4 GRID FOR NAVIGATION */
 .small-box {
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: var(--green);
+    text-decoration: none;
 }
 .small-box p {
+    text-decoration: none;
     font-family: 'EB Garamond', sans-serif;
     font-size: clamp(12px, 1.5vw, 14px);
     font-weight: 500;
