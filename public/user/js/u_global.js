@@ -17,7 +17,7 @@ if (scrollTopBtn) {
 }
 
 // Load the feedback modal dynamically
-fetch('./component/m_feedback.html')
+fetch('/user/component/m_feedback.html')
     .then(res => res.text())
     .then(html => {
         document.body.insertAdjacentHTML('beforeend', html);
