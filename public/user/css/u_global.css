@@ -5,85 +5,37 @@
     scroll-behavior: smooth;
 }
 
-/* ----- MODAL OVERLAY ----- */
-.modal {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 20px;
-}
-.modal.hidden { display: none; }
-.modal-overlay {
-    position:absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-/* ----- FEEDBACK MODAL ----- */
-.modal-content {
+/* ================= GLOBAL USER ELEMENTS ================= */
+/* FEEDBACK MODAL */
+.feedback-modal {
+    width: 500px;
     position: relative;
-    background: var(--white);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 540px;
-    padding: 40px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.5s ease;
 }
-/* Modal Animation */
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-@keyframes slideDown {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-
-    to {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-}
-.modal-content.closing {
-    animation: slideDown 0.5s ease forwards;
-}
-/* Modal */
 .modal-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
     padding-bottom: 10px;
+    margin-bottom: 10px;
     border-bottom: 1px solid var(--shadow);
 }
-.modal-icon {
+.feedback-icon {
     width: 50px;
     height: 50px;
-    background-color: var(--dark-green);
+    background-color: var(--green);
     border-radius: 12px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: clamp(24px, 2.5vw, 36px);
+    align-items: center;
+}
+.feedback-icon i {
+    font-size: 25px;
     color: var(--white);
 }
 .modal-header span {
-    font-size: clamp(20px, 2.5vw, 28px);
-    font-weight: 600;
     font-family: 'EB Garamond', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
     color: var(--dark-grey);
 }
 .modal-close {
@@ -97,74 +49,95 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    transition: background 0.2s;
+    border-radius: 15px;
+    transition: all 0.3s ease;
     font-size: 24px;
     color: var(--light-grey);
 }
-.modal-content h2 {
-    font-size: clamp(22px, 2.5vw, 28px);
+.modal-close:hover {
+    background-color: var(--dark-grey);
+    color: var(--white);
+}
+.feedback-modal h2 {
+    font-size: 25px;
     font-weight: 600;
-    margin-bottom: 15px;
     font-family: 'EB Garamond', sans-serif;
     color: var(--dark-grey);
 }
-.modal-content p {
-    font-size: clamp(14px, 1.2vw, 16px);
+.feedback-modal p {
+    font-size: 16px;
     color: var(--grey);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
+}
+#feedbackForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 .star-rating {
     display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 35px;
+    justify-content: space-between;
+    padding: 0 15px;
 }
 .star-rating span {
-    font-size: 100px;
+    font-size: 80px;
     color: var(--shadow);
-    transition: color 0.2s;
+    transition: color 0.2s ease;
 }
 .star-rating span.selected,
 .star-rating span.hover {
     color: gold;
 }
-/* Form Elements */ 
-.modal-content textarea {
+#feedbackForm textarea {
     width: 100%;
+    height: 250px;
+    padding: 15px 20px;
     margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid var(--shadow);
-    font-size: 16px;
-    font-family: 'Poppins', sans-serif;
-    color: var(--dark-grey);
+    background-color: var(--dirty-white);
     font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    outline: none;
     resize: none;
-    height: 150px;
 }
-.modal-buttons {
+#feedbackForm textarea:focus {
+    border-color: var(--green);
+    background-color: var(--white);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+#feedbackForm textarea::placeholder {
+    color: var(--light-grey);
+    font-style: italic;
+}
+#feedbackForm .modal-buttons {
     display: flex;
+    width: 100%;
     justify-content: space-between;
-    gap: 10px;
 }
-.modal-buttons button {
+#feedbackForm .modal-buttons button {
     padding: 10px 20px;
     border-radius: 9999px;
     border: none;
     font-size: 16px;
-    font-family: 'EB Garamond', sans-serif;
-}
-.modal-buttons button[type="submit"] {
-    background: var(--dark-green);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-grey);
     color: var(--white);
+    transition: all 0.3s ease;
 }
-.modal-cancel {
-    background: var(--light-grey);
-    color: var(--white);
+#feedbackForm .modal-buttons button:hover {
+    background-color: var(--grey);
+}
+#feedbackForm .modal-buttons button[type="submit"] {
+    background-color: var(--green);
+}
+#feedbackForm .modal-buttons button[type="submit"]:hover {
+    background-color: var(--dark-green);
 }
 
-/* ----- FLOATING BUTTONS ----- */
+/* FLOATING BUTTONS */
 .floating-buttons {
     position: fixed;
     bottom: 30px;
@@ -174,7 +147,7 @@
     gap: 15px;
     z-index: 999;
 }
-.float-btn {
+.float-button {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -189,12 +162,6 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
-/* Feedback button always visible */
-.feedback-float-btn {
-    background: var(--dark-green);
-    opacity: 1;
-    transform: scale(1);
-}
-.float-btn:active {
-    transform: scale(0.95);
+.feedback-float-btn:hover {
+    background-color: var(--green);
 }
