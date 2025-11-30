@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.8.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.2",
     "mongoose-sequence": "^6.0.1",
+    "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^2.2.1",
     "sib-api-v3-sdk": "^8.5.0"
   },
   "scripts": {
