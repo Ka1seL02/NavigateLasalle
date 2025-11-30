@@ -1,4 +1,6 @@
 {
+  "name": "navigate-lasalle",
+  "version": "1.0.0",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
@@ -8,5 +10,9 @@
     "mongoose": "^8.19.2",
     "mongoose-sequence": "^6.0.1",
     "sib-api-v3-sdk": "^8.5.0"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
   }
 }
