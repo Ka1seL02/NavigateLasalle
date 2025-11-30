@@ -152,7 +152,7 @@
     height: 60px;
     border-radius: 50%;
     border: none;
-    background: var(--dark-green);
+    background: var(--dark-grey);
     color: var(--white);
     font-size: 24px;
     display: flex;
@@ -161,6 +161,24 @@
     cursor: pointer;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+.float-button:hover {
+    border: 1px solid var(--white);
+}
+.scroll-up-btn {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+.scroll-up-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.feedback-float-btn {
+    background-color: var(--light-green);
 }
 .feedback-float-btn:hover {
     background-color: var(--green);
