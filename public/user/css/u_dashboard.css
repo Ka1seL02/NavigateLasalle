@@ -109,6 +109,7 @@ main {
     display: flex;
     flex-direction: column;
     padding: 20px 10px 0;
+    transition: opacity 0.5s ease-in-out;
 }
 .news-image {
     display: flex;
