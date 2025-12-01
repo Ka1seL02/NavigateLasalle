@@ -19,5 +19,6 @@ Thumbs.db
 *.swo
 
 # Big Image Uploads
-/public/shared/images/news-upload/
+/public/shared/images/news-upload
+/public/shared/images/virtual-tour
 /public/test/
