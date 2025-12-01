@@ -17,3 +17,6 @@ Thumbs.db
 .idea
 *.swp
 *.swo
+
+# Big Image Uploads
+/public/shared/images/news-upload/
