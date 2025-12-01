@@ -1,0 +1,43 @@
+/* ================= UNDER CONSTRUCTION MODAL STYLE ================= */
+#underConstructionModal {
+    display: flex;
+}
+.under-construction-modal {
+    width: 300px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-grey);
+}
+.construction-icon {
+    width: 70px;
+    height: 70px;
+    background-color: var(--dirty-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+}
+.construction-icon i {
+    font-size: 40px;
+    color: var(--red);
+}
+.under-construction-modal h2{
+    margin-bottom: 10px;
+}
+.under-construction-modal button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    background-color: var(--dirty-white);
+    font-family: 'Inter', sans-serif;
+    font-weight: bolder;
+    color: var(--dark-green);
+    transition: all 0.5s ease;
+    margin-top: 30px;
+}
+.under-construction-modal button:hover {
+    background-color: var(--green);
+    color: var(--cream);
+}
