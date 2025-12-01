@@ -11,26 +11,153 @@
     <link rel="stylesheet" href="../shared/css/s_modal.css">
     <!-- Admin Page Styles -->
     <link rel="stylesheet" href="css/a_global.css">
-    <link rel="stylesheet" href="/shared/component/m_under_construction.css">
+    <link rel="stylesheet" href="css/a_news.css">
     <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 </head>
 
 <body>
     <main>
-        
+        <div class="breadcrumb">
+            <div class="profile-section">
+                <div class="profile-initials">UN</div>
+                <div class="profile-info">
+                    <span class="profile-name">Name</span>
+                    <small class="profile-role">Postion</small>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <h2>Manage News</h2>
+            <p>Create, edit, and upload news articles quickly and efficiently.</p>
+
+            <div class="search-box">
+                <i class="bx bx-search"></i>
+                <input type="text" placeholder="Search">
+            </div>
+
+            <div class="action-bar">
+                <div class="filter-buttons">
+                    <button class="active" data-filter="all">All</button>
+                    <button data-filter="published">Published</button>
+                    <button data-filter="scheduled">Scheduled</button>
+                    <button data-filter="draft">Draft</button>
+                </div>
+
+                <div class="buttons">
+                    <button class="button" id="createNewNews">
+                        <i class="bx bx-plus-circle"></i> Post news
+                    </button>
+                    <button class="button export-table">Export</button>
+                </div>
+            </div>
+
+            <div class="table-controls">
+                <!-- Left side: select all and operations -->
+                <div class="controls-left">
+                    <input type="checkbox" class="select-all-toolbar" title="Select all">
+                    <button class="control-action" id="refresh-table" title="Refresh">
+                        <i class='bx bx-refresh'></i>
+                    </button>
+                    <span class="divider">|</span>
+                    <button class="control-action" id="delete-selected" title="Delete">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                    <button class="control-action" id="publish-selected" title="Publish">
+                        <i class='bx bx-paper-plane'></i>
+                    </button>
+                </div>
+
+                <!-- Right side: entries info + pagination -->
+                <div class="controls-right">
+                    <span class="entries-info">Showing <span id="start-entry">1</span> - <span id="end-entry">50</span>
+                        of
+                        <span id="total-entries">808</span> entries</span>
+
+                    <button class="pagination-button" id="prev-page" title="Previous page">
+                        <i class='bx bx-chevron-left'></i>
+                    </button>
+
+                    <div class="page-input">
+                        <input type="number" id="current-page" value="1" min="1">
+                        <span>/ <span id="total-pages">16</span></span>
+                    </div>
+
+                    <button class="pagination-button" id="next-page" title="Next page">
+                        <i class='bx bx-chevron-right'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Title</th>
+                            <th>Tag</th>
+                            <th>Status</th>
+                            <th data-sort="date">Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <th>
+                                <div class="table-image">
+                                    <img src="/shared/images/news-upload/arm-post.jpg">
+                                    <span class="img-indicator">5</span>
+                                </div>
+                            </th>
+                            <td class="news-title">Sample Title</td>
+                            <td>News</td>
+                            <td class="published">Published</td>
+                            <td>2025/02/25</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <th>
+                                <div class="table-image">
+                                    <img src="/shared/images/news-upload/arm-post2.jpg">
+                                    <span class="img-indicator">5</span>
+                                </div>
+                            </th>
+                            <td class="news-title">Sample Title</td>
+                            <td>News</td>
+                            <td class="draft">Draft</td>
+                            <td>2025/02/25</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <th>
+                                <div class="table-image">
+                                    <img src="/shared/images/news-upload/arm-post3.jpg">
+                                    <span class="img-indicator">5</span>
+                                </div>
+                            </th>
+                            <td class="news-title">Sample Title</td>
+                            <td>News</td>
+                            <td class="scheduled">Scheduled</td>
+                            <td>2025/02/25</td>
+                            <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
-    <script>
-        const mainElement = document.querySelector('main');
+    <!-- Scripts -->
+    <!-- Important Arrangement -->
+    <script src="js/a_global.js"></script>
+    <script>protectPage();</script>
+    <script src="../shared/js/s_notification.js"></script>
+    <script src="js/a_news.js"></script>
 
-        fetch('/shared/component/m_under_construction.html')
-            .then(response => response.text())
-            .then(html => {
-                mainElement.innerHTML = html;
-            })
-            .catch(err => console.error('Failed to load modal:', err));
-    </script>
 </body>
 
 </html>
