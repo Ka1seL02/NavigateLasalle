@@ -1,21 +1,107 @@
-// === CLOCK AND DATE ===
+// ========================
+// u_dashboard.js
+// ========================
+
+// === FETCH NEWS MODAL AT START ===
+let newsModal = null;
+let modalImageEl = null;
+let modalImageInterval = null;
+let modalCurrentImageIndex = 0;
+
+fetch('/user/component/m_view_news.html')
+    .then(res => res.text())
+    .then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+
+        newsModal = document.getElementById('showNewsModal');
+        modalImageEl = newsModal.querySelector('#newModalImage');
+
+        const closeBtn = newsModal.querySelector('.news-modal-close');
+
+        // Close modal on button click
+        closeBtn.addEventListener('click', () => closeModal());
+
+        // Close modal on overlay click
+        newsModal.addEventListener('click', (e) => {
+            if (e.target === newsModal) closeModal();
+        });
+    })
+    .catch(err => console.error('Error fetching news modal:', err));
+
+function openNewsModal(newsItem) {
+    if (!newsModal || !modalImageEl) {
+        console.error('Modal not ready');
+        return;
+    }
+
+    // Updated selectors for option 2
+    const modalTitle = newsModal.querySelector('.news-modal-title');
+    const modalDate = newsModal.querySelector('.news-date');
+    const modalTag = newsModal.querySelector('.news-tag');
+    const modalDescription = newsModal.querySelector('.news-modal-details p');
+
+    if (!modalTitle || !modalDate || !modalTag || !modalDescription) {
+        console.error('One or more modal elements are missing');
+        return;
+    }
+
+    modalTitle.textContent = newsItem.title;
+    modalDate.textContent = newsItem.date;
+    modalTag.textContent = newsItem.tag;
+    modalDescription.textContent = newsItem.description;
+
+    // Clear previous interval
+    if (modalImageInterval) clearInterval(modalImageInterval);
+    modalCurrentImageIndex = 0;
+
+    if (newsItem.images && newsItem.images.length > 0) {
+        modalImageEl.src = newsItem.images[0].imageUrl;
+
+        if (newsItem.images.length > 1) {
+            modalImageInterval = setInterval(() => {
+                modalCurrentImageIndex = (modalCurrentImageIndex + 1) % newsItem.images.length;
+                modalImageEl.src = newsItem.images[modalCurrentImageIndex].imageUrl;
+            }, 5000);
+        }
+    } else {
+        modalImageEl.src = '/shared/images/news/news_placeholder.jpg';
+    }
+
+    newsModal.classList.add('show');
+}
+
+function closeModal() {
+    if (!newsModal) return;
+
+    const modalContent = newsModal.querySelector('.news-modal');
+    modalContent.classList.add('closing');
+    modalContent.addEventListener('animationend', () => {
+        modalContent.classList.remove('closing');
+        newsModal.classList.remove('show');
+    }, { once: true });
+
+    if (modalImageInterval) {
+        clearInterval(modalImageInterval);
+        modalImageInterval = null;
+    }
+}
+
+// ========================
+// CLOCK & DATE
+// ========================
 function updateDateTime() {
     const currentDate = new Date();
 
-    // Clock (HH:MM AM/PM)
     let hours = currentDate.getHours();
     const minutes = currentDate.getMinutes().toString().padStart(2, '0');
     const meridiem = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
+    hours = hours % 12 || 12;
 
-    // Date
     const month = currentDate.toLocaleDateString('en-US', { month: 'short'}) + '.';
-    const day =  currentDate.getDate().toString().padStart(2, '0');
+    const day = currentDate.getDate().toString().padStart(2, '0');
     const year = currentDate.getFullYear();
     const weekday = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
 
-    // Update
     document.getElementById('clockText').textContent = `${hours}:${minutes} ${meridiem}`;
     document.getElementById('dateText').textContent = `${month} ${day}, ${year} | ${weekday}`;
 }
@@ -23,7 +109,9 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// === WEATHER API ===
+// ========================
+// WEATHER
+// ========================
 async function fetchWeather() {
     const apiUrl = '/api/weather';
 
@@ -34,39 +122,37 @@ async function fetchWeather() {
         if (response.ok) {
             updateWeatherUI(data);
         } else {
-            console.error('Weather API error:', data.message);
             displayWeatherError();
         }
-    } catch (error) {
-        console.error('Error fetching weather:', error);
+    } catch {
         displayWeatherError();
     }
 }
 
 function updateWeatherUI(data) {
     const weatherContainer = document.querySelector('.middle-box');
-    
+
     const temp = Math.round(data.main.temp * 10) / 10;
     const weatherMain = data.weather[0].main.toLowerCase();
     const weatherIcon = data.weather[0].icon;
     const location = 'Dasmarinas, Cavite';
 
     const weatherMessages = {
-        'clear': 'Sunny days are perfect for outdoor activities. Stay hydrated and have fun!',
-        'clouds': 'Partly cloudy skies today. A great day to explore the campus!',
-        'rain': 'Rainy weather ahead. Don\'t forget to bring an umbrella!',
-        'drizzle': 'Light drizzle expected. Stay dry and enjoy your day indoors!',
-        'thunderstorm': 'Thunderstorms in the area. Please stay safe indoors.',
-        'snow': 'Snow is falling! Bundle up and stay warm.',
-        'mist': 'Misty conditions outside. Drive carefully and stay safe.',
-        'fog': 'Foggy weather today. Take care when moving around campus.',
-        'haze': 'Hazy skies today. Stay indoors if you have respiratory concerns.',
-        'smoke': 'Smoky conditions detected. Limit outdoor activities if possible.',
-        'dust': 'Dusty weather outside. Keep windows closed and stay indoors.',
-        'sand': 'Sandy conditions today. Protect your eyes and stay safe.',
-        'ash': 'Volcanic ash in the air. Please stay indoors for safety.',
-        'squall': 'Strong winds expected. Secure loose items and stay safe.',
-        'tornado': 'Tornado warning! Seek shelter immediately.'
+        clear: 'Sunny days are perfect for outdoor activities. Stay hydrated and have fun!',
+        clouds: 'Partly cloudy skies today. A great day to explore the campus!',
+        rain: "Rainy weather ahead. Don't forget to bring an umbrella!",
+        drizzle: 'Light drizzle expected. Stay dry and enjoy your day indoors!',
+        thunderstorm: 'Thunderstorms in the area. Please stay safe indoors.',
+        snow: 'Snow is falling! Bundle up and stay warm.',
+        mist: 'Misty conditions outside. Drive carefully and stay safe.',
+        fog: 'Foggy weather today. Take care when moving around campus.',
+        haze: 'Hazy skies today. Stay indoors if you have respiratory concerns.',
+        smoke: 'Smoky conditions detected. Limit outdoor activities if possible.',
+        dust: 'Dusty weather outside. Keep windows closed and stay indoors.',
+        sand: 'Sandy conditions today. Protect your eyes and stay safe.',
+        ash: 'Volcanic ash in the air. Please stay indoors for safety.',
+        squall: 'Strong winds expected. Secure loose items and stay safe.',
+        tornado: 'Tornado warning! Seek shelter immediately.'
     };
 
     const weatherMessage = weatherMessages[weatherMain] || 'Have a wonderful day at DLSU-D!';
@@ -104,26 +190,26 @@ function displayWeatherError() {
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
-// === FEATURED NEWS CAROUSEL ===
+// ========================
+// FEATURED NEWS CAROUSEL
+// ========================
 let newsData = [];
 let currentSlide = 0;
 let autoAdvanceTimer = null;
 
-// Fetch featured news from backend
 async function fetchFeaturedNews() {
     try {
         const response = await fetch('/api/news/featured');
         const data = await response.json();
 
         newsData = data.map(item => ({
-            image: item.image.length > 0 ? item.image[0].imageUrl : '/shared/images/news/news_placeholder.jpg',
+            images: item.image.length > 0 ? item.image : [],
             date: new Date(item.datePosted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             tag: item.tag.toUpperCase(),
             title: item.title,
             description: item.content
         }));
 
-        // Dynamically create dots based on news items
         const dotsContainer = document.querySelector('.carousel-dots');
         dotsContainer.innerHTML = '';
         newsData.forEach((_, idx) => {
@@ -146,7 +232,6 @@ async function fetchFeaturedNews() {
     }
 }
 
-// Initialize carousel after newsData is fetched
 function initCarousel() {
     if (newsData.length === 0) return;
     updateCarousel();
@@ -154,33 +239,23 @@ function initCarousel() {
     startAutoAdvance();
 }
 
-// Update carousel
 function updateCarousel() {
     const newsContainer = document.querySelector('.news-content');
-
-    // Fade out
     newsContainer.style.opacity = 0;
 
     setTimeout(() => {
         const news = newsData[currentSlide];
 
-        // Update image
-        document.querySelector('.news-image img').src = news.image;
-
-        // Update date and tag
+        document.querySelector('.news-image img').src = news.images.length > 0 ? news.images[0].imageUrl : '/shared/images/news/news_placeholder.jpg';
         document.querySelector('.news-date').textContent = news.date;
         document.querySelector('.news-tag').textContent = news.tag;
-
-        // Update title and description
         document.querySelector('.news-title').textContent = news.title;
         document.querySelector('.news-description').textContent = news.description;
 
-        // Fade in
         newsContainer.style.opacity = 1;
-    }, 250); // half of transition duration
+    }, 250);
 }
 
-// Update dots
 function updateDots() {
     const dots = document.querySelectorAll('.carousel-dots .dot');
     dots.forEach((dot, index) => {
@@ -188,28 +263,20 @@ function updateDots() {
     });
 }
 
-// Next/Prev slides
 function nextSlide(manual = false) {
-    if (manual) {
-        stopAutoAdvance();
-        setTimeout(startAutoAdvance, 10000);
-    }
+    if (manual) { stopAutoAdvance(); setTimeout(startAutoAdvance, 10000); }
     currentSlide = (currentSlide + 1) % newsData.length;
     updateCarousel();
     updateDots();
 }
 
 function prevSlide(manual = false) {
-    if (manual) {
-        stopAutoAdvance();
-        setTimeout(startAutoAdvance, 10000);
-    }
+    if (manual) { stopAutoAdvance(); setTimeout(startAutoAdvance, 10000); }
     currentSlide = (currentSlide - 1 + newsData.length) % newsData.length;
     updateCarousel();
     updateDots();
 }
 
-// Auto-advance
 function startAutoAdvance() {
     if (autoAdvanceTimer) clearInterval(autoAdvanceTimer);
     autoAdvanceTimer = setInterval(() => nextSlide(), 5000);
@@ -222,7 +289,9 @@ function stopAutoAdvance() {
     }
 }
 
-// === EVENT LISTENERS ===
+// ========================
+// EVENT LISTENERS
+// ========================
 document.addEventListener('DOMContentLoaded', () => {
     fetchFeaturedNews();
 
@@ -230,6 +299,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.carousel-nav.next').addEventListener('click', () => nextSlide(true));
 
     document.getElementById('viewAllNews').addEventListener('click', () => {
-        window.location.href = 'u_news.html';
+        window.location.href = '/user/u_news.html';
     });
+
+    // Open modal when clicking carousel
+    const newsContent = document.querySelector('.news-content');
+    if (newsContent) {
+        newsContent.addEventListener('click', () => {
+            if (newsData.length > 0) {
+                openNewsModal(newsData[currentSlide]);
+            }
+        });
+    }
 });

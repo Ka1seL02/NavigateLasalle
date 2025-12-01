@@ -6,7 +6,7 @@ body {
     height: 100vh;
     background:
         linear-gradient(135deg, rgba(139, 195, 74, 0.5) 0%, rgba(76, 175, 80, 0.5) 30%, rgba(0, 188, 212, 0.5) 100%),
-        url('../images/u_dashboar_bg.jpg') center/cover no-repeat;
+        url('/user/images/dashboard/dashboard-bg.jpg') center/cover no-repeat;
 }
 main {
     height: 70vh;
