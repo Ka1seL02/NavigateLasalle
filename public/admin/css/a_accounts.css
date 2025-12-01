@@ -95,7 +95,7 @@
 }
 .table th:nth-child(5),
 .table td:nth-child(5) {
-    width: 125px;
+    width: 200px;
     text-align: center;
 }
 
