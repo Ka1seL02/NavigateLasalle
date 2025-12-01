@@ -1,131 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Navigate La Salle</title>
     <!-- Global Styles -->
-    <link rel="stylesheet" href="/shared/css/root.css">
-    <link rel="stylesheet" href="/shared/css/s_notification.css">
-    <link rel="stylesheet" href="/shared/css/s_modal.css">
+    <link rel="stylesheet" href="/shared/css/root.css" />
+    <link rel="stylesheet" href="/shared/css/s_notification.css" />
+    <link rel="stylesheet" href="/shared/css/s_modal.css" />
     <!-- Page Styles -->
-    <link rel="stylesheet" href="/user/css/u_global.css">
-    <link rel="stylesheet" href="/user/css/u_dashboard.css">
-    <link rel="stylesheet" href="/user/component/m_view_news.css">
+    <link rel="stylesheet" href="/user/css/u_global.css" />
+    <link rel="stylesheet" href="/user/css/u_dashboard.css" />
+    <link rel="stylesheet" href="/user/component/m_view_news.css" />
     <!-- Boxicons -->
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    />
+  </head>
 
-<body>
-
+  <body>
     <main>
-        <!-- Logo Section -->
-        <div class="logo-section">
-            <img src="/user/images/dashboard/dlsud-logo.png">
-        </div>
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <img src="/user/images/dashboard/dlsud-logo.png" />
+      </div>
 
-        <div class="dashboard-grid">
-            <!-- Featured News Section -->
-            <div class="main-section">
-                <div class="news-carousel">
-                    <button class="carousel-nav prev">
-                        <i class='bx bx-chevron-left'></i>
-                    </button>
+      <div class="dashboard-grid">
+        <!-- Featured News Section -->
+        <div class="main-section">
+          <div class="news-carousel">
+            <button class="carousel-nav prev">
+              <i class="bx bx-chevron-left"></i>
+            </button>
 
-                    <div class="news-content">
-                        <div class="news-image">
-                            <img src="/shared/images/news/news_3.jpg">
-                        </div>
-                        <div class="news-details">
-                            <div class="news-meta">
-                                <i class="bx bx-calendar"></i>
-                                <span class="news-date">April 03, 2024</span>
-                                <i class="bx bxs-purchase-tag"></i>
-                                <span class="news-tag">news</span>
-                            </div>
-                            <h2 class="news-title">DLSU-D joins Study Abroad Fair in TaiwanDLSU-D joins Study Abroad
-                                Fair in TaiwanDLSU-D joins Study Abroad Fair in Taiwan</h2>
-                            <p class="news-description">
-                                DLSU-D's Linkages and Scholarship Office recently participated in the Partner Day and
-                                Study Abroad Fair organized by Providence University in Taiwan. This event provided an
-                                excellent platform for DLSU-D to showcase its academic programs and foster international
-                                collaborations. Representatives from DLSU-D engaged with prospective students and
-                                academic partners, highlighting the university's commitment to global education and
-                                cultural exchange.
-                            </p>
-                        </div>
-                    </div>
-
-                    <button class="carousel-nav next">
-                        <i class='bx bx-chevron-right'></i>
-                    </button>
+            <div class="news-content">
+              <div class="news-image">
+                <img src="/shared/images/news/news_3.jpg" />
+              </div>
+              <div class="news-details">
+                <div class="news-meta">
+                  <i class="bx bx-calendar"></i>
+                  <span class="news-date">April 03, 2024</span>
+                  <i class="bx bxs-purchase-tag"></i>
+                  <span class="news-tag">news</span>
                 </div>
-
-                <div class="carousel-dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-
-                <button id="viewAllNews">View All News</button>
+                <h2 class="news-title">
+                  DLSU-D joins Study Abroad Fair in TaiwanDLSU-D joins Study
+                  Abroad Fair in TaiwanDLSU-D joins Study Abroad Fair in Taiwan
+                </h2>
+                <p class="news-description">
+                  DLSU-D's Linkages and Scholarship Office recently participated
+                  in the Partner Day and Study Abroad Fair organized by
+                  Providence University in Taiwan. This event provided an
+                  excellent platform for DLSU-D to showcase its academic
+                  programs and foster international collaborations.
+                  Representatives from DLSU-D engaged with prospective students
+                  and academic partners, highlighting the university's
+                  commitment to global education and cultural exchange.
+                </p>
+              </div>
             </div>
 
-            <div class="side-section">
-                <!-- Time & Date -->
-                <div class="top-box">
-                    <span id="clockText">9:10 AM</span>
-                    <span id="dateText">Tuesday | Mon. 23, 2025</span>
-                </div>
-                <!-- Weather -->
-                <div class="middle-box">
-                    <div class="weather">
-                        <icon></icon>
-                        <div class="">
-                            temperature
-                            place
-                        </div>
-                    </div>
-                    Weather text "SUnny"
-                </div>
-                <!-- 2X2 Grid Section -->
-                <div class="grid-2x2 upper">
-                    <a href="/user/u_about.html" class="small-box about">
-                        <img src="/user/images/dashboard/icon-about.png" />
-                        <p>About DLSU-D</p>
-                    </a>
-                    <a href="/user/u_interactive_map.html" class="small-box map">
-                        <img src="/user/images/dashboard/icon-map.png" />
-                        <p>Interactive Map</p>
-                    </a>
-                </div>
-                <div class="grid-2x2 lower">
-                    <a href="/user/u_virtual_tour.html" class="small-box virtual">
-                        <img src="/user/images/dashboard/icon-virtual.png" />
-                        <p>Virtual Tour</p>
-                    </a>
-                    <a href="/user/u_help.html" class="small-box help">
-                        <img src="/user/images/dashboard/icon-help.png" />
-                        <p>Help Center</p>
-                    </a>
-                </div>
-            </div>
+            <button class="carousel-nav next">
+              <i class="bx bx-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+
+          <button id="viewAllNews">View All News</button>
         </div>
+
+        <div class="side-section">
+          <!-- Time & Date -->
+          <div class="top-box">
+            <span id="clockText">9:10 AM</span>
+            <span id="dateText">Tuesday | Mon. 23, 2025</span>
+          </div>
+          <!-- Weather -->
+          <div class="middle-box">
+            <div class="weather">
+              <icon></icon>
+              <div class="">temperature place</div>
+            </div>
+            Weather text "SUnny"
+          </div>
+          <!-- 2X2 Grid Section -->
+          <div class="grid-2x2 upper">
+            <a href="/user/u_about.html" class="small-box about">
+              <img src="/user/images/dashboard/icon-about.png" />
+              <p>About DLSU-D</p>
+            </a>
+            <a href="/user/u_interactive_map.html" class="small-box map">
+              <img src="/user/images/dashboard/icon-map.png" />
+              <p>Interactive Map</p>
+            </a>
+          </div>
+          <div class="grid-2x2 lower">
+            <a href="/user/u_virtual_tour.html" class="small-box virtual">
+              <img src="/user/images/dashboard/icon-virtual.png" />
+              <p>Virtual Tour</p>
+            </a>
+            <a href="/user/u_help.html" class="small-box help">
+              <img src="/user/images/dashboard/icon-help.png" />
+              <p>Help Center</p>
+            </a>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Floating Action Buttons -->
     <div class="floating-buttons">
-        <button class="float-button feedback-float-btn">
-            <i class='bx bx-message-square-dots'></i>
-        </button>
+      <button class="float-button feedback-float-btn">
+        <i class="bx bx-message-square-dots"></i>
+      </button>
     </div>
 
     <script src="/shared/js/s_notification.js"></script>
     <script src="/user/js/u_global.js"></script>
     <script src="/user/js/u_dashboard.js"></script>
-
-</body>
-
+  </body>
 </html>
