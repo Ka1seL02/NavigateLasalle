@@ -1,0 +1,198 @@
+main {
+    height: 100vh;
+}
+
+/* ================= PAGE BANNER ================= */
+.help-banner {
+    width: 100%;
+    padding: 80px 20px;
+    text-align: center;
+    color: var(--white);
+
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.55),
+            rgba(0, 0, 0, 0.55)),
+        url("/user/images/u_help_bg.jpg") center/cover no-repeat;
+}
+.help-banner h1 {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
+    font-family: 'EB Garamond', sans-serif;
+}
+.help-banner p {
+    font-size: clamp(14px, 1.5vw, 20px);
+    font-weight: 200;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 2vh;
+}
+
+/* BACK TO DASHBOARD */
+.back-to-dashboard {
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid var(--white);
+    color: var(--white);
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+/* SEARCH BAR */
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 15px 20px;
+    width: 60%;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    color: var(--white);
+    margin-bottom: 10px;
+}
+.search-box input {
+    background: transparent;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+}
+.search-box input::placeholder {
+    color: var(--white);
+}
+.search-box i {
+    font-size: 22px;
+    color: var(--white);
+}
+/* FAQ CATEGORY FILTER */
+.faq-category {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+.faq-category button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    border: 1px solid var(--light-green);
+    background-color: transparent;
+    color: var(--white);
+    font-size: clamp(12px, 1vw, 16px);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: 'Montserrat', sans-serif;
+}
+.faq-category button.active {
+    background-color: var(--dark-green);
+    border: 1px solid var(--dark-green);
+}
+/* FAQ (Frequently Asked Question) SECTION */
+.faq-section {
+    padding: 60px 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.faq-item {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--shadow);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.faq-question {
+    width: 100%;
+    padding: 18px 20px;
+    background: var(--white);
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    font-size: clamp(16px, 1.5vw, 25px);
+    font-weight: 600;
+    color: var(--dark-green);
+    font-family: 'EB Garamond', sans-serif;
+}
+.faq-answer {
+    padding: 0 20px 20px;
+    color: var(--grey);
+    font-size: clamp(14px, 1.2vw, 16px);
+    font-family: 'Inter', sans-serif;
+}
+.faq-item.open .bx-chevron-down {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+.bx-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+/* ================= FEEDBACK SECTION ================= */
+.feedback-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 100px 20px;
+    background-color: var(--dirty-white);
+    border-top: 1px solid var(--shadow);
+}
+.feedback-section h2 {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 700;
+    font-family: 'EB Garamond', sans-serif;
+    color: var(--dark-green);
+}
+.feedback-section p {
+    font-size: clamp(12px, 1.25vw, 20px);
+    font-weight: 300;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--grey);
+    text-align: center;
+}
+.feedback-section button {
+    margin-top: 20px;
+    padding: 15px 30px;
+    background-color: transparent;
+    border: 2px solid var(--dark-green);
+    color: var(--dark-green);
+    font-size: clamp(14px, 1.2vw, 18px);
+    font-weight: 750;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Montserrat', sans-serif;
+}
+.feedback-section button i {
+    font-size: clamp(16px, 1.5vw, 24px);
+}
+
+/* ================= FOOTER SECTION ================= */
+.faq-footer {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    background-color: var(--white);
+    color: var(--grey);
+    border-top: 1px solid var(--shadow);
+    font-size: clamp(10px, 0.75vw, 12px);
+    font-family: 'Montserrat', sans-serif;
+}
+.faq-footer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/s_notification.css">
+    <link rel="stylesheet" href="/shared/css/s_modal.css">
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="/user/css/u_global.css">
+    <link rel="stylesheet" href="/shared/component/m_under_construction.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+
+    <main>
+
+    </main>
+
+    <script>
+        const mainElement = document.querySelector('main');
+
+        fetch('/shared/component/m_under_construction.html')
+            .then(response => response.text())
+            .then(html => {
+                mainElement.innerHTML = html;
+            })
+            .catch(err => console.error('Failed to load modal:', err));
+    </script>
+</body>
+
+</html>

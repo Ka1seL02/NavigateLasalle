@@ -1,11 +1,3 @@
-// Back to Dashboard Button
-const backToDashboardBtn = document.querySelector('.back-to-dashboard');
-if (backToDashboardBtn) {
-    backToDashboardBtn.addEventListener('click', () => {
-        window.location.href = 'u_dashboard.html';
-    });
-}
-
 // FAQ Functionality
 let allFAQs = [];
 let currentCategory = null;
@@ -27,7 +19,7 @@ function displayFAQs(faqs) {
     faqSection.innerHTML = '';
 
     if (faqs.length === 0) {
-        faqSection.innerHTML = '<p style="text-align: center; color: var(--grey);">No FAQs found.</p>';
+        faqSection.innerHTML = '<p style="text-align: center; color: var(--grey);">No matching FAQs found.</p>';
         return;
     }
 
