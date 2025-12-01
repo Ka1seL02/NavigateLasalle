@@ -5,7 +5,7 @@ const News = require('../models/News');
 // GET latest 5 featured news
 router.get('/featured', async (req, res) => {
   try {
-    const featuredNews = await News.find({ status: 'posted' })
+    const featuredNews = await News.find({ status: 'published' })
       .sort({ datePosted: -1 }) 
       .limit(5);
 

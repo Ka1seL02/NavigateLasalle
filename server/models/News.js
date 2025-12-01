@@ -13,7 +13,7 @@ const newsSchema = new mongoose.Schema({
     author: { type: String , required: true },
     datePosted: { type: Date, default: null },
     dateScheduled: { type: Date, default: null },
-    status: { type: String, enum: ['draft', 'scheduled', 'posted'], default: 'draft' }
+    status: { type: String, enum: ['draft', 'scheduled', 'published'], default: 'draft' }
 }, { collection: 'news', timestamps: true });
 
 // Auto-set datePosted when status is 'posted'
