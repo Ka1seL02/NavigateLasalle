@@ -6,6 +6,7 @@ const connectDB = require('./config/db.js');
 // Routes
 const weatherRoutes = require('./routes/weather');
 const accountRoutes = require('./routes/accounts.js');
+const newsRoutes = require('./routes/news');
 const faqRoutes = require('./routes/faqs.js');
 const feedbackRoutes = require('./routes/feedbacks.js');
 
@@ -33,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 // API routes
 app.use('/api/weather', weatherRoutes);
 app.use('/api/accounts', accountRoutes);
+app.use('/api/news', newsRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
 
