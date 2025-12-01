@@ -138,21 +138,21 @@ function updateWeatherUI(data) {
     const location = 'Dasmarinas, Cavite';
 
     const weatherMessages = {
-        clear: 'Sunny days are perfect for outdoor activities. Stay hydrated and have fun!',
-        clouds: 'Partly cloudy skies today. A great day to explore the campus!',
-        rain: "Rainy weather ahead. Don't forget to bring an umbrella!",
-        drizzle: 'Light drizzle expected. Stay dry and enjoy your day indoors!',
-        thunderstorm: 'Thunderstorms in the area. Please stay safe indoors.',
+        clear: 'Sunny days are perfect for outdoor activities.<br>Stay hydrated and have fun!',
+        clouds: 'Partly cloudy skies today.<br>A great day to explore the campus!',
+        rain: "Rainy weather ahead.<br>Don't forget to bring an umbrella!",
+        drizzle: 'Light drizzle expected.<br>Stay dry and enjoy your day indoors!',
+        thunderstorm: 'Thunderstorms in the area.<br>Please stay safe indoors.',
         snow: 'Snow is falling! Bundle up and stay warm.',
-        mist: 'Misty conditions outside. Drive carefully and stay safe.',
-        fog: 'Foggy weather today. Take care when moving around campus.',
-        haze: 'Hazy skies today. Stay indoors if you have respiratory concerns.',
-        smoke: 'Smoky conditions detected. Limit outdoor activities if possible.',
-        dust: 'Dusty weather outside. Keep windows closed and stay indoors.',
-        sand: 'Sandy conditions today. Protect your eyes and stay safe.',
-        ash: 'Volcanic ash in the air. Please stay indoors for safety.',
-        squall: 'Strong winds expected. Secure loose items and stay safe.',
-        tornado: 'Tornado warning! Seek shelter immediately.'
+        mist: 'Misty conditions outside.<br>Drive carefully and stay safe.',
+        fog: 'Foggy weather today.<br>Take care when moving around campus.',
+        haze: 'Hazy skies today.<br>Stay indoors if you have respiratory concerns.',
+        smoke: 'Smoky conditions detected.<br>Limit outdoor activities if possible.',
+        dust: 'Dusty weather outside.<br>Keep windows closed and stay indoors.',
+        sand: 'Sandy conditions today.<br>Protect your eyes and stay safe.',
+        ash: 'Volcanic ash in the air.<br>Please stay indoors for safety.',
+        squall: 'Strong winds expected.<br>Secure loose items and stay safe.',
+        tornado: 'Tornado warning!<br>Seek shelter immediately.'
     };
 
     const weatherMessage = weatherMessages[weatherMain] || 'Have a wonderful day at DLSU-D!';
