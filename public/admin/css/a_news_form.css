@@ -39,6 +39,7 @@
     display: flex;
     flex-direction: row;
     gap: 30px;
+    height: 100%;
 }
 .left-form-wrapper,
 .right-form-wrapper {
@@ -48,9 +49,172 @@
 }
 
 /* LEFT FORM WRAPPER */
-.left-form-wrapper {
-    background-color: aqua;
+.left-form-wrapper label,
+.right-form-wrapper label {
+    font-family: 'EB Garamond', sans-serif;
+    color: var(--dark-green);
+    font-size: 20px;
+    margin: 20px 0 10px;
 }
-.right-form-wrapper {
-    background-color: red;
+.left-form-wrapper label span,
+.right-form-wrapper label span {
+    color: var(--red);
+}
+.left-form-wrapper input,
+.left-form-wrapper select,
+.right-form-wrapper textarea {
+    width: 100%;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--shadow);
+    background-color: var(--dirty-white);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    outline: none;
+}
+.left-form-wrapper input:focus,
+.left-form-wrapper select,
+.right-form-wrapper textarea:focus {
+    border-color: var(--green);
+    background-color: var(--white);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+.left-form-wrapper input::placeholder,
+.left-form-wrapper select,
+.right-form-wrapper textarea::placeholder {
+    color: var(--light-grey);
+    font-style: italic;
+}
+.right-form-wrapper textarea {
+    resize: none;
+    height: 100%;
+}
+.left-form-wrapper .image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.upload-tile,
+.img-preview {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed var(--shadow );
+    background: var(--dirty-white);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+.upload-tile i {
+    font-size: 32px;
+    margin-bottom: 5px;
+    color: var(--grey);
+}
+.upload-tile span {
+    font-size: 14px;
+    opacity: 0.8;
+    color: var(--grey);
+    font-family: 'Inter', sans-serif;
+}
+.img-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    color: var(--white);
+    font-size: 18px;
+    padding: 3px;
+    cursor: pointer;
+}
+.right-form-wrapper .form-buttons {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.right-form-wrapper .form-buttons button {
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: transparent;
+    background-color: var(--shadow);
+    color: var(--dark-grey);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.5s ease;
+}
+.right-form-wrapper .form-buttons button:hover {
+    background-color: var(--dark-grey);
+    color: var(--white);
+}
+.right-form-wrapper .right-actions .draft-button:hover {
+    font-weight: 600;
+    background-color: var(--orange);
+}
+.right-form-wrapper .right-actions .schedule-button:hover {
+    font-weight: 600;
+    background-color: var(--green);
+    color: var(--white);
+}
+.right-form-wrapper .right-actions .post-button:hover {
+    font-weight: 600;
+    background-color: var(--dark-green);
+    color: var(--white);
+}
+.schedule-popup {
+    position: absolute;
+    bottom: 70px;
+    right: 20px;
+    width: 250px;
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 500;
+}
+.schedule-popup h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: var(--dark-green);
+}
+.schedule-popup input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+}
+.schedule-popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.schedule-popup-buttons button {
+    font-family: 'Inter', sans-serif;
+}
+.popup-cancel {
+    background: var(--dirty-white);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+}
+.popup-save {
+    background: var(--green);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    color: var(--white);
 }
