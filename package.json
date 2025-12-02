@@ -12,6 +12,8 @@
     "mongoose-sequence": "^6.0.1",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^2.2.1",
+    "node-cron": "^4.2.1",
+    "sharp": "^0.34.5",
     "sib-api-v3-sdk": "^8.5.0"
   },
   "scripts": {
