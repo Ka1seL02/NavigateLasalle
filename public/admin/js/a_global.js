@@ -104,7 +104,7 @@ function showConfirmModal({ icon, iconColor, title, message, confirmText, confir
 // ==================== LOAD COMPONENTS ==================== //
 function loadComponents() {
     const currentPage = window.location.pathname;
-    const noSidebarPages = ['a_login.html', 'a_reset_password.html', 'a_news_form.html'];
+    const noSidebarPages = ['a_login.html', 'a_reset_password.html'];
     const shouldLoadSidebar = !noSidebarPages.some(page => currentPage.includes(page));
 
     if (!shouldLoadSidebar) return;

@@ -10,16 +10,13 @@ const newsSchema = new mongoose.Schema({
             publicId: { type: String, required: true }
         }
     ],
-    author: { type: String , required: true },
+    author: { type: String, required: true },
     datePosted: { type: Date, default: null },
     dateScheduled: { type: Date, default: null },
     status: { type: String, enum: ['draft', 'scheduled', 'published'], default: 'draft' }
-}, { collection: 'news', timestamps: true });
-
-// Auto-set datePosted when status is 'posted'
-newsSchema.pre('save', function(next) {
-    if (this.status === 'posted' && !this.datePosted) this.datePosted = new Date();
-    next();
+}, { 
+    collection: 'news',
+    timestamps: false // Disabled createdAt and updatedAt
 });
 
 newsSchema.index({ status: 1, datePosted: -1 });
