@@ -391,7 +391,7 @@ router.post('/invite', requireSuperAdmin, async (req, res) => {
             subject: "Admin Invitation - Navigate La Salle",
             templateId: 3,
             params: {
-                RESET_LINK: inviteLink,
+                INVITE_LINK: inviteLink,
                 FIRSTNAME: email.split('@')[0]
             }
         });
