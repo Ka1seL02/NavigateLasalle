@@ -181,7 +181,29 @@ router.post('/invite', requireSuperAdmin, async (req, res) => {
             });
         }
 
-        // Create invite
+        // Check if there's already a PENDING invite that hasn't expired
+        const pendingInvite = await Invite.findOne({
+            email,
+            status: 'pending',
+            inviteExpires: { $gt: Date.now() }
+        });
+
+        if (pendingInvite) {
+            const expiresIn = Math.ceil((pendingInvite.inviteExpires - Date.now()) / (1000 * 60 * 60 * 24)); // Days
+            return res.status(400).json({
+                success: false,
+                message: `A pending invitation already exists for this email. It will expire in ${expiresIn} day(s).`
+            });
+        }
+
+        // Clean up any expired invites for this email
+        await Invite.deleteMany({ 
+            email, 
+            status: 'pending',
+            inviteExpires: { $lt: Date.now() }
+        });
+
+        // Create new invite
         const { invite, token } = await Invite.createInvite(email, req.session.userId);
 
         // Send email
@@ -416,20 +438,26 @@ router.post('/forgot-password', async (req, res) => {
         const user = await Account.findOne({ email });
 
         if (user) {
-            const resetToken = crypto.randomBytes(32).toString("hex");
-            user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-            user.resetPasswordExpires = Date.now() + 1000 * 60 * 15;
-            await user.save();
+            const now = Date.now();
 
-            const resetLink = `${FRONTEND_URL}/admin/a_reset_password.html?token=${resetToken}`;
-            await sendEmail({
-                to: email,
-                subject: "Password Reset Request",
-                templateId: 1,
-                params: { RESET_LINK: resetLink, FIRSTNAME: user.name }
-            });
+            // Only generate/send new token if there is no valid token
+            if (!user.resetPasswordToken || !user.resetPasswordExpires || user.resetPasswordExpires < now) {
+                const resetToken = crypto.randomBytes(32).toString("hex");
+                user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+                user.resetPasswordExpires = now + 1000 * 60 * 15; // 15 minutes
+                await user.save();
+
+                const resetLink = `${FRONTEND_URL}/admin/a_reset_password.html?token=${resetToken}`;
+                await sendEmail({
+                    to: email,
+                    subject: "Password Reset Request",
+                    templateId: 1,
+                    params: { RESET_LINK: resetLink, FIRSTNAME: user.name }
+                });
+            }
         }
 
+        // Always return generic message
         return res.status(200).json({
             success: true,
             message: "If an account exists, a reset link has been sent."
@@ -442,7 +470,7 @@ router.post('/forgot-password', async (req, res) => {
             message: "Server error. Please try again later."
         });
     }
-});
+}); 
 
 // VERIFY RESET TOKEN
 router.post('/verify-reset-token', async (req, res) => {
