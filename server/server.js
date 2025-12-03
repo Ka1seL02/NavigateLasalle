@@ -95,6 +95,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/user/u_dashboard.html'));
 });
 
+app.get('/admin', (req, res) => {
+    res.redirect('/admin/a_login.html');
+});
+
 // Admin folder static (optional)
 app.use('/admin', express.static(path.join(__dirname, '../public/admin')));
 
