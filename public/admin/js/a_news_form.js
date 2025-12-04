@@ -1,12 +1,12 @@
 // ==================== STATE MANAGEMENT ==================== //
 let uploadedImages = []; // Array of { imageUrl, publicId }
+let originalImages = []; // Track original images when editing
 let editMode = false;
 let editingNewsId = null;
 let scheduledDateTime = null;
 
 // ==================== INITIALIZATION ==================== //
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check if editing (URL has ?id=...)
     const urlParams = new URLSearchParams(window.location.search);
     editingNewsId = urlParams.get('id');
     
@@ -29,24 +29,20 @@ async function loadNewsData(newsId) {
             throw new Error('Failed to load news data');
         }
 
-        // Populate form fields
         document.getElementById('news-title').value = news.title;
         document.getElementById('news-tag').value = news.tag;
         document.getElementById('news-content').value = news.content;
 
-        // Load existing images
+        // Store original images for comparison later
         uploadedImages = news.image || [];
+        originalImages = JSON.parse(JSON.stringify(news.image || [])); // Deep copy
         renderImagePreviews();
 
-        // Load scheduled date if exists
         if (news.dateScheduled) {
             const schedDate = new Date(news.dateScheduled);
             scheduledDateTime = schedDate;
             
-            // Format date for input (YYYY-MM-DD)
             const dateStr = schedDate.toISOString().split('T')[0];
-            
-            // Format time for input (HH:MM in 24-hour format)
             const hours = String(schedDate.getHours()).padStart(2, '0');
             const minutes = String(schedDate.getMinutes()).padStart(2, '0');
             const timeStr = `${hours}:${minutes}`;
@@ -66,7 +62,6 @@ async function loadNewsData(newsId) {
 
 // ==================== EVENT LISTENERS ==================== //
 function initializeEventListeners() {
-    // Back button
     document.querySelector('.back-btn').addEventListener('click', () => {
         showConfirmModal({
             icon: 'bx-arrow-back',
@@ -81,7 +76,6 @@ function initializeEventListeners() {
         });
     });
 
-    // Cancel button
     document.querySelector('.cancel-btn').addEventListener('click', () => {
         showConfirmModal({
             icon: 'bx-x-circle',
@@ -96,7 +90,6 @@ function initializeEventListeners() {
         });
     });
 
-    // Image upload
     const uploadTile = document.getElementById('uploadTile');
     const fileInput = document.getElementById('imageUpload');
 
@@ -108,7 +101,6 @@ function initializeEventListeners() {
         fileInput.click();
     });
 
-    // Validate file types before upload (SINGLE EVENT LISTENER)
     fileInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         
@@ -126,7 +118,6 @@ function initializeEventListeners() {
         handleImageUpload(e);
     });
 
-    // Schedule popup
     const scheduleBtn = document.querySelector('.schedule-button');
     const schedulePopup = document.getElementById('schedulePopup');
     const cancelSchedule = document.getElementById('cancelSchedule');
@@ -156,7 +147,6 @@ function initializeEventListeners() {
             return;
         }
 
-        // Parse and validate
         const dateTime = parseDateTime(date, time);
         if (!dateTime) {
             customNotification('error', 'Invalid Format', 'Please use valid date and time format.');
@@ -172,31 +162,19 @@ function initializeEventListeners() {
         customNotification('success', 'Schedule Set', `News will be published on ${dateTime.toLocaleString()}`);
         schedulePopup.style.display = 'none';
         
-        // Now submit with scheduled status
         submitNews('scheduled');
     });
 
-    // Form submission buttons
     document.querySelector('.draft-button').addEventListener('click', () => submitNews('draft'));
-    
-    // Schedule button should NOT submit, just open popup - removed the submit action
-    // The actual scheduled submission happens when user confirms the schedule popup
-    
     document.querySelector('.post-button').addEventListener('click', () => submitNews('published'));
 }
 
 // ==================== PARSE DATE TIME ==================== //
 function parseDateTime(dateStr, timeStr) {
     try {
-        // Parse time from time input (format: "13:00" for 1:00 PM)
         const [hours, minutes] = timeStr.split(':').map(Number);
-        
-        // Create date in LOCAL timezone (not UTC)
         const dateTime = new Date(dateStr);
         dateTime.setHours(hours, minutes, 0, 0);
-
-        // Convert to ISO string for MongoDB (this will be in UTC)
-        // MongoDB will store it as: '2025-12-02T13:41:00.000Z'
         return dateTime;
     } catch (error) {
         console.error('Parse error:', error);
@@ -222,7 +200,7 @@ async function handleImageUpload(event) {
         await uploadImageToCloudinary(file);
     }
 
-    event.target.value = ''; // Reset input
+    event.target.value = '';
     customNotification('success', 'Upload Complete', 'All images uploaded successfully!');
 }
 
@@ -260,11 +238,9 @@ async function uploadImageToCloudinary(file) {
 function renderImagePreviews() {
     const imageGrid = document.getElementById('imageGrid');
     
-    // Clear existing previews (except upload tile)
     const previews = imageGrid.querySelectorAll('.img-preview');
     previews.forEach(p => p.remove());
 
-    // Add new previews
     uploadedImages.forEach((img, index) => {
         const preview = document.createElement('div');
         preview.className = 'img-preview';
@@ -273,12 +249,10 @@ function renderImagePreviews() {
             <i class='bx bx-x delete-btn' data-index="${index}"></i>
         `;
 
-        // Click to view larger
         preview.querySelector('img').addEventListener('click', () => {
             showImageModal(img.imageUrl);
         });
 
-        // Delete button
         preview.querySelector('.delete-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             deleteImage(index);
@@ -287,7 +261,6 @@ function renderImagePreviews() {
         imageGrid.insertBefore(preview, document.getElementById('uploadTile'));
     });
 
-    // Hide upload tile if 5 images
     const uploadTile = document.getElementById('uploadTile');
     uploadTile.style.display = uploadedImages.length >= 5 ? 'none' : 'flex';
 }
@@ -337,7 +310,7 @@ async function deleteImage(index) {
             btn.textContent = 'Deleting...';
 
             try {
-                // Delete from Cloudinary
+                // Delete from Cloudinary immediately
                 const publicIdEncoded = image.publicId.replace(/\//g, '_');
                 await fetch(`/api/upload/news-image/${publicIdEncoded}`, {
                     method: 'DELETE'
@@ -358,9 +331,33 @@ async function deleteImage(index) {
     });
 }
 
+// ==================== DELETE REMOVED IMAGES FROM CLOUDINARY ==================== //
+async function deleteRemovedImagesFromCloudinary() {
+    if (!editMode || originalImages.length === 0) return;
+
+    // Find images that were in original but not in current uploadedImages
+    const currentPublicIds = uploadedImages.map(img => img.publicId);
+    const removedImages = originalImages.filter(
+        img => !currentPublicIds.includes(img.publicId)
+    );
+
+    // Delete each removed image from Cloudinary
+    for (const image of removedImages) {
+        try {
+            const publicIdEncoded = image.publicId.replace(/\//g, '_');
+            await fetch(`/api/upload/news-image/${publicIdEncoded}`, {
+                method: 'DELETE'
+            });
+            console.log(`Deleted orphaned image: ${image.publicId}`);
+        } catch (error) {
+            console.error(`Failed to delete image ${image.publicId}:`, error);
+            // Continue with other deletions even if one fails
+        }
+    }
+}
+
 // ==================== SUBMIT NEWS ==================== //
 async function submitNews(status) {
-    // Validation
     const title = document.getElementById('news-title').value.trim();
     const tag = document.getElementById('news-tag').value;
     const content = document.getElementById('news-content').value.trim();
@@ -380,7 +377,6 @@ async function submitNews(status) {
         return;
     }
 
-    // Get current user (you might need to fetch this from session)
     const user = await getCurrentUser();
     const author = user?.name || 'Admin';
 
@@ -395,17 +391,20 @@ async function submitNews(status) {
     };
 
     try {
+        // IMPORTANT: Delete removed images from Cloudinary before saving
+        if (editMode) {
+            await deleteRemovedImagesFromCloudinary();
+        }
+
         let response;
         
         if (editMode) {
-            // Update existing news
             response = await fetch(`/api/news/${editingNewsId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newsData)
             });
         } else {
-            // Create new news
             response = await fetch('/api/news', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
