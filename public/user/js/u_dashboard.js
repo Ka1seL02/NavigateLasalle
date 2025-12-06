@@ -1,7 +1,3 @@
-// ========================
-// u_dashboard.js
-// ========================
-
 // === FETCH NEWS MODAL AT START ===
 let newsModal = null;
 let modalImageEl = null;
