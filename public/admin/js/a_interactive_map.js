@@ -7,6 +7,13 @@ let tempShape = null;
 let startPoint = { x: 0, y: 0 };
 let currentEditingId = null;
 
+// ====== MOVE MODE STATE ======
+let movingElement = null;
+let movingLocation = null;
+let moveStartPos = { x: 0, y: 0 };
+let originalShapeData = null;
+let isDraggingBuilding = false;
+
 // ====== DOM ELEMENTS ======
 const buildingsListView = document.getElementById('buildingsListView');
 const mapEditorView = document.getElementById('mapEditorView');
@@ -219,8 +226,8 @@ function handleBuildingClick(e, location) {
         // Open edit modal
         editLocation(location._id);
     } else if (currentMode === 'move') {
-        // TODO: Implement move functionality
-        customNotification('info', 'Move Mode', 'Click and drag to move this location');
+        // Start moving this building
+        startMovingBuilding(e, location);
     }
 }
 
@@ -835,15 +842,18 @@ function showNewLocationModal() {
     const name = prompt('Enter location name:');
     if (!name) return;
     
-    const type = prompt('Enter type (building/facility/gate/landmark/parking):');
+    const type = prompt('Enter type (administrative/academic/facility/learning-space/parking/chapel/security):');
     if (!type) return;
+
+    const section = prompt('Enter section (east/west):');
+    if (!section) return;
     
     // Create new location object
     const newLocation = {
         code: code.toUpperCase(),
         name: name,
         type: type.toLowerCase(),
-        section: '',
+        section: (section && section.trim() !== '') ? section.toLowerCase() : null,
         description: '',
         shape: newShapeData,
         images: [],
@@ -898,6 +908,214 @@ async function saveNewLocation(locationData) {
 }
 
 // ====== HELPER: GET SVG POINT FROM MOUSE EVENT ======
+function getSVGPoint(event, rect) {
+    const viewBox = svg.viewBox.baseVal;
+    const scaleX = viewBox.width / rect.width;
+    const scaleY = viewBox.height / rect.height;
+    
+    return {
+        x: (event.clientX - rect.left) * scaleX + viewBox.x,
+        y: (event.clientY - rect.top) * scaleY + viewBox.y
+    };
+}
+
+// ====== MOVE BUILDING FUNCTIONALITY ======
+function startMovingBuilding(e, location) {
+    movingElement = e.target;
+    movingLocation = location;
+    isDraggingBuilding = false;
+    
+    // Store original shape data for potential cancel
+    originalShapeData = JSON.parse(JSON.stringify(location.shape));
+    
+    // Get initial mouse position in SVG coordinates
+    const rect = svg.getBoundingClientRect();
+    moveStartPos = getSVGPoint(e, rect);
+    
+    // Add moving class
+    movingElement.classList.add('moving');
+    svg.style.cursor = 'move';
+    
+    customNotification('info', 'Move Mode', 'Drag to reposition, then click "Save Position" or press Escape to cancel');
+    
+    // Show save/cancel buttons
+    showMoveControls();
+}
+
+// Add mouseup handler to stop dragging
+svg.addEventListener('mouseup', (e) => {
+    if (isDraggingBuilding) {
+        isDraggingBuilding = false;
+        svg.style.cursor = 'default';
+        customNotification('info', 'Position Updated', 'Click "Save Position" to save or "Cancel" to revert');
+    }
+});
+
+function showMoveControls() {
+    // Check if controls already exist
+    let moveControls = document.getElementById('moveControls');
+    if (!moveControls) {
+        moveControls = document.createElement('div');
+        moveControls.id = 'moveControls';
+        moveControls.className = 'move-controls';
+        moveControls.innerHTML = `
+            <h3>Moving: ${movingLocation.name}</h3>
+            <button class="btn-primary" onclick="saveBuildingPosition()">
+                <i class='bx bx-check'></i> Save Position
+            </button>
+            <button class="btn-secondary" onclick="cancelBuildingMove()">
+                <i class='bx bx-x'></i> Cancel
+            </button>
+        `;
+        
+        const mapContainer = document.querySelector('.map-canvas-container');
+        mapContainer.appendChild(moveControls);
+    }
+    moveControls.style.display = 'block';
+}
+
+function hideMoveControls() {
+    const moveControls = document.getElementById('moveControls');
+    if (moveControls) {
+        moveControls.style.display = 'none';
+    }
+}
+
+// Add mousemove handler to SVG for moving
+svg.addEventListener('mousemove', (e) => {
+    if (movingElement && movingLocation) {
+        isDraggingBuilding = true;
+        svg.style.cursor = 'move';
+
+        const rect = svg.getBoundingClientRect();
+        const currentPos = getSVGPoint(e, rect);
+        
+        const dx = currentPos.x - moveStartPos.x;
+        const dy = currentPos.y - moveStartPos.y;
+        
+        if (movingLocation.shape.type === 'rect') {
+            const newX = originalShapeData.x + dx;
+            const newY = originalShapeData.y + dy;
+            
+            movingElement.setAttribute('x', newX);
+            movingElement.setAttribute('y', newY);
+            
+            // Update rotation transform if exists
+            if (originalShapeData.rotate) {
+                const cx = newX + originalShapeData.width / 2;
+                const cy = newY + originalShapeData.height / 2;
+                movingElement.setAttribute('transform', `rotate(${originalShapeData.rotate}, ${cx}, ${cy})`);
+            }
+            
+            // Update location data
+            movingLocation.shape.x = newX;
+            movingLocation.shape.y = newY;
+            
+        } else if (movingLocation.shape.type === 'ellipse') {
+            const newCx = originalShapeData.cx + dx;
+            const newCy = originalShapeData.cy + dy;
+            
+            movingElement.setAttribute('cx', newCx);
+            movingElement.setAttribute('cy', newCy);
+            
+            // Update location data
+            movingLocation.shape.cx = newCx;
+            movingLocation.shape.cy = newCy;
+        }
+    }
+});
+
+// Save building position
+window.saveBuildingPosition = async function() {
+    if (!movingLocation) return;
+    
+    const saveBtn = document.querySelector('#moveControls .btn-primary');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Saving...';
+    
+    try {
+        // Update in database
+        const response = await fetch(`/api/locations/${movingLocation.code}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(movingLocation)
+        });
+        
+        if (response.ok) {
+            customNotification('success', 'Saved', 'Building position updated successfully');
+            
+            // Update local data
+            const locationIndex = locations.findIndex(l => l._id === movingLocation._id);
+            if (locationIndex !== -1) {
+                locations[locationIndex] = movingLocation;
+            }
+            
+            // Clean up
+            finishMoving();
+        } else {
+            customNotification('error', 'Error', 'Failed to save position');
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="bx bx-check"></i> Save Position';
+        }
+    } catch (error) {
+        console.error('Error saving position:', error);
+        customNotification('error', 'Error', 'Failed to save position');
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="bx bx-check"></i> Save Position';
+    }
+};
+
+// Cancel building move
+window.cancelBuildingMove = function() {
+    if (!movingElement || !movingLocation || !originalShapeData) return;
+    
+    // Restore original position
+    if (movingLocation.shape.type === 'rect') {
+        movingElement.setAttribute('x', originalShapeData.x);
+        movingElement.setAttribute('y', originalShapeData.y);
+        
+        if (originalShapeData.rotate) {
+            const cx = originalShapeData.x + originalShapeData.width / 2;
+            const cy = originalShapeData.y + originalShapeData.height / 2;
+            movingElement.setAttribute('transform', `rotate(${originalShapeData.rotate}, ${cx}, ${cy})`);
+        }
+        
+        movingLocation.shape.x = originalShapeData.x;
+        movingLocation.shape.y = originalShapeData.y;
+        
+    } else if (movingLocation.shape.type === 'ellipse') {
+        movingElement.setAttribute('cx', originalShapeData.cx);
+        movingElement.setAttribute('cy', originalShapeData.cy);
+        
+        movingLocation.shape.cx = originalShapeData.cx;
+        movingLocation.shape.cy = originalShapeData.cy;
+    }
+    
+    customNotification('info', 'Cancelled', 'Move cancelled');
+    finishMoving();
+};
+
+function finishMoving() {
+    if (movingElement) {
+        movingElement.classList.remove('moving');
+    }
+    
+    movingElement = null;
+    movingLocation = null;
+    originalShapeData = null;
+    svg.style.cursor = 'default';
+    
+    hideMoveControls();
+}
+
+// ESC key to cancel move
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && movingElement) {
+        cancelBuildingMove();
+    }
+});
+
+// Helper function (add if not already present)
 function getSVGPoint(event, rect) {
     const viewBox = svg.viewBox.baseVal;
     const scaleX = viewBox.width / rect.width;

@@ -587,3 +587,31 @@
     font-size: 14px;
     color: var(--grey);
 }
+
+/* Move Controls Panel */
+.move-controls {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    display: none;
+    min-width: 300px;
+}
+
+.move-controls h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.move-controls button {
+    width: 100%;
+    margin-top: 10px;
+}
