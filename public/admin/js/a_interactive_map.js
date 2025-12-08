@@ -70,25 +70,25 @@ function renderLocationsTable() {
     }
     
     buildingsTableBody.innerHTML = filtered.map(loc => `
-        <tr>
-            <td><strong>${loc.code}</strong></td>
-            <td>${loc.name}</td>
-            <td><span class="badge badge-${loc.type}">${loc.type}</span></td>
-            <td>${loc.section ? `<span class="badge badge-${loc.section}">${loc.section}</span>` : '-'}</td>
-            <td>${loc.images?.length || 0}</td>
-            <td>${loc.offices?.length || 0}</td>
-            <td>${loc.departments?.length || 0}</td>
-            <td>
-                <div class="action-btns">
-                    <button class="icon-btn edit" onclick="editLocation('${loc._id}')" title="Edit">
-                        <i class='bx bx-edit'></i>
-                    </button>
-                    <button class="icon-btn delete" onclick="deleteLocation('${loc._id}', '${loc.code}')" title="Delete">
-                        <i class='bx bx-trash'></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
+    <tr>
+        <td><strong>${loc.code}</strong></td>
+        <td>${loc.name}</td>
+        <td><span class="badge badge-${loc.type}">${loc.type}</span></td>
+        <td>${loc.section ? `<span class="badge badge-${loc.section}">${loc.section}</span>` : '-'}</td>
+        <td>${loc.images && loc.images.length > 0 ? loc.images.length : '-'}</td>
+        <td>${loc.offices && loc.offices.length > 0 ? loc.offices.length : '-'}</td>
+        <td>${loc.departments && loc.departments.length > 0 ? loc.departments.length : '-'}</td>
+        <td>
+            <div class="action-btns">
+                <button class="icon-btn edit" onclick="editLocation('${loc._id}')" title="Edit">
+                    <i class='bx bx-edit'></i>
+                </button>
+                <button class="icon-btn delete" onclick="deleteLocation('${loc._id}', '${loc.code}')" title="Delete">
+                    <i class='bx bx-trash'></i>
+                </button>
+            </div>
+        </td>
+    </tr>
     `).join('');
 }
 
@@ -298,21 +298,29 @@ window.deleteLocation = function(locationId, code) {
 function renderImageGallery(images) {
     const gallery = document.getElementById('editImageGallery');
     
-    if (!images || images.length === 0) {
+    // Check if images exist and have items
+    if (!images || !Array.isArray(images) || images.length === 0) {
         gallery.innerHTML = '<p style="color: var(--grey); font-size: 14px;">No images uploaded yet</p>';
         return;
     }
     
-    gallery.innerHTML = images.map((img, index) => `
-        <div class="image-item" data-index="${index}">
-            <img src="${img.imageUrl}" alt="Location image">
-            <div class="image-item-actions">
-                <button type="button" onclick="removeImage(${index})" title="Remove">
-                    <i class='bx bx-trash'></i>
-                </button>
+    gallery.innerHTML = images.map((img, index) => {
+        // Skip if image doesn't have required properties
+        if (!img || !img.imageUrl) {
+            return '';
+        }
+        
+        return `
+            <div class="image-item" data-index="${index}">
+                <img src="${img.imageUrl}" alt="Location image" onerror="this.parentElement.style.display='none'">
+                <div class="image-item-actions">
+                    <button type="button" onclick="removeImage(${index})" title="Remove">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ====== HANDLE IMAGE UPLOAD ======

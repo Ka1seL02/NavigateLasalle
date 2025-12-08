@@ -31,17 +31,29 @@
             </div>
         </div>
 
+        <!-- Side Panel -->
         <div class="side-panel" id="sidePanel">
             <button class="panel-close" id="closePanel">
-                <i class="bx bx-x"></i>
+                <i class='bx bx-x'></i>
             </button>
             <div class="panel-content">
-                <!-- Building Image -->
+                <!-- Building Image Carousel -->
                 <div class="panel-image">
-                    <img src="https://res.cloudinary.com/dmjdhgcsi/image/upload/v1765181991/AEA_2_ty1upo.jpg"
-                        alt="Building Image">
+                    <img id="panelImage" src="https://via.placeholder.com/400x250" alt="Building Image">
+
+                    <!-- Image Navigation (only shows if multiple images) -->
+                    <div class="image-nav" id="imageNav" style="display: none;">
+                        <button class="image-nav-btn prev" id="prevImageBtn">
+                            <i class='bx bx-chevron-left'></i>
+                        </button>
+                        <button class="image-nav-btn next" id="nextImageBtn">
+                            <i class='bx bx-chevron-right'></i>
+                        </button>
+                        <div class="image-counter" id="imageCounter">1 / 1</div>
+                    </div>
                 </div>
 
+                <!-- Building Info -->
                 <div class="panel-info">
                     <div class="panel-header">
                         <small class="building-code">ADG</small>
@@ -49,17 +61,14 @@
                     </div>
                     <h2>Ayuntamiento De Gonzales</h2>
                     <p class="building-description">
-                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus turpis vel eros
-                        consectetur.
+                        Lorem ipsum dolor sit amet consectetur adipiscing elit.
                     </p>
 
                     <!-- Offices Section -->
                     <div class="info-section">
                         <h3>Offices</h3>
                         <div class="tags-container">
-                            <span class="tag">Registrar's Office</span>
-                            <span class="tag">Admissions Office</span>
-                            <span class="tag">Student Affairs</span>
+                            <!-- Populated by JS -->
                         </div>
                     </div>
 
@@ -67,8 +76,7 @@
                     <div class="info-section">
                         <h3>Departments</h3>
                         <div class="tags-container">
-                            <span class="tag">Finance Department</span>
-                            <span class="tag">HR Department</span>
+                            <!-- Populated by JS -->
                         </div>
                     </div>
                 </div>

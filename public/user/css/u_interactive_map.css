@@ -52,15 +52,17 @@
     right: -400px;
     width: 400px;
     height: 100vh;
-    background: var(--white);
+    background: white;
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 200;
     transition: right 0.3s ease;
     overflow-y: auto;
 }
+
 .side-panel.show {
     right: 0;
 }
+
 .panel-close {
     position: absolute;
     top: 20px;
@@ -79,34 +81,115 @@
     cursor: pointer;
     z-index: 10;
 }
+
 .panel-close:hover {
     background-color: rgba(0, 0, 0, 0.2);
 }
+
 .panel-content {
     padding: 0;
 }
-/* Panel Image */
+
+/* Panel Image with Carousel */
 .panel-image {
     width: 100%;
     height: 250px;
     overflow: hidden;
     position: relative;
+    background: var(--dark-grey);
 }
+
 .panel-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: opacity 0.3s ease;
 }
-/* Panel Info */
+
+/* Image Navigation */
+.image-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+
+.image-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--dark-grey);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.2s ease;
+}
+
+.image-nav-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.image-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.image-counter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
+/* No Image State */
+.panel-image .no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--dirty-white);
+    color: var(--grey);
+}
+
+.panel-image .no-image i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.panel-image .no-image span {
+    font-size: 14px;
+}
+
+/* Rest of your existing panel styles... */
 .panel-info {
     padding: 25px 30px;
 }
-/* Panel Header - Code and Section */
+
 .panel-header {
     display: flex;
     gap: 8px;
     margin-bottom: 10px;
 }
+
 .building-code {
     display: inline-block;
     background: var(--green);
@@ -117,6 +200,7 @@
     font-weight: 600;
     font-family: 'Inter', sans-serif;
 }
+
 .building-section {
     display: inline-block;
     background: var(--dark-grey);
@@ -128,6 +212,7 @@
     font-family: 'Inter', sans-serif;
     text-transform: capitalize;
 }
+
 .panel-info h2 {
     font-family: 'EB Garamond', sans-serif;
     font-size: 28px;
@@ -136,6 +221,7 @@
     margin-bottom: 15px;
     line-height: 1.2;
 }
+
 .building-description {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
@@ -143,10 +229,11 @@
     line-height: 1.6;
     margin-bottom: 25px;
 }
-/* Info Sections (Offices & Departments) */
+
 .info-section {
     margin-bottom: 20px;
 }
+
 .info-section h3 {
     font-family: 'Inter', sans-serif;
     font-size: 16px;
@@ -154,12 +241,13 @@
     color: var(--dark-grey);
     margin-bottom: 12px;
 }
-/* Tags Container */
+
 .tags-container {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
+
 .tag {
     display: inline-block;
     background: var(--dirty-white);
@@ -172,12 +260,13 @@
     border: 1px solid var(--shadow);
     transition: all 0.2s ease;
 }
+
 .tag:hover {
     background: var(--light-green);
     border-color: var(--green);
     color: var(--dark-grey);
 }
-/* Directions Button */
+
 .directions-btn {
     width: calc(100% - 60px);
     margin: 0 30px 30px 30px;
@@ -196,11 +285,13 @@
     gap: 10px;
     transition: all 0.3s ease;
 }
+
 .directions-btn:hover {
     background: var(--dark-green);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
+
 .directions-btn i {
     font-size: 20px;
 }

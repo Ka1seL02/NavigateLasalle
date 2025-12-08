@@ -15,6 +15,10 @@ let isPanning = false;
 let startPoint = { x: 0, y: 0 };
 let scale = 1;
 
+// ====== IMAGE CAROUSEL STATE ======
+let currentImages = [];
+let currentImageIndex = 0;
+
 // ====== SIDE PANEL FUNCTIONS ======
 function openSidePanel() {
     sidePanel.classList.add('show');
@@ -26,10 +30,82 @@ function closeSidePanel() {
         selectedElement.classList.remove('selected');
         selectedElement = null;
     }
+    // Reset carousel
+    currentImages = [];
+    currentImageIndex = 0;
 }
 
 // Close panel when clicking X button
 closePanel.addEventListener('click', closeSidePanel);
+
+// ====== IMAGE CAROUSEL FUNCTIONS ======
+function updatePanelImage() {
+    const panelImage = document.getElementById('panelImage');
+    const imageNav = document.getElementById('imageNav');
+    const imageCounter = document.getElementById('imageCounter');
+    const prevBtn = document.getElementById('prevImageBtn');
+    const nextBtn = document.getElementById('nextImageBtn');
+    
+    // Check if we have images
+    if (!currentImages || currentImages.length === 0) {
+        // Show no image placeholder
+        panelImage.style.display = 'none';
+        imageNav.style.display = 'none';
+        
+        const noImageDiv = document.createElement('div');
+        noImageDiv.className = 'no-image';
+        noImageDiv.innerHTML = `
+            <i class='bx bx-image-alt'></i>
+            <span>No images available</span>
+        `;
+        
+        const panelImageContainer = panelImage.parentElement;
+        // Remove existing no-image if any
+        const existingNoImage = panelImageContainer.querySelector('.no-image');
+        if (existingNoImage) existingNoImage.remove();
+        
+        panelImageContainer.appendChild(noImageDiv);
+        return;
+    }
+    
+    // Remove no-image placeholder if exists
+    const existingNoImage = panelImage.parentElement.querySelector('.no-image');
+    if (existingNoImage) existingNoImage.remove();
+    panelImage.style.display = 'block';
+    
+    // Set current image
+    panelImage.src = currentImages[currentImageIndex].imageUrl;
+    
+    // Show/hide navigation based on number of images
+    if (currentImages.length > 1) {
+        imageNav.style.display = 'flex';
+        imageCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+        
+        // Enable/disable buttons
+        prevBtn.disabled = currentImageIndex === 0;
+        nextBtn.disabled = currentImageIndex === currentImages.length - 1;
+    } else {
+        imageNav.style.display = 'none';
+    }
+}
+
+function nextImage() {
+    if (currentImageIndex < currentImages.length - 1) {
+        currentImageIndex++;
+        updatePanelImage();
+    }
+}
+
+function prevImage() {
+    if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updatePanelImage();
+    }
+}
+
+// Hook up navigation buttons
+document.getElementById('nextImageBtn')?.addEventListener('click', nextImage);
+document.getElementById('prevImageBtn')?.addEventListener('click', prevImage);
 
 // ====== ZOOM AND PAN FUNCTIONS ======
 function updateViewBox() {
@@ -207,14 +283,26 @@ svg.addEventListener('click', (e) => {
     const locationData = JSON.parse(target.dataset.location);
     console.log('📍 Selected location:', locationData);
 
-    // ⭐ Populate side panel main text info (do NOT change image)
+    // ⭐ UPDATE IMAGES
+    currentImages = locationData.images || [];
+    currentImageIndex = 0;
+    updatePanelImage();
+
+    // ⭐ Populate side panel main text info
     const codeEl = sidePanel.querySelector('.building-code');
     const sectionEl = sidePanel.querySelector('.building-section');
     const titleEl = sidePanel.querySelector('h2');
     const descEl = sidePanel.querySelector('.building-description');
 
     if (codeEl) codeEl.textContent = locationData.code || '';
-    if (sectionEl) sectionEl.textContent = locationData.section || '';
+    if (sectionEl) {
+        if (locationData.section) {
+            sectionEl.textContent = locationData.section;
+            sectionEl.style.display = 'inline-block';
+        } else {
+            sectionEl.style.display = 'none';
+        }
+    }
     if (titleEl) titleEl.textContent = locationData.name || '';
     if (descEl) descEl.textContent = locationData.description || 'No description available.';
 
@@ -251,7 +339,7 @@ svg.addEventListener('click', (e) => {
         locationData.departments.forEach(dept => {
             const span = document.createElement('span');
             span.classList.add('tag');
-            span.textContent = dept;
+            span.textContent = dept.name;
             departmentsContainer.appendChild(span);
         });
         departmentsContainer.parentElement.style.display = 'block';

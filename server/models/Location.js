@@ -48,11 +48,11 @@ const locationSchema = new mongoose.Schema({
     images: [{
         imageUrl: {
             type: String,
-            required: true
+            required: false
         },
         publicId: {
             type: String,
-            required: true
+            required: false
         }
     }],
     offices: [{
