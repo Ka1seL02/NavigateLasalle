@@ -11,6 +11,7 @@ const newsRoutes = require('./routes/news.js');
 const uploadRoutes = require('./routes/upload');
 const faqRoutes = require('./routes/faqs');
 const feedbackRoutes = require('./routes/feedbacks');
+const locationRoutes = require('./routes/locations');
 
 // Models
 const News = require('./models/News');
@@ -86,6 +87,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Serve static files from public
 app.use(express.static(path.join(__dirname, '../public')));

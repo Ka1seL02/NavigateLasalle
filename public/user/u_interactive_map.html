@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/shared/css/s_modal.css">
     <!-- Page Styles -->
     <link rel="stylesheet" href="/user/css/u_global.css">
-    <link rel="stylesheet" href="/shared/component/m_under_construction.css">
+    <link rel="stylesheet" href="/user/css/u_interactive_map.css">
     <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 </head>
@@ -19,19 +19,82 @@
 <body>
 
     <main>
+        <!-- SVG Map Canvas -->
+        <div class="map-container">
+            <svg id="campusMap" viewBox="0 0 1920 1080"></svg>
 
+            <!-- Zoom Controls -->
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="resetZoom" title="Reset Zoom">
+                    <i class='bx bx-reset'></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="side-panel" id="sidePanel">
+            <button class="panel-close" id="closePanel">
+                <i class="bx bx-x"></i>
+            </button>
+            <div class="panel-content">
+                <!-- Building Image -->
+                <div class="panel-image">
+                    <img src="https://res.cloudinary.com/dmjdhgcsi/image/upload/v1765181991/AEA_2_ty1upo.jpg"
+                        alt="Building Image">
+                </div>
+
+                <div class="panel-info">
+                    <div class="panel-header">
+                        <small class="building-code">ADG</small>
+                        <small class="building-section">East</small>
+                    </div>
+                    <h2>Ayuntamiento De Gonzales</h2>
+                    <p class="building-description">
+                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus turpis vel eros
+                        consectetur.
+                    </p>
+
+                    <!-- Offices Section -->
+                    <div class="info-section">
+                        <h3>Offices</h3>
+                        <div class="tags-container">
+                            <span class="tag">Registrar's Office</span>
+                            <span class="tag">Admissions Office</span>
+                            <span class="tag">Student Affairs</span>
+                        </div>
+                    </div>
+
+                    <!-- Departments Section -->
+                    <div class="info-section">
+                        <h3>Departments</h3>
+                        <div class="tags-container">
+                            <span class="tag">Finance Department</span>
+                            <span class="tag">HR Department</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get Directions Button -->
+                <button class="directions-btn">
+                    <i class='bx bx-directions'></i>
+                    Get Directions
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Action Buttons -->
+        <div class="floating-buttons">
+            <button class="float-button scroll-up-btn">
+                <i class='bx bx-chevron-up'></i>
+            </button>
+            <button class="float-button feedback-float-btn">
+                <i class='bx bx-message-square-dots'></i>
+            </button>
+        </div>
     </main>
 
-    <script>
-        const mainElement = document.querySelector('main');
-
-        fetch('/shared/component/m_under_construction.html')
-            .then(response => response.text())
-            .then(html => {
-                mainElement.innerHTML = html;
-            })
-            .catch(err => console.error('Failed to load modal:', err));
-    </script>
+    <script src="/shared/js/s_notification.js"></script>
+    <script src="/user/js/u_global.js"></script>
+    <script src="/user/js/u_interactive_map.js"></script>
 </body>
 
 </html>

@@ -44,7 +44,7 @@ function openNewsModal(newsItem) {
     modalTitle.textContent = newsItem.title;
     modalDate.textContent = newsItem.date;
     modalTag.textContent = newsItem.tag;
-    modalDescription.textContent = newsItem.description;
+    modalDescription.innerHTML = newsItem.description.replace(/\n/g, '<br>');
 
     // Clear previous interval
     if (modalImageInterval) clearInterval(modalImageInterval);
