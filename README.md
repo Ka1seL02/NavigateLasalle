@@ -1,1 +1,0 @@
-navigatelasalle_db_user : nSIpsGAJSAOWNtz2
