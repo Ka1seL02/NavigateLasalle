@@ -1,23 +1,29 @@
+import './config/env.js';
 import express from 'express';
-import dotenv from 'dotenv';
+import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-dotenv.config();
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Middleware
+connectDB();
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve frontend as static
 app.use(express.static(path.join(__dirname, '../../frontend')));
 
-// Test route
+app.use('/api/auth', authRoutes);
+
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });

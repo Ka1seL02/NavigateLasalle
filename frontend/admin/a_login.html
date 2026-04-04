@@ -14,20 +14,26 @@
 </head>
 
 <body>
+    <!-- Form Section -->
     <div class="form-section">
         <div class="system-brand">
             <img src="img/a_logo.png">
             <span>Navigate La Salle</span>
         </div>
 
-        <div class="login-header">
-            <h1>Holla,<br>Welcome Back!</h1>
+        <div class="header">
+            <h1>Welcome<br>Back!</h1>
             <p>Sign in to your admin account to continue.</p>
+        </div>
+
+        <div class="error-message hidden">
+            <p>Incorrect username or password.</p>
+            <i class='bx bx-x'></i>
         </div>
 
         <form id="loginForm">
             <div class="input-field">
-                <input type="text" id="username" placeholder="Username" />
+                <input type="email" id="email" placeholder="Email" />
             </div>
 
             <div class="input-field">
@@ -40,7 +46,12 @@
         </form>
 
     </div>
+
+    <!-- Image Section -->
     <div class="image-section"></div>
+
+    <!-- JavaScript -->
+    <script src="js/a_login.js"></script>
 </body>
 
 </html>
