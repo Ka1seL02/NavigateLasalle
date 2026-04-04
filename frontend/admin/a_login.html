@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,37 +12,35 @@
     <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 </head>
+
 <body>
-    <main>
-        <div class="login-left">
-            <img src="img/a_login-bg.jpg">
+    <div class="form-section">
+        <div class="system-brand">
+            <img src="img/a_logo.png">
+            <span>Navigate La Salle</span>
         </div>
 
-        <div class="login-right">
-            <img src="img/a_system-icon.png">
-            <h2>Navigate <span>La Salle</span></h2>
-            <small>Admin Portal</small>
-
-            <!-- Login Form -->
-            <form id="loginForm" class="form">
-                <input type="text" placeholder="Email *">
-                <div class="password-input-wrapper">
-                    <input type="password" id="loginPassword" placeholder="Password *">
-                    <i class="bx bx-hide toggle-password" data-target="loginPassword"></i>
-                </div>
-                <button type="submit">Login</button>
-            </form>
-
-            <!-- Forgot Password Form (Default: Hidden) -->
-            <form id="forgotForm" class="form hidden">
-                <input type="email" id="forgotEmail" placeholder="Enter your email *">
-                <button type="submit">Send Reset Link</button>
-            </form>
-
-            <!-- Links to show Login or Forgot Password Form -->
-            <a class="forgot-password">Forgot your password?</a>
-            <a class="login hidden">Back to login</a>
+        <div class="login-header">
+            <h1>Holla,<br>Welcome Back!</h1>
+            <p>Sign in to your admin account to continue.</p>
         </div>
-    </main>
+
+        <form id="loginForm">
+            <div class="input-field">
+                <input type="text" id="username" placeholder="Username" />
+            </div>
+
+            <div class="input-field">
+                <input type="password" id="password" placeholder="Password" />
+                <i class='bx bx-hide toggle-password' id="togglePassword"></i>
+            </div>
+            <a href="a_forgot-password.html" class="forgot-link">Forgot Password?</a>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+
+    </div>
+    <div class="image-section"></div>
 </body>
+
 </html>
