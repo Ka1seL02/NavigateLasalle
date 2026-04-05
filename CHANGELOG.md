@@ -32,3 +32,30 @@
 - `a_reset-password.html` — new password + confirm password, password rules validation on blur, success modal, redirects to login on close
 - Token verification on page load — redirects to login if token is missing, invalid, or expired
 - Password rules turn red on blur if requirements not met
+
+## [v0.2] - 00:29 2026-04-06
+### Frontend - Admin Dashboard
+- `a_dashboard.html` — dashboard layout with sidebar container and main content area
+- `a_sidebar.html` — reusable sidebar component loaded dynamically via fetch, includes logout modal and inactivity modal
+- `a_sidebar.js` — loads sidebar into any admin page, sets active nav link based on current URL, handles collapse toggle, logout modal, inactivity modal ok button
+- `a_sidebar.css` — sidebar styles with collapsed state, nav labels, admin footer, logout modal, inactivity modal
+- `a_dashboard.css` — base dashboard layout with flexbox
+- `a_auth.js` — reusable auth check, redirects to login if not authenticated, starts 15min inactivity watcher, auto logout on inactivity with modal notification
+- Added `type="module"` to script tags for ES module support
+### Frontend - Admin Accounts
+- `a_accounts.html` — accounts page layout with page title, count badge, search bar, invite button, accounts table with pagination controls
+- Table columns — name, email, role badge, last login, actions
+- Role badges styled differently for superadmin and admin
+- Invite button hidden by default, shown only for superadmin via JS
+- Pagination controls — showing x-y out of total, page input (no spin buttons), prev/next buttons with disabled state
+- Delete button with red hover effect
+- Last login shown as tooltip on hover instead of full column
+### Backend
+- Added `role` field to Admin model with enum `superadmin` and `admin`, default `admin`
+- Added `lastLogin` field to Admin model, updated on every successful login
+- Added `/api/auth/me` route — returns current admin name, email, role from JWT cookie
+- Added `/api/auth/logout` route — clears httpOnly cookie
+- Added `cookie-parser` middleware to read httpOnly cookies
+- Updated login route — JWT and cookie now expire in 15 minutes, updates lastLogin on login
+- Updated seed to include `role: superadmin` for first admin, added 10 additional test admin accounts
+- Created `server/middleware/requireSuperAdmin.js` — middleware to protect superadmin-only routes

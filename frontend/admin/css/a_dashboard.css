@@ -1,0 +1,29 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+main {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--white);
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+}
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Inter', serif;
+    color: var(--dark-green);
+    margin-bottom: 1rem;
+    height: 1.75rem;
+}
+.main-content {
+    flex: 1;
+}

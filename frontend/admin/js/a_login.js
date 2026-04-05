@@ -1,3 +1,19 @@
+// Check if already logged in
+const checkIfLoggedIn = async () => {
+    try {
+        const response = await fetch('/api/auth/me', {
+            credentials: 'include'
+        });
+        if (response.ok) {
+            window.location.href = 'a_dashboard.html';
+        }
+    } catch (error) {
+        // not logged in, stay on login page
+    }
+};
+
+checkIfLoggedIn();
+
 // Toggle password visibility
 const togglePassword = document.getElementById('togglePassword');
 const passwordInput = document.getElementById('password');
@@ -45,5 +61,5 @@ form.addEventListener('submit', async (e) => {
 const closeError = document.querySelector('.error-message .bx-x');
 
 closeError.addEventListener('click', () => {
-  errorMessage.classList.add('hidden');
+    errorMessage.classList.add('hidden');
 });

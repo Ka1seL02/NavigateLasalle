@@ -1,0 +1,94 @@
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">
+        <img src="img/a_logo.png" alt="Logo" class="sidebar-logo">
+        <p class="sidebar-brand">Navigate<span> La Salle</span></p>
+        <button class="toggle-sidebar-btn" id="toggleSidebar">
+            <i class='bx bx-chevron-left'></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <p class="nav-label">MAIN</p>
+        <a href="a_dashboard.html" class="nav-link" data-page="dashboard">
+            <i class='bx bxs-dashboard'></i>
+            <span>Dashboard</span>
+        </a>
+
+        <p class="nav-label">CONTENT</p>
+        <a href="#" class="nav-link" data-page="announcements">
+            <i class='bx bxs-megaphone'></i>
+            <span>Announcements</span>
+        </a>
+        <a href="#" class="nav-link" data-page="buildings">
+            <i class='bx bxs-building'></i>
+            <span>Buildings</span>
+        </a>
+        <a href="#" class="nav-link" data-page="offices">
+            <i class='bx bxs-map-pin'></i>
+            <span>Offices</span>
+        </a>
+        <a href="#" class="nav-link" data-page="events">
+            <i class='bx bxs-calendar'></i>
+            <span>Events</span>
+        </a>
+
+        <p class="nav-label">SYSTEM</p>
+        <a href="a_accounts.html" class="nav-link" data-page="accounts">
+            <i class='bx bxs-user-account'></i>
+            <span>Accounts</span>
+        </a>
+        <a href="#" class="nav-link" data-page="settings">
+            <i class='bx bxs-cog'></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="admin-info">
+            <div class="admin-avatar" id="adminAvatar">U</div>
+            <div class="admin-details">
+                <p class="admin-name" id="adminName">User</p>
+                <p class="admin-role" id="adminRole">Role</p>
+            </div>
+        </div>
+        <a href="#" class="logout-btn" id="logoutBtn" title="Logout">
+            <i class='bx bx-log-out'></i>
+        </a>
+    </div>
+
+</aside>
+
+<!-- Logout Modal -->
+<div class="modal-overlay hidden" id="logoutModalOverlay">
+    <div class="modal" id="logoutModal">
+        <div class="modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" 
+                stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to logout?</p>
+        <div class="modal-btns">
+            <button class="logout-cancel-btn" id="cancelLogout">Cancel</button>
+            <button class="logout-confirm-btn" id="confirmLogout">Logout</button>
+        </div>
+    </div>
+</div>
+
+<!-- Inactivity Modal -->
+<div class="modal-overlay hidden" id="inactiveModalOverlay">
+    <div class="modal" id="inactiveModal">
+        <div class="modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" 
+                stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2>Session Expired</h2>
+        <p>You have been logged out due to inactivity.</p>
+        <button class="inactive-close-btn" id="inactiveOkBtn">Ok</button>
+    </div>
+</div>
