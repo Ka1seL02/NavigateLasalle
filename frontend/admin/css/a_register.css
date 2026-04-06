@@ -77,6 +77,10 @@ form {
     color: var(--black);
     font-family: 'Inter', sans-serif;
 }
+.input-field input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 .input-field i {
     color: var(--grey);
     cursor: pointer;
@@ -107,7 +111,7 @@ form {
     margin: -0.5rem 0 0 0.2rem;
     font-family: 'Inter', sans-serif;
 }
-.reset-btn {
+.register-btn {
     background: var(--dark-green);
     color: var(--white);
     border: none;
@@ -121,7 +125,7 @@ form {
     margin-top: 2rem;
     transition: background 0.5s ease;
 }
-.reset-btn:hover {
+.register-btn:hover {
     background: var(--green);
 }
 

@@ -2,13 +2,18 @@ import express from 'express';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+
 import Admin from '../models/Admin.js';
+import Invite from '../models/Invite.js';
+
+import requireSuperAdmin from '../middleware/requireSuperAdmin.js';
+import { loginLimiter, forgotPasswordLimiter } from '../middleware/rateLimiter.js';
 import { sendResetEmail } from '../utils/emailService.js';
 
 const router = express.Router();
 
 // LOGIN
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -48,8 +53,49 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// REGISTER (via invite)
+router.post('/register', async (req, res) => {
+    const { name, password, token } = req.body;
+
+    try {
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        // Look in Invite collection not Admin
+        const invite = await Invite.findOne({
+            inviteToken: hashedToken,
+            inviteTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!invite) {
+            return res.status(400).json({ message: 'Invalid or expired invite link.' });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create account using email from invite
+        const newAdmin = new Admin({
+            name,
+            email: invite.email,
+            password: hashedPassword,
+            role: 'admin'
+        });
+
+        await newAdmin.save();
+
+        // Delete invite after successful registration
+        await Invite.deleteOne({ _id: invite._id });
+
+        res.json({ message: 'Account created successfully.' });
+
+    } catch (error) {
+        console.error('Register error:', error);
+        res.status(500).json({ message: 'Something went wrong. Please try again.' });
+    }
+});
+
 // FORGOT PASSWORD REQUEST
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
     const { email } = req.body;
 
     try {
@@ -170,6 +216,66 @@ router.get('/me', async (req, res) => {
 
     } catch (error) {
         res.status(401).json({ message: 'Not authenticated.' });
+    }
+});
+
+// GET ALL ADMINS
+router.get('/admins', async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) return res.status(401).json({ message: 'Not authenticated.' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const requester = await Admin.findById(decoded.id);
+        if (!requester) return res.status(401).json({ message: 'Not authenticated.' });
+
+        const admins = await Admin.find().select('-password -resetPasswordToken -resetPasswordExpires');
+
+        // Mask email based on requester role
+        const result = admins.map(admin => ({
+            _id: admin._id,
+            name: admin.name,
+            email: requester.role === 'superadmin'
+                ? admin.email
+                : admin.email.replace(/(?<=.{4})[^@]+(?=@)/, '****'),
+            role: admin.role,
+            lastLogin: admin.lastLogin
+        }));
+
+        res.json({ admins: result, requesterRole: requester.role });
+
+    } catch (error) {
+        console.error('Get admins error:', error);
+        res.status(500).json({ message: 'Something went wrong.' });
+    }
+});
+
+// DELETE ADMIN
+router.delete('/admins/:id', requireSuperAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Prevent superadmin from deleting themselves
+        if (req.admin._id.toString() === id) {
+            return res.status(400).json({ message: 'You cannot delete your own account.' });
+        }
+
+        const admin = await Admin.findById(id);
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found.' });
+        }
+
+        // Prevent deleting another superadmin
+        if (admin.role === 'superadmin') {
+            return res.status(400).json({ message: 'You cannot delete a superadmin account.' });
+        }
+
+        await Admin.findByIdAndDelete(id);
+        res.json({ message: 'Admin account deleted successfully.' });
+
+    } catch (error) {
+        console.error('Delete admin error:', error);
+        res.status(500).json({ message: 'Something went wrong.' });
     }
 });
 

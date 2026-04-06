@@ -16,7 +16,6 @@ main {
     display: flex;
     flex-direction: column;
 }
-
 .page-title {
     display: flex;
     align-items: center;
@@ -26,7 +25,6 @@ main {
     font-family: 'Inter', serif;
     color: var(--dark-green);
     margin-bottom: 1rem;
-    height: 1.75rem;
 }
 .page-count {
     background-color: var(--light-green);
@@ -38,18 +36,18 @@ main {
     min-width: 1.5rem;
     text-align: center;
 }
-
 .main-content {
     flex: 1;
 }
 
-/* Account Toolbar (Search and Invite Button) */
+/* TOOLBAR (Search and Invite Button) */
 .accounts-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
 }
+
 /* Search Bar */
 .search-bar {
     display: flex;
@@ -140,6 +138,23 @@ tr:last-child td {
 tr:hover td {
     background: var(--sage-green);
 }
+/* Time Since Last Login */
+.last-login {
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    padding: 4px 12px;
+    border-radius: 15px;
+}
+.last-login.fresh {
+    background-color: var(--sage-green);
+    color: var(--green);
+}
+.last-login.stale {
+    background-color: var(--off-white);
+    color: var(--grey);
+}
+/* Delete Button action */
 .delete-btn {
     background: none;
     border: none;
@@ -154,7 +169,8 @@ tr:hover td {
     color: var(--red);
     background: rgba(220, 53, 69, 0.08);
 }
-/* Pagination */
+
+/* PAGINATION */
 .pagination {
     display: flex;
     align-items: center;
@@ -225,6 +241,73 @@ tr:hover td {
 }
 .page-input-wrap input[type=number] {
     -moz-appearance: textfield;
+}
+
+/* MODALS */
+/* No need to style common modal elements */
+/* like .modal-overlay, .modal-header, .modal-icon, .modal h2, .modal p */
+/* since they are shared with the sidebar modals */
+/* Specific modal styling for accounts page are below */
+
+/* Send Invite Modal & Delete Confirmation Modal */
+#sendInviteModal .modal-close-btn,
+#deleteConfirmModal .modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--light-grey);
+    transition: color 0.2s;
+}
+#sendInviteModal .invite-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+#sendInviteModal .invite-input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    outline: none;
+}
+#sendInviteModal .invite-input-row input:focus {
+    border-color: var(--green);
+}
+#sendInviteModal .confirm-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--green);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#sendInviteModal .confirm-btn:hover {
+    background: var(--dark-green);
+}
+#deleteConfirmModal .confirm-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--red);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#deleteConfirmModal .confirm-btn:hover {
+    background: var(--dark-red);
 }
 
 .hidden {

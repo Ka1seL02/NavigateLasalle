@@ -1,26 +1,25 @@
+// TOKEN VERIFICATION (uncomment when ready to test with invite flow)
 const params = new URLSearchParams(window.location.search);
 const token = params.get('token');
 
-// On page load, verify token
 const verifyToken = async () => {
     if (!token) {
         window.location.href = 'a_login.html';
         return;
     }
-
     try {
-        const response = await fetch(`/api/auth/verify-reset-token?token=${token}`);
+        const response = await fetch(`/api/invite/verify?token=${token}`);
         const data = await response.json();
-
         if (!data.valid) {
             window.location.href = 'a_login.html';
+            return;
         }
-
+        // Pre-fill email
+        document.getElementById('email').value = data.email;
     } catch (error) {
         window.location.href = 'a_login.html';
     }
 };
-
 verifyToken();
 
 // Toggle password visibility
@@ -73,7 +72,7 @@ newPasswordInput.addEventListener('blur', () => {
 });
 
 // Form submit
-const form = document.getElementById('resetPasswordForm');
+const form = document.getElementById('createAccountForm');
 const modalOverlay = document.querySelector('.modal-overlay');
 const closeBtn = document.querySelector('.close-btn');
 const passwordMismatchError = document.getElementById('passwordMismatchError');
@@ -81,14 +80,19 @@ const passwordMismatchError = document.getElementById('passwordMismatchError');
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const name = document.getElementById('name').value.trim();
     const newPassword = newPasswordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
+    if (!name) return;
+
     if (newPassword !== confirmPassword) {
         passwordMismatchError.classList.remove('hidden');
+        confirmPasswordInput.style.borderColor = 'var(--red)';
         return;
     }
     passwordMismatchError.classList.add('hidden');
+    confirmPasswordInput.style.borderColor = '';
 
     const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!strongPassword.test(newPassword)) {
@@ -96,10 +100,10 @@ form.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch('/api/auth/reset-password', {
+        const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token, newPassword })
+            body: JSON.stringify({ name, password: newPassword, token })
         });
 
         const data = await response.json();
@@ -107,7 +111,7 @@ form.addEventListener('submit', async (e) => {
         if (response.ok) {
             modalOverlay.classList.remove('hidden');
         } else {
-            alert(data.message);
+            window.location.href = 'a_login.html';
         }
 
     } catch (error) {
@@ -115,6 +119,17 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
+confirmPasswordInput.addEventListener('blur', () => {
+    if (confirmPasswordInput.value && confirmPasswordInput.value !== newPasswordInput.value) {
+        passwordMismatchError.classList.remove('hidden');
+        confirmPasswordInput.style.borderColor = 'var(--red)';
+    } else {
+        passwordMismatchError.classList.add('hidden');
+        confirmPasswordInput.style.borderColor = '';
+    }
+});
+
+// Close modal and redirect to login
 closeBtn.addEventListener('click', () => {
     modalOverlay.classList.add('hidden');
     setTimeout(() => {

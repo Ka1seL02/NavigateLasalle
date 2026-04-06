@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../shared/css/root.css">
     <!-- Specific Page Style -->
     <link rel="stylesheet" href="css/a_sidebar.css">
+    <link rel="stylesheet" href="css/a_toast.css">
     <link rel="stylesheet" href="css/a_accounts.css">
     <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
@@ -52,18 +53,26 @@
                             <td>Juan Dela Cruz</td>
                             <td>juan****@gmail.com</td>
                             <td><span class="role-badge admin">Admin</span></td>
-                            <td>Apr 5, 2026, 10:30 AM</td>
                             <td>
-                                <button class="delete-btn"><i class='bx bx-trash'></i></button>
+                                <span class="last-login fresh"> ● Today </span>
+                            </td>
+                            <td>
+                                <button class="delete-btn">
+                                    <i class='bx bx-trash'></i>
+                                </button>
                             </td>
                         </tr>
                         <tr>
                             <td>Super Admin</td>
                             <td>navi****@gmail.com</td>
                             <td><span class="role-badge superadmin">Super Admin</span></td>
-                            <td>Apr 6, 2026, 9:00 AM</td>
                             <td>
-                                <button class="delete-btn"><i class='bx bx-trash'></i></button>
+                                <span class="last-login stale"> ● 1 day ago </span>
+                            </td>
+                            <td>
+                                <button class="delete-btn">
+                                    <i class='bx bx-trash'></i>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -72,7 +81,8 @@
 
             <div class="pagination">
                 <span class="pagination-info">
-                    Showing <span id="showingStart">1</span>-<span id="showingEnd">10</span> out of <span id="totalEntries">0</span>
+                    Showing <span id="showingStart">1</span>-<span id="showingEnd">10</span> out of <span
+                        id="totalEntries">0</span>
                 </span>
                 <div class="pagination-controls">
                     <button class="page-btn" id="prevBtn">
@@ -90,9 +100,57 @@
         </div>
     </main>
 
+    <div class="modal-overlay hidden" id="modalOverlay">
+        <!-- Invite Modal -->
+        <div class="modal hidden" id="sendInviteModal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                        <path
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Invite Admin</h2>
+                <button class="modal-close-btn" id="cancelInvite">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <p>Enter the email address to send an invite link to.</p>
+            <div class="invite-input-row">
+                <input type="email" id="inviteEmail" placeholder="Email address" />
+                <button class="confirm-btn" id="confirmInvite">
+                    <i class='bx bx-paper-plane'></i>
+                </button>
+            </div>
+        </div>
+        <!-- Delete Confirmation Modal -->
+        <div class="modal hidden" id="deleteConfirmModal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                        <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Confirm Deletion</h2>
+                <button class="modal-close-btn" id="cancelDelete">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <p>Are you sure you want to delete the admin account of <strong id="deleteTargetName">Example User</strong>?</p>
+            <div class="modal-footer">
+                <button class="confirm-btn" id="confirmDeleteAccount">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script type="module" src="js/a_sidebar.js"></script>
-    <script src="js/a_accounts.js"></script>
+    <script type="module" src="js/a_accounts.js"></script>
 </body>
 
 </html>

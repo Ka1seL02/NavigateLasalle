@@ -23,3 +23,20 @@ export const sendResetEmail = async (toEmail, toName, resetLink) => {
 
     await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
 };
+
+export const sendInviteEmail = async (toEmail, inviteLink) => {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+    sendSmtpEmail.sender = {
+        name: process.env.BREVO_SENDER_NAME,
+        email: process.env.BREVO_SENDER_EMAIL
+    };
+
+    sendSmtpEmail.to = [{ email: toEmail }];
+    sendSmtpEmail.templateId = 4;
+    sendSmtpEmail.params = {
+        INVITE_LINK: inviteLink
+    };
+
+    await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+};

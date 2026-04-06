@@ -42,14 +42,6 @@
 - `a_dashboard.css` — base dashboard layout with flexbox
 - `a_auth.js` — reusable auth check, redirects to login if not authenticated, starts 15min inactivity watcher, auto logout on inactivity with modal notification
 - Added `type="module"` to script tags for ES module support
-### Frontend - Admin Accounts
-- `a_accounts.html` — accounts page layout with page title, count badge, search bar, invite button, accounts table with pagination controls
-- Table columns — name, email, role badge, last login, actions
-- Role badges styled differently for superadmin and admin
-- Invite button hidden by default, shown only for superadmin via JS
-- Pagination controls — showing x-y out of total, page input (no spin buttons), prev/next buttons with disabled state
-- Delete button with red hover effect
-- Last login shown as tooltip on hover instead of full column
 ### Backend
 - Added `role` field to Admin model with enum `superadmin` and `admin`, default `admin`
 - Added `lastLogin` field to Admin model, updated on every successful login
@@ -59,3 +51,33 @@
 - Updated login route — JWT and cookie now expire in 15 minutes, updates lastLogin on login
 - Updated seed to include `role: superadmin` for first admin, added 10 additional test admin accounts
 - Created `server/middleware/requireSuperAdmin.js` — middleware to protect superadmin-only routes
+
+## [v0.3] 18:49 2026-04-07
+### Frontend - Admin Accounts
+- `a_accounts.html` — finalized layout with page title, count badge, toolbar, table, pagination and modals
+- `a_accounts.css` — full styling for toolbar, table, last login badges, pagination, modals
+- `a_accounts.js` — full implementation with fetch and render table, email masking based on role, delete buttons visible only to superadmin, search filtering, pagination, invite modal, delete confirmation modal, toast notifications, table refresh after delete
+- Added shared modal overlay with invite and delete confirmation modals inside
+- Invite modal — email input side by side with send button, X close button
+- Delete confirmation modal — dynamic name display via `id="deleteTargetName"`
+- Last login display with `fresh` (green, today) and `stale` (grey, older) badge styles
+### Frontend - Admin Register
+- `a_register.html` — create account page with name, email (disabled/prefilled), password, confirm password fields
+- `a_register.js` — token verification on load, redirects to login if no token/invalid/expired, pre-fills email from invite token, password rules validation on blur, border turns red on mismatch/invalid password, success modal redirects to login, redirects to login on any backend error
+### Frontend - Admin Toast
+- `a_toast.js` — reusable toast notification utility, supports success and error types, auto dismisses after 4 seconds, manual close button, slides in from top right
+- `a_toast.css` — toast styles with left color border, slide in/out animation, success green and error red variants
+### Backend
+- Added `role` field to Admin model with enum `superadmin` and `admin`, default `admin`
+- Added `lastLogin` field to Admin model, updated on every successful login
+- Added `Invite` model with email, hashed invite token, expiry (24 hours)
+- Added `/api/invite/send` route — superadmin only, checks if email exists in admins or has pending invite, generates hashed token, sends Brevo template #4
+- Added `/api/invite/verify` route — verifies invite token, returns email if valid
+- Added `/api/auth/register` route — verifies invite token against Invite collection, creates admin account with email from invite, deletes invite after success
+- Added `/api/auth/admins` GET route — returns all admins with email masking based on requester role
+- Added `/api/auth/admins/:id` DELETE route — superadmin only, prevents deleting own account or another superadmin
+- Added `requireSuperAdmin` middleware — checks JWT cookie and verifies role is superadmin, returns 403 if not
+- Added `rateLimiter.js` middleware — login (5 attempts/15min), forgot password (3 attempts/15min), invite (10 attempts/15min)
+- Added `sendInviteEmail` function to `emailService.js` using Brevo template #4
+- Added `inviteRoutes.js` registered at `/api/invite`
+- Installed `express-rate-limit` and `cookie-parser` packages

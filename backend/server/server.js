@@ -4,8 +4,11 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 import connectDB from './config/db.js';
+
 import authRoutes from './routes/authRoutes.js';
+import inviteRoutes from './routes/inviteRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../../frontend')));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/invite', inviteRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is running!');

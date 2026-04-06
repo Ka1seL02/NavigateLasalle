@@ -1,3 +1,19 @@
+// Check if already logged in
+const checkIfLoggedIn = async () => {
+    try {
+        const response = await fetch('/api/auth/me', {
+            credentials: 'include'
+        });
+        if (response.ok) {
+            window.location.href = 'a_dashboard.html';
+        }
+    } catch (error) {
+        // not logged in, stay on login page
+    }
+};
+
+checkIfLoggedIn();
+
 const form = document.getElementById('requestResetForm');
 const modalOverlay = document.querySelector('.modal-overlay');
 const closeBtn = document.querySelector('.close-btn');
