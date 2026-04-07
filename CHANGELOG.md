@@ -81,3 +81,34 @@
 - Added `sendInviteEmail` function to `emailService.js` using Brevo template #4
 - Added `inviteRoutes.js` registered at `/api/invite`
 - Installed `express-rate-limit` and `cookie-parser` packages
+
+## [v0.4] 12:18 - 2026-04-07
+### Frontend - Admin FAQ
+- `a_faq.html` — FAQ page layout with page header, add new FAQ button, accordion FAQ list, create modal and delete confirmation modal
+- `a_faq.css` — styles for FAQ items, accordion, inline edit inputs, action buttons, cancel edit button
+- `a_faq.js` — full implementation with fetch and render FAQs, accordion toggle, create FAQ via modal, inline edit with save/cancel, duplicate question prevention toast, empty field toast, toggle visibility with eye/eye-slash icon, delete with confirmation modal, toast notifications for all actions
+### Backend
+- Added `FAQ` model with fields: question, answer, isVisible (default true), timestamps
+- Added `faqRoutes.js` registered at `/api/faq`
+- `GET /api/faq` — returns all FAQs sorted by createdAt descending
+- `POST /api/faq` — creates new FAQ, prevents duplicate questions case-insensitively
+- `PUT /api/faq/:id` — updates FAQ question, answer, isVisible, prevents duplicate questions excluding current FAQ
+- `DELETE /api/faq/:id` — deletes FAQ by id
+- Added `seedFAQ.js` — seeds 10 sample FAQs for testing
+- Renamed `seed.js` to `seedAccount.js` for clarity
+
+## [v0.5] - 2026-04-07
+### Frontend - Admin Posts
+- `a_posts.html` — posts listing page layout with page header, toolbar with search and create button, view toggle (list/grid), filter by tag and status, posts container with sample post cards, delete confirmation modal
+- `a_posts.js` — basic JS for list/grid view toggle, delete modal open/close/confirm (DOM only, not yet wired to backend)
+### Backend
+- Added `Post` model with fields: title, category, body, images (url + publicId), status (Published/Scheduled), scheduledAt, publishedAt, author (ref Admin), timestamps
+- Added `postRoutes.js` registered at `/api/posts`
+- `GET /api/posts` — returns all posts with optional filters (status, category) and sort by publishedAt
+- `GET /api/posts/:id` — returns single post
+- `POST /api/posts` — creates post, uploads images to Cloudinary, validates scheduled time is 15 mins in future
+- `PUT /api/posts/:id` — updates post, handles image removal from Cloudinary and new image uploads
+- `DELETE /api/posts/:id` — deletes post and removes images from Cloudinary
+- Added `scheduler.js` — node-cron runs every minute, auto-publishes scheduled posts when scheduledAt time is reached
+- Added `startScheduler()` call in `server.js`
+- Added Cloudinary credentials to `.env`

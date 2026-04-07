@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global Style -->
+    <link rel="stylesheet" href="../shared/css/root.css">
+    <!-- Specific Page Style -->
+    <link rel="stylesheet" href="css/a_sidebar.css">
+    <link rel="stylesheet" href="css/a_toast.css">
+    <link rel="stylesheet" href="css/a_posts.css">
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">Posts</h1>
+            <p class="page-subtitle">
+                Manage news, announcements, and updates displayed on the kiosk.
+            </p>
+        </div>
+        <div class="main-content">
+            <!-- Top Toolbar -->
+            <div class="posts-toolbar">
+                <!-- 1st row (search and create button)-->
+                <div class="toolbar-row">
+                    <input type="text" class="search-posts" placeholder="Search by title...">
+                    <button class="create-post-btn">
+                        <i class="bx bx-edit-alt"></i> Create Post
+                    </button>
+                </div>
+                <!-- 2nd row (toggle view & filters)-->
+                <div class="toolbar-row">
+                    <div class="view-toggle">
+                        <button class="active" id="listViewBtn" title="List"><i class='bx bx-list-ul'></i></button>
+                        <button id="gridViewBtn" title="Grid"><i class='bx bx-grid-alt'></i></button>
+                    </div>
+                    <div class="posts-filters">
+                        <select id="postFilterTag">
+                            <option value="all">Tags</option>
+                            <option value="news">News</option>
+                            <option value="announcement">Announcements</option>
+                            <option value="event">Events</option>
+                        </select>
+                        <select id="postFilterStatus">
+                            <option value="all">Status</option>
+                            <option value="published">Published</option>
+                            <option value="scheduled">Scheduled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Container -->
+            <div class="posts-container" id="postsContainer">
+                <!-- Example Post -->
+                <div class="post-card">
+                    <div class="post-thumbnail">
+                        <img src="img/sample-image.png" alt="Post Image">
+                    </div>
+                    <div class="post-meta">
+                        <span class="post-tag">News</span>
+                        <span class="post-status">Published</span>
+                    </div>
+
+                    <h3 class="post-title">New Campus Building Opens</h3>
+
+                    <p class="post-date">May 12, 2026</p>
+
+                    <div class="post-actions">
+                        <button class="action-view-post"><i class='bx bx-show'></i></button>
+                        <button class="action-edit-post"><i class='bx bx-edit'></i></button>
+                        <button class="action-delete-post"><i class='bx bx-trash'></i></button>
+                    </div>
+                </div>
+                <!-- Other posts -->
+                 <div class="post-card">
+                    <div class="post-thumbnail">
+                        <img src="img/sample-image.png" alt="Post Image">
+                    </div>
+                    <div class="post-meta">
+                        <span class="post-tag">News</span>
+                        <span class="post-status">Published</span>
+                    </div>
+
+                    <h3 class="post-title">New Campus Building Opens New Campus Building Opens New Campus Building Opens</h3>
+
+                    <p class="post-date">May 12, 2026</p>
+
+                    <div class="post-actions">
+                        <button class="action-view-post"><i class='bx bx-show'></i></button>
+                        <button class="action-edit-post"><i class='bx bx-edit'></i></button>
+                        <button class="action-delete-post"><i class='bx bx-trash'></i></button>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-thumbnail">
+                        <img src="img/sample-image.png" alt="Post Image">
+                    </div>
+                    <div class="post-meta">
+                        <span class="post-tag">News</span>
+                        <span class="post-status">Published</span>
+                    </div>
+
+                    <h3 class="post-title">New Campus Building Opens New Campus Building Opens</h3>
+
+                    <p class="post-date">May 12, 2026</p>
+
+                    <div class="post-actions">
+                        <button class="action-view-post"><i class='bx bx-show'></i></button>
+                        <button class="action-edit-post"><i class='bx bx-edit'></i></button>
+                        <button class="action-delete-post"><i class='bx bx-trash'></i></button>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-thumbnail">
+                        <img src="img/sample-image.png" alt="Post Image">
+                    </div>
+                    <div class="post-meta">
+                        <span class="post-tag">News</span>
+                        <span class="post-status">Published</span>
+                    </div>
+
+                    <h3 class="post-title">New Campus Building Opens</h3>
+
+                    <p class="post-date">May 12, 2026</p>
+
+                    <div class="post-actions">
+                        <button class="action-view-post"><i class='bx bx-show'></i></button>
+                        <button class="action-edit-post"><i class='bx bx-edit'></i></button>
+                        <button class="action-delete-post"><i class='bx bx-trash'></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+     <div class="modal-overlay hidden" id="modalOverlay">
+        <!-- Delete Confirmation Modal -->
+        <div class="modal hidden" id="deleteConfirmModal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                        <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Confirm Deletion</h2>
+                <button class="modal-close-btn" id="cancelDelete">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <p>Are you sure you want to delete this post?</p>
+            <div class="modal-footer">
+                <button class="confirm-btn" id="confirmDeletePost">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script type="module" src="js/a_sidebar.js"></script>
+    <script type="module" src="js/a_posts.js"></script>
+</body>
+
+</html>
