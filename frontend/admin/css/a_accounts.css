@@ -240,6 +240,7 @@ tr:hover td {
     margin: 0;
 }
 .page-input-wrap input[type=number] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }
 
