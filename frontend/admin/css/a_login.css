@@ -11,7 +11,6 @@ body {
     background: var(--dirty-white);
 }
 
-/* LEFT SIDE */
 .form-section {
     flex: 1;
     display: flex;
@@ -48,6 +47,7 @@ body {
     color: var(--grey);
     margin-top: 1rem;
 }
+/* Error message */
 .error-message {
     font-size: 0.875rem;
     color: var(--dark-red);
@@ -132,14 +132,12 @@ form {
     background: var(--green);
 }
 
-/* RIGHT SIDE */
 .image-section {
     flex: 0.75;
     border-radius: 25px;
     background: url('../img/a_login_bg.png') center/cover no-repeat;
 }
 
-/* Hidden */
 .hidden {
     display: none;
 }

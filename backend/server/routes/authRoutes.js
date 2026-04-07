@@ -60,7 +60,6 @@ router.post('/register', async (req, res) => {
     try {
         const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-        // Look in Invite collection not Admin
         const invite = await Invite.findOne({
             inviteToken: hashedToken,
             inviteTokenExpires: { $gt: Date.now() }
@@ -70,10 +69,8 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Invalid or expired invite link.' });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create account using email from invite
         const newAdmin = new Admin({
             name,
             email: invite.email,
@@ -82,8 +79,6 @@ router.post('/register', async (req, res) => {
         });
 
         await newAdmin.save();
-
-        // Delete invite after successful registration
         await Invite.deleteOne({ _id: invite._id });
 
         res.json({ message: 'Account created successfully.' });
@@ -176,7 +171,6 @@ router.post('/reset-password', async (req, res) => {
             return res.status(400).json({ message: 'Invalid or expired reset token.' });
         }
 
-        // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         admin.password = hashedPassword;

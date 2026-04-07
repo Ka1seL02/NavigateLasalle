@@ -1,17 +1,18 @@
-// Check if already logged in
+// Authenticate if a user is already logged in
 const checkIfLoggedIn = async () => {
     try {
         const response = await fetch('/api/auth/me', {
             credentials: 'include'
         });
+        // If user is logged in, redirect the user to dashboard
         if (response.ok) {
             window.location.href = 'a_dashboard.html';
         }
-    } catch (error) {
-        // not logged in, stay on login page
+    } catch (error) { 
+        // If user isn't logged in nothing happens
+        // Also does nothing if fetch fails
     }
 };
-
 checkIfLoggedIn();
 
 const form = document.getElementById('requestResetForm');
@@ -34,7 +35,6 @@ form.addEventListener('submit', async (e) => {
 
         const data = await response.json();
 
-        // Always show success modal regardless
         modalOverlay.classList.remove('hidden');
 
     } catch (error) {

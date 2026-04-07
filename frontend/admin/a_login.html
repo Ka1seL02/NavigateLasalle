@@ -5,52 +5,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigate La Salle</title>
-    <!-- Global Style -->
+    <!-- Global style -->
     <link rel="stylesheet" href="../shared/css/root.css">
-    <!-- Specific Page Style -->
+    <!-- Specific page style and other resources -->
     <link rel="stylesheet" href="css/a_login.css">
-    <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 </head>
 
 <body>
-    <!-- Form Section -->
     <div class="form-section">
         <div class="system-brand">
             <img src="img/a_logo.png">
             <span>Navigate La Salle</span>
         </div>
-
         <div class="header">
             <h1>Welcome<br>Back!</h1>
             <p>Sign in to your admin account to continue.</p>
         </div>
-
         <div class="error-message hidden">
             <p>Incorrect username or password.</p>
             <i class='bx bx-x'></i>
         </div>
-
         <form id="loginForm">
             <div class="input-field">
                 <input type="email" id="email" placeholder="Email" />
             </div>
-
             <div class="input-field">
                 <input type="password" id="password" placeholder="Password" />
                 <i class='bx bx-hide toggle-password' id="togglePassword"></i>
             </div>
             <a href="a_forgot-password.html" class="forgot-link">Forgot Password?</a>
-
             <button type="submit" class="login-btn">Login</button>
         </form>
-
     </div>
 
-    <!-- Image Section -->
     <div class="image-section"></div>
 
-    <!-- JavaScript -->
     <script src="js/a_login.js"></script>
 </body>
 
