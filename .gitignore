@@ -1,19 +1,22 @@
-# Dependencies
+# Node.js
 node_modules/
-
-# Enviroment variables
+package-lock.json
 .env
+.DS_Store
 
 # Logs
+logs/
 *.log
 npm-debug.log*
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
+# VSCode
 .vscode/
-.idea
-*.swp
-*.swo
+
+# Frontend build (if using build tools)
+dist/
+build/
+
+# Optional: IDE files
+*.idea/
+*.sublime-project
+*.sublime-workspace

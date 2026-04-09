@@ -1,0 +1,300 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+main {
+    flex: 1;
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--white);
+}
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Inter', serif;
+    color: var(--dark-green);
+}
+.page-count {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--white);
+    text-align: center;
+    background-color: var(--light-green);
+    border-radius: 999px;
+}
+.main-content {
+    flex: 1;
+}
+
+/* Toolbar - Search and invite button */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.search-bar {
+    width: 300px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+}
+.search-bar i {
+    color: var(--light-grey);
+}
+.search-bar input {
+    outline: none;
+    font-size: 0.9rem;
+    color: var(--dark-green);
+    border: none;
+    background: transparent;
+}
+.search-bar input::placeholder {
+    color: var(--light-grey);
+    font-family: 'Inter', sans-serif;
+}
+.invite-btn {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--green);
+    border: none;
+    border-radius: 8px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.invite-btn:hover {
+    background: var(--dark-green);
+}
+.invite-btn i {
+    font-size: 1.1rem;
+}
+
+/* Account list table */
+.table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 12px;
+}
+table {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    border-collapse: collapse;
+}
+thead {
+    background: var(--off-white);
+}
+th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--grey);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--shadow);
+}
+td {
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    color: var(--dark-grey);
+    border-bottom: 1px solid var(--shadow);
+}
+tr:last-child td {
+    border-bottom: none;
+}
+tr:hover td {
+    background: var(--sage-green);
+}
+/* Custom date style for status */
+.last-login {
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    border-radius: 15px;
+}
+.last-login.fresh {
+    color: var(--green);
+    background: var(--sage-green);
+}
+.last-login.stale {
+    color: var(--grey);
+    background: var(--off-white);
+}
+/* Delete Button action */
+.delete-btn {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    font-size: 1.1rem;
+    color: var(--light-grey);
+    border-radius: 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+}
+.delete-btn:hover {
+    color: var(--red);
+    background: var(--shadow);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 4px;
+}
+.pagination-info {
+    font-size: 0.8rem;
+    color: var(--light-grey);
+    font-family: 'Inter', sans-serif;
+}
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.page-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--dark-green);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+.page-btn:hover {
+    background: var(--sage-green);
+    color: var(--dark-green);
+}
+.page-btn:disabled {
+    color: var(--light-grey);
+    cursor: not-allowed;
+    background: var(--off-white);
+}
+.page-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--dark-grey);
+    font-family: 'Inter', sans-serif;
+    margin-right: 0.25rem;
+}
+.page-input-wrap input {
+    width: 35px;
+    height: 32px;
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--dark-green);
+    outline: none;
+    background: var(--white);
+}
+.page-input-wrap input:focus {
+    border-color: var(--green);
+}
+.page-input-wrap input::-webkit-outer-spin-button,
+.page-input-wrap input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.page-input-wrap input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+#sendInviteModal .close-btn,
+#confirmDeleteModal .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.3rem;
+    color: var(--light-grey);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+#sendInviteModal .close-btn:hover,
+#confirmDeleteModal .close-btn:hover {
+    color: var(--dark-grey);
+}
+#sendInviteModal .input-row {
+    display: flex;
+    margin-top: 12px;
+    align-items: center;
+    gap: 8px;
+}
+#sendInviteModal .input-row input {
+    flex: 1;
+    padding: 10px 18px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    outline: none;
+}
+#sendInviteModal .confirm-btn {
+    padding: 10px 18px;
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    background: var(--green);
+    transition: background 0.3s;
+}
+#sendInviteModal .confirm-btn:hover {
+    background: var(--dark-green);
+}
+#sendInviteModal .confirm-btn i {
+    font-size: 1rem;
+    color: var(--white);
+}
+#confirmDeleteModal .confirm-btn {
+    padding: 10px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    background: var(--red);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#deleteConfirmModal .confirm-btn:hover {
+    background: var(--dark-red);
+}

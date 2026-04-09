@@ -6,6 +6,7 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 
 const transactionalEmailsApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
+// Send reset email
 export const sendResetEmail = async (toEmail, toName, resetLink) => {
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
@@ -24,6 +25,7 @@ export const sendResetEmail = async (toEmail, toName, resetLink) => {
     await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
 };
 
+// Invite email
 export const sendInviteEmail = async (toEmail, inviteLink) => {
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 

@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    display: flex;
+    height: 100vh;
+    padding: 0.5rem;
+    background: var(--dirty-white);
+}
+.form-section {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+/* Form section */
+.form-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 500px;
+    gap: 2rem;
+}
+/* Icon */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 500px;
+    font-family: 'EB Garamond', sans-serif;
+    font-weight: bolder;
+    color: var(--dark-grey);
+}
+.brand img {
+    width: 20px;
+    height: auto;
+}
+/* Header */
+.register-header {
+    font-family: 'Inter', sans-serif;
+    color: var(--black);
+}
+.register-header h1 {
+    font-weight: bolder;
+    font-size: 2rem;
+    line-height: 0.875;
+}
+.register-header p {
+    margin-top: 0.875rem;
+    font-size: 1rem;
+    color: var(--grey);
+}
+/* Login form */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    width: 100%;
+}
+.form-group {
+    position: relative;
+    width: 300px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border: 1.5px solid var(--light-grey);
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+.form-group label {
+    position: absolute;
+    padding: 0 0.5rem;
+    left: 0.5rem;
+    top: 45%;
+    transform: translateY(-50%);
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--grey);
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+.form-group input {
+    width: 100%;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--black);
+    border: none;
+    outline: none;
+    background: transparent;
+}
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
+    top: -7px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--green);
+}
+.form-group:focus-within {
+    border-color: var(--green);
+}
+.form-group:focus-within label,
+.form-group input:not(:placeholder-shown) + label {
+    background: var(--dirty-white);
+}
+.input-field i {
+    color: var(--grey);
+    cursor: pointer;
+}
+/* Password rules */
+.password-rules {
+    font-size: 0.875rem;
+    color: var(--grey);
+    margin: 0.25rem 0;
+    font-family: 'Inter', sans-serif;
+}
+.password-rules ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-top: 1rem;
+}
+.password-rules li {
+    margin-bottom: 0.25rem;
+}
+.password-rules li::marker {
+    font-size: 1.25rem;
+}
+/* Register button */
+.register-btn {
+    width: 300px;
+    padding: 12px;
+    color: var(--white);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    background: var(--dark-green);
+    cursor: pointer;
+    transition: background 0.5s ease;
+}
+.register-btn:hover {
+    background: var(--green);
+}
+
+/* Image card */
+.image-section {
+    flex: 0.75;
+    min-width: 400px;
+    border-radius: 25px;
+    background: url('../img/image3.png') center/cover no-repeat;
+}
+
+.hidden {
+    display: none !important;
+}

@@ -1,36 +1,26 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "type": "module",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "nodemon server/server.js"
+    "dev": "nodemon server/server.js",
+    "start": "node server/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.4.1",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.3.2",
-    "express-session": "^1.18.2",
-    "from": "^0.1.7",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.0.1",
-    "mongoose-sequence": "^6.0.1",
-    "multer": "^2.0.2",
-    "multer-storage-cloudinary": "^2.2.1",
-    "node-cron": "^4.2.1",
-    "sharp": "^0.34.5",
+    "mongoose": "^9.4.1",
     "sib-api-v3-sdk": "^8.5.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.14"
   }
 }
