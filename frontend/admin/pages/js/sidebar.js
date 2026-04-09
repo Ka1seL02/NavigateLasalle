@@ -58,7 +58,7 @@ cancelLogout.addEventListener('click', () => {
 });
 
 confirmLogout.addEventListener('click', async () => {
-    showLoading();
+    await showLoading();
     await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/admin/login.html';
 });
@@ -66,6 +66,26 @@ confirmLogout.addEventListener('click', async () => {
 // ─── Inactivity Modal OK ──────────────────────────────────────────────────────
 document.getElementById('inactiveOkBtn').addEventListener('click', () => {
     window.location.href = '/admin/login.html';
+});
+
+// ─── Theme Toggle ─────────────────────────────────────────────────────────────
+const themeSwitch = document.getElementById('themeSwitch');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeSwitch.checked = savedTheme === 'dark';
+themeIcon.className = savedTheme === 'dark' ? 'bx bx-sun' : 'bx bx-moon';
+themeLabel.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+themeSwitch.addEventListener('change', () => {
+    const isDark = themeSwitch.checked;
+    const theme = isDark ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeIcon.className = isDark ? 'bx bx-sun' : 'bx bx-moon';
+    themeLabel.textContent = isDark ? 'Light Mode' : 'Dark Mode';
 });
 
 // ─── Export admin for page-specific use ──────────────────────────────────────

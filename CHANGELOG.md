@@ -46,3 +46,34 @@
 ### Shared
 - loading.html + loading.css + loading.js — global loading overlay system
 - toast.js + toast.css — global toast notification system
+
+## V0.2 — 10/04/2026
+### Frontend — Sidebar
+- Added dark mode / light mode theme toggle switch in sidebar
+- Theme persists across all pages via localStorage
+- Icon switches between moon (light) and sun (dark)
+- Label reflects current mode (Dark Mode / Light Mode)
+- Toggle switch stays visible when sidebar is collapsed, icon and label hide
+### Frontend — Shared
+- Added dark mode CSS variables to root.css via [data-theme="dark"] selector
+### Backend
+- Added FAQ.js model (question, answer, isVisible, unique question constraint)
+- Added faqRoutes.js:
+  - GET /api/faq — fetch all FAQs
+  - POST /api/faq — create new FAQ
+  - PATCH /api/faq/:id — update question, answer, and/or visibility
+  - DELETE /api/faq/:id — delete FAQ
+- Wired faqRoutes in server.js
+### Frontend — FAQ Page
+- faq.html — FAQ management page layout
+- faq.js — dynamic population of FAQ list with:
+  - Collapse/expand per FAQ item with chevron rotation
+  - Inline editing — question input and answer textarea
+  - Textarea auto-height on edit entry
+  - Edit button becomes save during edit mode
+  - Only save and cancel visible during editing
+  - Cancel restores original values
+  - Save calls PATCH with toast feedback for success and errors
+  - Visibility toggle with correct bx-show/bx-hide icon reflecting isVisible
+  - Loading overlay on all fetch operations
+  - Toast notifications for success/error
