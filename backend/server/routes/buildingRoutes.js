@@ -30,7 +30,17 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── Create Building ──────────────────────────────────────────────────────────
-router.post('/', uploadBuilding.array('images', 10), async (req, res) => {
+router.post('/', (req, res, next) => {
+    uploadBuilding.array('images', 10)(req, res, (err) => {
+        if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ error: 'File too large. Maximum size is 10MB per image.' });
+            }
+            return res.status(500).json({ error: 'Upload error.' });
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         const { name, dataId, category, description, isVisible, shape } = req.body;
 
@@ -61,7 +71,17 @@ router.post('/', uploadBuilding.array('images', 10), async (req, res) => {
 });
 
 // ─── Update Building ──────────────────────────────────────────────────────────
-router.patch('/:id', uploadBuilding.array('images', 10), async (req, res) => {
+router.patch('/:id', (req, res, next) => {
+    uploadBuilding.array('images', 10)(req, res, (err) => {
+        if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ error: 'File too large. Maximum size is 10MB per image.' });
+            }
+            return res.status(500).json({ error: 'Upload error.' });
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         const building = await Building.findById(req.params.id);
         if (!building) return res.status(404).json({ error: 'Building not found' });
@@ -90,7 +110,7 @@ router.patch('/:id', uploadBuilding.array('images', 10), async (req, res) => {
         if (name !== undefined) building.name = name;
         if (dataId !== undefined) building.dataId = dataId;
         if (category !== undefined) building.category = category;
-        if (description !== undefined) building.description = description;
+        if (description !== undefined) building.description = description === '' ? null : description;
         if (isVisible !== undefined) building.isVisible = isVisible;
         if (shape !== undefined) building.shape = typeof shape === 'string' ? JSON.parse(shape) : shape;
 

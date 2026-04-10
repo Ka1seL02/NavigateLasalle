@@ -7,9 +7,19 @@ const createStorage = (folder) => new CloudinaryStorage({
     params: {
         folder: `navigate-lasalle/${folder}`,
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+        transformation: [
+            { quality: 'auto', fetch_format: 'auto' }
+        ]
     },
 });
 
-export const uploadBuilding = multer({ storage: createStorage('buildings') });
-export const uploadOffice = multer({ storage: createStorage('offices') });
-export const uploadNews = multer({ storage: createStorage('news') });
+const createUpload = (folder) => multer({
+    storage: createStorage(folder),
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB
+    }
+});
+
+export const uploadBuilding = createUpload('buildings');
+export const uploadOffice = createUpload('offices');
+export const uploadNews = createUpload('news');

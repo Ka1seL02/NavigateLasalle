@@ -136,7 +136,8 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     const dataId = document.getElementById('dataId').value.trim();
     const category = document.getElementById('category').value;
     const isVisible = document.getElementById('isVisible').checked;
-    const description = quill.root.innerHTML;
+    const descriptionContent = quill.root.innerHTML;
+    const description = descriptionContent === '<p><br></p>' ? null : descriptionContent;
 
     if (!name || !dataId || !category) {
         showToast('error', 'Name, Data ID and Category are required.');
@@ -150,7 +151,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
         formData.append('name', name);
         formData.append('dataId', dataId);
         formData.append('category', category);
-        formData.append('description', description);
+        formData.append('description', description || '');
         formData.append('isVisible', isVisible);
 
         if (removedImages.length > 0) {
