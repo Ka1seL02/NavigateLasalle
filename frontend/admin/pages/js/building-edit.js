@@ -66,8 +66,10 @@ const isVisibleInput = document.getElementById('isVisible');
 const visibilityLabel = document.getElementById('visibilityLabel');
 
 isVisibleInput.addEventListener('change', () => {
-    visibilityLabel.textContent = isVisibleInput.checked ? 'Visible' : 'Hidden';
+    visibilityLabel.textContent = isVisibleInput.checked ? 'Open' : 'Under Maintenance';
 });
+
+document.getElementById('visibilityLabel').textContent = building.isVisible ? 'Open' : 'Under Maintenance';
 
 // ─── Existing Images ──────────────────────────────────────────────────────────
 existingImages = building.images ? [...building.images] : [];
