@@ -15,6 +15,17 @@ const mapTabBtn = document.getElementById('mapTabBtn');
 const buildingsCount = document.getElementById('buildingsCount');
 const addBuildingBtn = document.getElementById('addBuildingBtn');
 
+// ─── Restore View from URL ────────────────────────────────────────────────────
+const urlParams = new URLSearchParams(window.location.search);
+const savedView = urlParams.get('view');
+
+if (savedView === 'map') {
+    mapTabBtn.classList.add('active');
+    listTabBtn.classList.remove('active');
+    mapView.classList.remove('hidden');
+    listView.classList.add('hidden');
+}
+
 // ─── View Tabs ────────────────────────────────────────────────────────────────
 listTabBtn.addEventListener('click', () => {
     listTabBtn.classList.add('active');
@@ -45,6 +56,7 @@ async function fetchBuildings() {
         allBuildings = data.buildings;
         buildingsCount.textContent = allBuildings.length;
         renderList();
+        if (savedView === 'map') renderMap();
     } catch (err) {
         showToast('error', 'Failed to load buildings.');
     } finally {
@@ -165,7 +177,6 @@ function openViewModal(building) {
     selectedBuildingId = building._id;
     currentImageIndex = 0;
 
-    // Gallery
     function startAutoSwap(images) {
         clearInterval(autoSwapInterval);
         autoSwapInterval = setInterval(() => {
@@ -179,15 +190,15 @@ function openViewModal(building) {
 
     if (building.images && building.images.length > 0) {
         modalGallery.innerHTML = `
-        <img src="${building.images[0]}" alt="${building.name}" id="galleryImg" />
-        ${building.images.length > 1 ? `
-            <div class="gallery-nav">
-                ${building.images.map((_, i) => `
-                    <div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
-                `).join('')}
-            </div>
-        ` : ''}
-    `;
+            <img src="${building.images[0]}" alt="${building.name}" id="galleryImg" />
+            ${building.images.length > 1 ? `
+                <div class="gallery-nav">
+                    ${building.images.map((_, i) => `
+                        <div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
+                    `).join('')}
+                </div>
+            ` : ''}
+        `;
 
         if (building.images.length > 1) {
             modalGallery.querySelectorAll('.gallery-dot').forEach(dot => {
@@ -196,18 +207,18 @@ function openViewModal(building) {
                     document.getElementById('galleryImg').src = building.images[currentImageIndex];
                     modalGallery.querySelectorAll('.gallery-dot').forEach(d => d.classList.remove('active'));
                     dot.classList.add('active');
-                    startAutoSwap(building.images); // reset timer
+                    startAutoSwap(building.images);
                 });
             });
             startAutoSwap(building.images);
         }
     } else {
         modalGallery.innerHTML = `
-        <div class="no-image">
-            <i class='bx bx-image'></i>
-            <p>No images available</p>
-        </div>
-    `;
+            <div class="no-image">
+                <i class='bx bx-image'></i>
+                <p>No images available</p>
+            </div>
+        `;
     }
 
     modalCategory.textContent = building.category;
@@ -216,9 +227,9 @@ function openViewModal(building) {
     modalDescription.innerHTML = building.description || '<p style="color: var(--light-grey); font-family: Noto Sans, sans-serif; font-size: 0.9rem;">No description available.</p>';
 
     editModalBtn.onclick = () => {
-    const currentView = mapView.classList.contains('hidden') ? 'list' : 'map';
-    window.location.href = `building-edit.html?id=${building._id}&view=${currentView}`;
-};
+        const currentView = mapView.classList.contains('hidden') ? 'list' : 'map';
+        window.location.href = `building-edit.html?id=${building._id}&view=${currentView}`;
+    };
 
     deleteModalBtn.onclick = () => {
         viewModalOverlay.classList.add('hidden');

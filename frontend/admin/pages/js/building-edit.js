@@ -4,6 +4,7 @@ import { showLoading, hideLoading } from '/shared/js/loading.js';
 // ─── Check ID from URL ────────────────────────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
 const buildingId = params.get('id');
+const view = params.get('view') || 'list';
 
 if (!buildingId) {
     window.location.href = 'building.html';
@@ -24,14 +25,14 @@ try {
     });
 
     if (!res.ok) {
-        window.location.href = 'building.html';
+        window.location.href = `building.html?view=${view}`;
     }
 
     const data = await res.json();
     building = data.building;
 
 } catch (err) {
-    window.location.href = 'building.html';
+    window.location.href = `building.html?view=${view}`;
 } finally {
     hideLoading();
 }
@@ -126,7 +127,7 @@ imageInput.addEventListener('change', () => {
 
 // ─── Cancel ───────────────────────────────────────────────────────────────────
 document.getElementById('cancelBtn').addEventListener('click', () => {
-    window.location.href = 'building.html';
+    window.location.href = `building.html?view=${view}`;
 });
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
@@ -175,7 +176,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 
         showToast('success', 'Building updated successfully!');
         setTimeout(() => {
-            window.location.href = 'building.html';
+            window.location.href = `building.html?view=${view}`;
         }, 1500);
 
     } catch (err) {
