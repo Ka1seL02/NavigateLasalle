@@ -3,71 +3,70 @@
 
     <div class="sidebar-header">
         <img src="../img/brand.png" alt="Navigate La Salle" class="sidebar-logo">
-        <p class="sidebar-brand">Navigate<span> La Salle</span></p>
-        <button class="toggle-sidebar-btn" id="toggleSidebar">
-            <i class='bx bx-chevron-left'></i>
-        </button>
     </div>
 
     <nav class="sidebar-nav">
-        <!-- Navigation Links -->
-        <p class="nav-label">MAIN</p>
-        <a href="dashboard.html" class="nav-link" data-page="dashboard">
-            <i class='bx bxs-dashboard'></i>
-            <span>Dashboard</span>
-        </a>
+        <!-- MAIN -->
+        <div class="nav-section">
+            <a href="dashboard.html" class="nav-link" data-page="dashboard">
+                <i class='bx bxs-dashboard'></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
 
-        <p class="nav-label">CONTENT</p>
-        <a href="posts.html" class="nav-link" data-page="posts">
-            <i class='bx bxs-news'></i>
-            <span>Posts</span>
-        </a>
-        <a href="buildings.html" class="nav-link" data-page="buildings">
-            <i class='bx bxs-building'></i>
-            <span>Buildings</span>
-        </a>
-        <a href="offices.html" class="nav-link" data-page="offices">
-            <i class='bx bxs-briefcase-alt'></i>
-            <span>Offices</span>
-        </a>
-        <a href="campus-info.html" class="nav-link" data-page="events">
-            <i class='bx bxs-info-circle'></i>
-            <span>Campus Info</span>
-        </a>
-        <a href="faq.html" class="nav-link" data-page="faq">
-            <i class='bx bxs-help-circle'></i>
-            <span>FAQ</span>
-        </a>
+        <div class="nav-divider"></div>
 
-        <p class="nav-label">SYSTEM</p>
-        <a href="accounts.html" class="nav-link" data-page="accounts">
-            <i class='bx bxs-user-account'></i>
-            <span>Accounts</span>
-        </a>
-        <a href="settings.html" class="nav-link" data-page="settings">
-            <i class='bx bxs-cog'></i>
-            <span>Settings</span>
-        </a>
-        <div class="theme-toggle">
-            <i class='bx bx-moon' id="themeIcon"></i>
-            <span id="themeLabel">Dark Mode</span>
-            <label class="switch">
-                <input type="checkbox" id="themeSwitch">
-                <span class="slider"></span>
-            </label>
+        <!-- CONTENT -->
+        <div class="nav-section">
+            <a href="posts.html" class="nav-link" data-page="posts">
+                <i class='bx bxs-news'></i>
+                <span>Posts</span>
+            </a>
+            <a href="building.html" class="nav-link" data-page="buildings">
+                <i class='bx bxs-building'></i>
+                <span>Buildings</span>
+            </a>
+            <a href="offices.html" class="nav-link" data-page="offices">
+                <i class='bx bxs-briefcase-alt'></i>
+                <span>Offices</span>
+            </a>
+            <a href="campus-info.html" class="nav-link" data-page="campus-info">
+                <i class='bx bxs-info-circle'></i>
+                <span>Campus Info</span>
+            </a>
+            <a href="faq.html" class="nav-link" data-page="faq">
+                <i class='bx bxs-help-circle'></i>
+                <span>FAQ</span>
+            </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- SYSTEM -->
+        <div class="nav-section">
+            <a href="accounts.html" class="nav-link" data-page="accounts">
+                <i class='bx bxs-user-account'></i>
+                <span>Accounts</span>
+            </a>
+            <a href="feedbacks.html" class="nav-link" data-page="feedbacks">
+                <i class='bx bxs-star'></i>
+                <span>Feedbacks</span>
+            </a>
+            <a href="settings.html" class="nav-link" data-page="settings">
+                <i class='bx bxs-cog'></i>
+                <span>Settings</span>
+            </a>
         </div>
     </nav>
 
     <div class="sidebar-footer">
-        <div class="admin-info">
-            <div class="admin-avatar" id="adminAvatar">A</div>
-            <div class="admin-details">
-                <p class="admin-name" id="adminName">Admin Name</p>
-                <p class="admin-role" id="adminRole">Admin Role</p>
-            </div>
+        <div class="theme-toggle">
+            <input type="checkbox" id="themeSwitch" />
+            <i class='bx bx-moon' id="themeIcon"></i>
         </div>
-        <a href="#" class="logout-btn" id="logoutBtn" title="Logout">
+        <a href="#" class="logout-btn" id="logoutBtn" title="Sign Out">
             <i class='bx bx-log-out'></i>
+            <span>Sign Out</span>
         </a>
     </div>
 

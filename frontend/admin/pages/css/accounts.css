@@ -3,140 +3,202 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     height: 100vh;
     overflow: hidden;
     display: flex;
 }
+
 main {
     flex: 1;
     padding: 2rem 2.5rem;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    background: var(--white);
+    background: var(--dirty-white);
+    align-items: flex-start;
 }
+
+/* ─── Page Header ────────────────────────────────────────────────────────────── */
 .page-title {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    font-family: 'Inter', serif;
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-family: 'EB Garamond', serif;
     color: var(--dark-green);
 }
 .page-count {
-    padding: 0.15rem 0.5rem;
-    font-size: 0.8rem;
-    font-weight: 600;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
     color: var(--white);
-    text-align: center;
-    background-color: var(--light-green);
+    background: var(--green);
     border-radius: 999px;
 }
+
 .main-content {
-    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid var(--shadow);
+    padding: 1.5rem;
+    gap: 1rem;
 }
 
-/* Toolbar - Search and invite button */
+/* ─── Toolbar ────────────────────────────────────────────────────────────────── */
 .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
 }
 .search-bar {
-    width: 300px;
+    width: 280px;
     display: flex;
     align-items: center;
-    padding: 10px 15px;
+    padding: 9px 14px;
     gap: 8px;
-    font-family: 'Inter', sans-serif;
+    background: var(--dirty-white);
     border: 1px solid var(--shadow);
     border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-bar:focus-within {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
 }
 .search-bar i {
     color: var(--light-grey);
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 .search-bar input {
     outline: none;
-    font-size: 0.9rem;
-    color: var(--dark-green);
+    font-size: 0.875rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
     border: none;
     background: transparent;
+    width: 100%;
 }
 .search-bar input::placeholder {
     color: var(--light-grey);
-    font-family: 'Inter', sans-serif;
 }
 .invite-btn {
     display: flex;
     align-items: center;
-    padding: 10px 18px;
+    padding: 9px 18px;
     gap: 8px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Noto Sans', sans-serif;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--white);
-    background: var(--green);
+    background: var(--dark-green);
     border: none;
     border-radius: 8px;
-    transition: background 0.2s;
     cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 64, 28, 0.2);
 }
 .invite-btn:hover {
-    background: var(--dark-green);
+    background: var(--green);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25);
+}
+.invite-btn:active {
+    transform: translateY(0);
 }
 .invite-btn i {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
-/* Account list table */
+/* ─── Table ──────────────────────────────────────────────────────────────────── */
 .table-wrapper {
-    flex: 1;
     overflow-y: auto;
-    background: var(--white);
+    border-radius: 10px;
     border: 1px solid var(--shadow);
-    border-radius: 12px;
 }
 table {
     width: 100%;
-    font-family: 'Inter', sans-serif;
     border-collapse: collapse;
+    font-family: 'Noto Sans', sans-serif;
 }
 thead {
     background: var(--off-white);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 th {
-    padding: 14px 16px;
+    padding: 12px 16px;
     text-align: left;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--grey);
-    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     border-bottom: 1px solid var(--shadow);
 }
 td {
-    padding: 14px 16px;
+    padding: 13px 16px;
     font-size: 0.875rem;
     color: var(--dark-grey);
-    border-bottom: 1px solid var(--shadow);
-}
-tr:last-child td {
-    border-bottom: none;
 }
 tr:hover td {
+    background: var(--dirty-white);
+}
+
+/* ─── You Badge ──────────────────────────────────────────────────────────────── */
+.you-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-green);
+    background: var(--sage-green);
+    border: 1px solid var(--green);
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+    margin-left: 6px;
+}
+
+/* ─── Role Badge ─────────────────────────────────────────────────────────────── */
+.role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+}
+.role-badge.admin {
+    color: var(--green);
     background: var(--sage-green);
 }
-/* Custom date style for status */
+.role-badge.superadmin {
+    color: var(--dark-green);
+    background: var(--sage-green);
+    border: 1px solid var(--green);
+}
+
+/* ─── Last Login ─────────────────────────────────────────────────────────────── */
 .last-login {
-    padding: 4px 12px;
-    font-size: 0.8rem;
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.75rem;
     font-weight: 500;
-    font-family: 'Inter', sans-serif;
-    border-radius: 15px;
+    font-family: 'Noto Sans', sans-serif;
+    border-radius: 999px;
 }
 .last-login.fresh {
     color: var(--green);
@@ -146,35 +208,39 @@ tr:hover td {
     color: var(--grey);
     background: var(--off-white);
 }
-/* Delete Button action */
+
+/* ─── Delete Button ──────────────────────────────────────────────────────────── */
 .delete-btn {
     display: flex;
     align-items: center;
-    padding: 8px;
-    font-size: 1.1rem;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
     color: var(--light-grey);
     border-radius: 6px;
-    border: none;
+    border: 1px solid var(--shadow);
     background: none;
     cursor: pointer;
-    transition: color 0.2s, background 0.2s;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
 }
 .delete-btn:hover {
     color: var(--red);
-    background: var(--shadow);
+    background: var(--light-red);
+    border-color: var(--red);
 }
 
-/* Pagination */
+/* ─── Pagination ─────────────────────────────────────────────────────────────── */
 .pagination {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 4px;
+    padding: 4px 0;
 }
 .pagination-info {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--light-grey);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Noto Sans', sans-serif;
 }
 .pagination-controls {
     display: flex;
@@ -182,48 +248,49 @@ tr:hover td {
     gap: 8px;
 }
 .page-btn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border: 1px solid var(--shadow);
     border-radius: 6px;
     background: var(--white);
     color: var(--dark-green);
-    font-size: 1.1rem;
+    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s, border-color 0.2s;
 }
 .page-btn:hover {
     background: var(--sage-green);
-    color: var(--dark-green);
+    border-color: var(--green);
 }
 .page-btn:disabled {
     color: var(--light-grey);
     cursor: not-allowed;
     background: var(--off-white);
+    border-color: var(--shadow);
 }
 .page-input-wrap {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--dark-grey);
-    font-family: 'Inter', sans-serif;
-    margin-right: 0.25rem;
+    font-family: 'Noto Sans', sans-serif;
 }
 .page-input-wrap input {
-    width: 35px;
-    height: 32px;
+    width: 36px;
+    height: 30px;
     border: 1px solid var(--shadow);
     border-radius: 6px;
     text-align: center;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.8rem;
     color: var(--dark-green);
     outline: none;
     background: var(--white);
+    transition: border-color 0.2s;
 }
 .page-input-wrap input:focus {
     border-color: var(--green);
@@ -238,63 +305,136 @@ tr:hover td {
     -moz-appearance: textfield;
 }
 
-#sendInviteModal .close-btn,
-#confirmDeleteModal .close-btn {
+/* ─── Modals ─────────────────────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(2px);
+}
+.modal {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 16px;
+    width: 420px;
+    font-family: 'Noto Sans', sans-serif;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+}
+.modal-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--off-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.modal-header h2 {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-green);
+    flex: 1;
+}
+.modal p {
+    font-size: 0.875rem;
+    color: var(--light-grey);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+.close-btn {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: var(--light-grey);
     background: none;
     border: none;
     cursor: pointer;
     transition: color 0.2s;
-}
-#sendInviteModal .close-btn:hover,
-#confirmDeleteModal .close-btn:hover {
-    color: var(--dark-grey);
-}
-#sendInviteModal .input-row {
+    width: 28px;
+    height: 28px;
     display: flex;
-    margin-top: 12px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+.close-btn:hover {
+    color: var(--dark-grey);
+    background: var(--off-white);
+}
+
+/* Invite modal */
+.input-row {
+    display: flex;
     align-items: center;
     gap: 8px;
+    margin-top: 0.5rem;
 }
-#sendInviteModal .input-row input {
+.input-row input {
     flex: 1;
-    padding: 10px 18px;
+    padding: 10px 14px;
     font-family: 'Noto Sans', sans-serif;
     font-size: 0.875rem;
     border: 1px solid var(--shadow);
     border-radius: 8px;
     outline: none;
+    color: var(--dark-grey);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
-#sendInviteModal .confirm-btn {
-    padding: 10px 18px;
-    border: 1px solid var(--green);
+.input-row input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
+}
+.confirm-btn {
+    padding: 10px 14px;
+    border: none;
     border-radius: 8px;
-    background: var(--green);
-    transition: background 0.3s;
-}
-#sendInviteModal .confirm-btn:hover {
     background: var(--dark-green);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-#sendInviteModal .confirm-btn i {
+.confirm-btn:hover {
+    background: var(--green);
+    transform: translateY(-1px);
+}
+.confirm-btn i {
     font-size: 1rem;
     color: var(--white);
 }
-#confirmDeleteModal .confirm-btn {
-    padding: 10px 18px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--white);
-    border: none;
-    border-radius: 8px;
-    background: var(--red);
-    cursor: pointer;
-    transition: background 0.2s;
+
+/* Delete modal */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
 }
-#deleteConfirmModal .confirm-btn:hover {
+#confirmDeleteModal .confirm-btn {
+    padding: 10px 20px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--red);
+    gap: 6px;
+}
+#confirmDeleteModal .confirm-btn:hover {
     background: var(--dark-red);
+}
+#confirmDeleteModal .confirm-btn i {
+    font-size: 0.9rem;
 }

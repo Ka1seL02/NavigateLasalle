@@ -1,7 +1,7 @@
 import showToast from './toast.js';
 import { showLoading, hideLoading } from '/shared/js/loading.js';
 
-// ─── Fetch & Render FAQs ──────────────────────────────────────────────────────
+// ─── FAQ List ─────────────────────────────────────────────────────────────────
 const faqList = document.getElementById('faqList');
 
 function createFaqElement(faq) {
@@ -45,7 +45,7 @@ function createFaqElement(faq) {
         chevron.style.transform = body.classList.contains('hidden') ? '' : 'rotate(180deg)';
     });
 
-    // ── Inline Edit ───────────────────────────────────────────────────────────
+    // ── Action Buttons ────────────────────────────────────────────────────────
     const editBtn = div.querySelector('.edit-btn');
     const cancelBtn = div.querySelector('.cancel-btn');
     const deleteBtn = div.querySelector('.delete-btn');
@@ -53,9 +53,12 @@ function createFaqElement(faq) {
 
     let isEditing = false;
 
+    // ── Delete ────────────────────────────────────────────────────────────────
+    deleteBtn.addEventListener('click', () => openDeleteFaqModal(faq._id));
+
+    // ── Inline Edit ───────────────────────────────────────────────────────────
     editBtn.addEventListener('click', async () => {
         if (!isEditing) {
-            // Enter edit mode
             isEditing = true;
 
             const questionEl = div.querySelector('.faq-question');
@@ -75,7 +78,6 @@ function createFaqElement(faq) {
             toggleBtn.classList.add('hidden');
 
         } else {
-            // Save
             const questionInput = div.querySelector('.edit-question-input');
             const answerInput = div.querySelector('.edit-answer-input');
             const newQuestion = questionInput.value.trim();
@@ -172,6 +174,7 @@ function exitEditMode(div, faq) {
     toggleBtn.classList.remove('hidden');
 }
 
+// ─── Fetch FAQs ───────────────────────────────────────────────────────────────
 async function fetchFAQs() {
     await showLoading();
     try {
@@ -187,6 +190,101 @@ async function fetchFAQs() {
         hideLoading();
     }
 }
+
+// ─── Delete FAQ ───────────────────────────────────────────────────────────────
+const deleteModalOverlay = document.getElementById('deleteFaqModalOverlay');
+const cancelDelete = document.getElementById('cancelDelete');
+const confirmDelete = document.getElementById('confirmDelete');
+
+let deleteFaqId = null;
+
+function openDeleteFaqModal(id) {
+    deleteFaqId = id;
+    deleteModalOverlay.classList.remove('hidden');
+}
+
+cancelDelete.addEventListener('click', () => {
+    deleteModalOverlay.classList.add('hidden');
+    deleteFaqId = null;
+});
+
+confirmDelete.addEventListener('click', async () => {
+    if (!deleteFaqId) return;
+
+    deleteModalOverlay.classList.add('hidden');
+    await showLoading();
+
+    try {
+        const res = await fetch(`/api/faq/${deleteFaqId}`, {
+            method: 'DELETE',
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            showToast('error', data.error || 'Failed to delete FAQ.');
+        } else {
+            showToast('success', 'FAQ deleted successfully!');
+            await fetchFAQs();
+        }
+    } catch (err) {
+        showToast('error', 'Failed to delete FAQ.');
+    } finally {
+        hideLoading();
+        deleteFaqId = null;
+    }
+});
+
+// ─── Create FAQ ───────────────────────────────────────────────────────────────
+const createBtn = document.getElementById('createNewFAQ');
+const createModalOverlay = document.getElementById('createFaqModalOverlay');
+const cancelCreate = document.getElementById('cancelCreate');
+const confirmCreate = document.getElementById('confirmCreate');
+const newQuestion = document.getElementById('newQuestion');
+const newAnswer = document.getElementById('newAnswer');
+
+createBtn.addEventListener('click', () => {
+    newQuestion.value = '';
+    newAnswer.value = '';
+    createModalOverlay.classList.remove('hidden');
+});
+
+cancelCreate.addEventListener('click', () => {
+    createModalOverlay.classList.add('hidden');
+});
+
+confirmCreate.addEventListener('click', async () => {
+    const question = newQuestion.value.trim();
+    const answer = newAnswer.value.trim();
+
+    if (!question || !answer) {
+        showToast('error', 'Question and answer cannot be empty.');
+        return;
+    }
+
+    createModalOverlay.classList.add('hidden');
+    await showLoading();
+
+    try {
+        const res = await fetch('/api/faq', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ question, answer })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            showToast('error', data.error || 'Failed to create FAQ.');
+        } else {
+            showToast('success', 'FAQ created successfully!');
+            await fetchFAQs();
+        }
+    } catch (err) {
+        showToast('error', 'Failed to create FAQ.');
+    } finally {
+        hideLoading();
+    }
+});
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 fetchFAQs();

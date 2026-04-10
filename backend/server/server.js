@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import { verifyToken } from './middleware/auth.js';
 
 import authRoutes from './routes/authRoutes.js';
+import buildingRoutes from './routes/buildingRoutes.js';
 import accountRoutes from './routes/accountRoutes.js';
 import faqRoutes from './routes/faqRoutes.js';
 
@@ -30,6 +31,7 @@ app.use(express.static(join(__dirname, '../../frontend')));
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
+app.use('/api/buildings', buildingRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/faq', faqRoutes);
 

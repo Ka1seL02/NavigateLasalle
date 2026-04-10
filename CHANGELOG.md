@@ -77,3 +77,34 @@
   - Visibility toggle with correct bx-show/bx-hide icon reflecting isVisible
   - Loading overlay on all fetch operations
   - Toast notifications for success/error
+
+## V0.3 — 10/04/2026
+### Frontend — Sidebar (Revamp)
+- Removed collapse toggle entirely — sidebar is now fixed width
+- Removed admin name/role display from sidebar
+- New dark green vertical icon-based sidebar design
+- Icons with labels below each, subtle dividers between sections
+- Theme toggle becomes clickable icon in footer
+- Sign Out button at bottom with icon and label
+- Modals updated to match new design language (blur backdrop, EB Garamond headings)
+### Frontend — Auth Pages Redesign
+- login.css — full redesign: fluid layout, EB Garamond headings, Noto Sans body,
+  staggered entrance animations, green glow on input focus, lift effect on button,
+  image section with green gradient overlay and brand name, responsive breakpoints
+- forgot-password.css — matching redesign consistent with login, backdrop blur modal,
+  back link with sage-green hover, column-reverse on mobile
+### Frontend — Accounts Page
+- accounts.css — full redesign matching new design language:
+  dirty-white background, white card main-content, Noto Sans typography,
+  sticky table headers, no row dividers with hover highlight,
+  role badges differentiated (superadmin gets border), consistent modal styling
+- Fixed table stretching on large screens
+- Fixed main-content card height via align-items: flex-start on main
+### Frontend — FAQ Page
+- faq.css — full redesign matching design language
+- faq.html — added Create FAQ modal with floating label inputs and Delete FAQ modal
+- faq.js — wired up create and delete:
+  - Create FAQ with POST /api/faq, toast feedback, refetch on success
+  - Delete FAQ with DELETE /api/faq/:id, confirmation modal, toast feedback
+  - Fixed double deleteBtn declaration bug
+  - Fixed openDeleteFaqModal scope issue

@@ -91,7 +91,7 @@ function renderTable() {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${a.name}</td>
+            <td>${a.name} ${a._id === currentAdmin._id ? '<span class="you-badge">you</span>' : ''}</td>
             <td>${formatEmail(a.email)}</td>
             <td><span class="role-badge ${isSuperAdmin ? 'superadmin' : 'admin'}">${isSuperAdmin ? 'Super Admin' : 'Admin'}</span></td>
             <td><span class="last-login ${fresh ? 'fresh' : 'stale'}"> ● ${text}</span></td>

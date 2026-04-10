@@ -1,0 +1,401 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+main {
+    flex: 1;
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--dirty-white);
+}
+
+/* ─── Page Header ────────────────────────────────────────────────────────────── */
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+.page-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.back-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.back-link:hover {
+    color: var(--dark-green);
+}
+.back-link i {
+    font-size: 1rem;
+}
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-family: 'EB Garamond', serif;
+    color: var(--dark-green);
+}
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.cancel-btn {
+    padding: 9px 18px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dark-grey);
+    background: none;
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cancel-btn:hover {
+    background: var(--off-white);
+}
+.save-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--dark-green);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 4px 12px rgba(0, 64, 28, 0.2);
+}
+.save-btn:hover {
+    background: var(--green);
+    transform: translateY(-1px);
+}
+.save-btn i {
+    font-size: 1rem;
+}
+
+/* ─── Main Content ───────────────────────────────────────────────────────────── */
+.main-content {
+    width: 100%;
+}
+
+/* ─── Form Layout ────────────────────────────────────────────────────────────── */
+.form-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* ─── Form Card ──────────────────────────────────────────────────────────────── */
+.form-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid var(--shadow);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+.form-card:last-child {
+    margin-bottom: 0;
+}
+.form-card-title {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--dark-green);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--shadow);
+}
+.form-card-subtitle {
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+    margin-top: -0.75rem;
+}
+
+/* ─── Form Groups ────────────────────────────────────────────────────────────── */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+}
+.required {
+    color: var(--red);
+}
+.form-group input,
+.form-group select {
+    padding: 10px 14px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--dark-grey);
+    border: 1.5px solid var(--shadow);
+    border-radius: 8px;
+    outline: none;
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* ─── Visibility Toggle ──────────────────────────────────────────────────────── */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.toggle-label {
+    font-size: 0.875rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--grey);
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--shadow);
+    border-radius: 999px;
+    transition: background 0.3s;
+}
+.slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    top: 3px;
+    background: var(--white);
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+.switch input:checked + .slider {
+    background: var(--green);
+}
+.switch input:checked + .slider::before {
+    transform: translateX(18px);
+}
+
+/* ─── Quill Editor ───────────────────────────────────────────────────────────── */
+#quillEditor {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1.5px solid var(--shadow);
+    font-family: 'Noto Sans', sans-serif;
+}
+#quillEditor .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--shadow);
+    background: var(--off-white);
+}
+#quillEditor .ql-container {
+    border: none;
+    min-height: 200px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.9rem;
+}
+#quillEditor .ql-editor {
+    min-height: 200px;
+}
+/* Quill toolbar tooltips */
+.ql-toolbar button {
+    position: relative;
+}
+.ql-toolbar .ql-bold::after { content: 'Bold'; }
+.ql-toolbar .ql-italic::after { content: 'Italic'; }
+.ql-toolbar .ql-underline::after { content: 'Underline'; }
+.ql-toolbar .ql-list[value="ordered"]::after { content: 'Ordered List'; }
+.ql-toolbar .ql-list[value="bullet"]::after { content: 'Bullet List'; }
+.ql-toolbar .ql-clean::after { content: 'Remove Formatting'; }
+
+.ql-toolbar button::after {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark-grey);
+    color: var(--white);
+    font-size: 0.7rem;
+    font-family: 'Noto Sans', sans-serif;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+.ql-toolbar button:hover::after {
+    opacity: 1;
+}
+
+/* ─── Image Upload ───────────────────────────────────────────────────────────── */
+.existing-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+}
+.existing-image-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border: 1px solid var(--shadow);
+}
+.existing-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.remove-image-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--white);
+    border: none;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.remove-image-btn:hover {
+    background: var(--red);
+}
+.upload-area {
+    border: 2px dashed var(--shadow);
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    text-align: center;
+}
+.upload-area:hover {
+    border-color: var(--green);
+    background: var(--dirty-white);
+}
+.upload-area i {
+    font-size: 2rem;
+    color: var(--light-grey);
+}
+.upload-area p {
+    font-size: 0.875rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+    font-weight: 600;
+}
+.upload-area span {
+    font-size: 0.75rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+}
+.upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.new-image-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+.preview-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border: 1px solid var(--green);
+}
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.remove-preview-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--white);
+    border: none;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.remove-preview-btn:hover {
+    background: var(--red);
+}
+
+/* ─── Hidden ─────────────────────────────────────────────────────────────────── */
+.hidden {
+    display: none !important;
+}

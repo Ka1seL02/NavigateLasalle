@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin.js';
+import Invite from '../models/Invite.js';
 import { verifyToken } from '../middleware/auth.js';
 import { sendResetEmail } from '../utils/emailService.js';
 
@@ -158,6 +159,70 @@ router.post('/reset-password/:token', async (req, res) => {
     }
 });
 
+// ─── Verify Invite Token ──────────────────────────────────────────────────────
+router.get('/register/:token', async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        const invite = await Invite.findOne({
+            inviteToken: token,
+            inviteTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!invite) {
+            return res.status(400).json({ error: 'Invalid or expired invite' });
+        }
+
+        res.json({ email: invite.email });
+
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ─── Register ─────────────────────────────────────────────────────────────────
+router.post('/register/:token', async (req, res) => {
+    const { token } = req.params;
+    const { name, password } = req.body;
+
+    try {
+        const invite = await Invite.findOne({
+            inviteToken: token,
+            inviteTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!invite) {
+            return res.status(400).json({ error: 'Invalid or expired invite' });
+        }
+
+        if (!name || !password) {
+            return res.status(400).json({ error: 'Name and password are required' });
+        }
+
+        const existing = await Admin.findOne({ email: invite.email });
+        if (existing) {
+            return res.status(409).json({ error: 'An account with this email already exists' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        await Admin.create({
+            name,
+            email: invite.email,
+            password: hashedPassword,
+            role: 'admin'
+        });
+
+        await Invite.deleteOne({ inviteToken: token });
+
+        res.json({ message: 'Account created successfully' });
+
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // ─── Logout ────────────────────────────────────────────────────
 router.post('/logout', (req, res) => {
 
@@ -169,6 +234,5 @@ router.post('/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
 
 });
-
 
 export default router;

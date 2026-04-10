@@ -13,11 +13,14 @@
   "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "sib-api-v3-sdk": "^8.5.0"
   },
   "devDependencies": {
