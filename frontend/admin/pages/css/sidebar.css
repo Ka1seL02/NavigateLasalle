@@ -1,4 +1,4 @@
-/* Sidebar */
+/* ─── Sidebar ────────────────────────────────────────────────────────────────── */
 .sidebar {
     width: 80px;
     height: 100vh;
@@ -9,7 +9,7 @@
     overflow: hidden;
 }
 
-/* Header */
+/* ─── Header ─────────────────────────────────────────────────────────────────── */
 .sidebar-header {
     display: flex;
     align-items: center;
@@ -24,7 +24,7 @@
     border-radius: 50%;
 }
 
-/* Nav */
+/* ─── Nav ────────────────────────────────────────────────────────────────────── */
 .sidebar-nav {
     flex: 1;
     display: flex;
@@ -78,7 +78,7 @@
     color: var(--white);
 }
 
-/* Footer */
+/* ─── Footer ─────────────────────────────────────────────────────────────────── */
 .sidebar-footer {
     display: flex;
     flex-direction: column;
@@ -137,7 +137,7 @@
     color: var(--red);
 }
 
-/* Modal */
+/* ─── Modal ──────────────────────────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -231,7 +231,7 @@
     background: var(--green);
 }
 
-/* Hidden */
+/* ─── Hidden ─────────────────────────────────────────────────────────────────── */
 .hidden {
     display: none !important;
 }
