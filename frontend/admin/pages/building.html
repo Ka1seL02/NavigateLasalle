@@ -41,6 +41,9 @@
                 <button class="tab-btn" id="mapTabBtn">
                     <i class='bx bx-map'></i> Map
                 </button>
+                <button class="tab-btn" id="graphTabBtn">
+                    <i class='bx bx-git-repo-forked'></i> Graph
+                </button>
             </div>
 
             <!-- List View -->
@@ -51,6 +54,58 @@
             <!-- Map View -->
             <div id="mapView" class="hidden">
                 <svg id="campusMap" viewBox="0 0 1920 1080"></svg>
+            </div>
+
+            <!-- Graph View -->
+            <div id="graphView" class="hidden">
+                <!-- Toolbar -->
+                <div class="graph-toolbar">
+                    <div class="graph-toolbar-left">
+                        <span class="graph-mode-label">Mode:</span>
+                        <div class="graph-mode-toggle">
+                            <button class="graph-mode-btn active" id="modeNodeBtn">
+                                <i class='bx bx-radio-circle-marked'></i> Node
+                            </button>
+                            <button class="graph-mode-btn" id="modeEdgeBtn">
+                                <i class='bx bx-git-branch'></i> Edge
+                            </button>
+                            <button class="graph-mode-btn" id="modeAssignBtn">
+                                <i class='bx bx-link'></i> Assign
+                            </button>
+                            <button class="graph-mode-btn" id="modeDeleteBtn">
+                                <i class='bx bx-trash'></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="graph-toolbar-right">
+                        <div class="graph-edge-options hidden" id="edgeOptions">
+                            <span class="graph-mode-label">Direction:</span>
+                            <div class="graph-mode-toggle">
+                                <button class="graph-mode-btn active" id="edgeBothBtn" data-direction="both">
+                                    <i class='bx bx-transfer'></i> Two-way
+                                </button>
+                                <button class="graph-mode-btn" id="edgeOneWayBtn" data-direction="one-way">
+                                    <i class='bx bx-right-arrow-alt'></i> One-way
+                                </button>
+                            </div>
+                        </div>
+                        <div class="graph-status" id="graphStatus">Click on the map to place a node</div>
+                        <button class="graph-save-btn" id="saveGraphBtn">
+                            <i class='bx bx-save'></i> Save Graph
+                        </button>
+                    </div>
+                </div>
+                <!-- Graph SVG -->
+                <div class="graph-map-wrapper">
+                    <svg id="graphMap" viewBox="0 0 1920 1080"></svg>
+                </div>
+                <!-- Legend -->
+                <div class="graph-legend">
+                    <div class="legend-item"><span class="legend-dot node-dot"></span> Waypoint Node</div>
+                    <div class="legend-item"><span class="legend-dot assigned-dot"></span> Building Node</div>
+                    <div class="legend-item"><span class="legend-line both-line"></span> Two-way Edge</div>
+                    <div class="legend-item"><span class="legend-line oneway-line"></span> One-way Edge</div>
+                </div>
             </div>
         </div>
     </main>

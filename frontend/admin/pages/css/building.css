@@ -231,6 +231,250 @@ main {
 #campusMap .parking { fill: #D7C7A9; stroke: black; stroke-width: 2; cursor: pointer; }
 #campusMap .road { fill: #B3B3B3; }
 
+/* ─── Graph View ─────────────────────────────────────────────────────────────── */
+#graphView {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Toolbar */
+.graph-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    background: var(--dirty-white);
+    border-radius: 10px;
+    border: 1px solid var(--shadow);
+}
+.graph-toolbar-left,
+.graph-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+.graph-mode-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--light-grey);
+    white-space: nowrap;
+}
+.graph-mode-toggle {
+    display: flex;
+    gap: 6px;
+}
+.graph-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--light-grey);
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.graph-mode-btn:hover {
+    color: var(--dark-green);
+    border-color: var(--dark-green);
+}
+.graph-mode-btn.active {
+    color: var(--white);
+    background: var(--dark-green);
+    border-color: var(--dark-green);
+}
+.graph-mode-btn i {
+    font-size: 0.9rem;
+}
+.graph-edge-options {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.graph-status {
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+    font-style: italic;
+    white-space: nowrap;
+}
+.graph-save-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--dark-green);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 64, 28, 0.2);
+    white-space: nowrap;
+}
+.graph-save-btn:hover {
+    background: var(--green);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25);
+}
+.graph-save-btn i {
+    font-size: 1rem;
+}
+
+/* Graph SVG wrapper */
+.graph-map-wrapper {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--shadow);
+    overflow: hidden;
+    background: var(--dirty-white);
+    cursor: crosshair;
+}
+#graphMap {
+    width: 100%;
+    height: 600px;
+    display: block;
+}
+
+/* Ghost buildings on graph */
+#graphMap .ghost-building {
+    opacity: 0.18;
+    pointer-events: none;
+}
+#graphMap .ghost-building.assignable {
+    opacity: 0.5;
+    pointer-events: all;
+    cursor: pointer;
+}
+#graphMap .ghost-building.assignable:hover {
+    opacity: 0.75;
+}
+#graphMap .ghost-building.assigned {
+    opacity: 0.4;
+    stroke: var(--green);
+    stroke-width: 2.5;
+}
+
+/* Roads on graph */
+#graphMap .graph-road {
+    fill: #C8C8C8;
+    pointer-events: none;
+}
+
+/* Edges */
+#graphMap .graph-edge {
+    stroke: var(--dark-green);
+    stroke-width: 2.5;
+    pointer-events: none;
+    opacity: 0.85;
+}
+#graphMap .graph-edge.one-way {
+    stroke-dasharray: 6 3;
+}
+
+/* Arrow markers for one-way edges */
+#graphMap .graph-edge-arrow {
+    fill: var(--dark-green);
+}
+
+/* Nodes */
+#graphMap .graph-node {
+    fill: var(--white);
+    stroke: var(--dark-green);
+    stroke-width: 2.5;
+    cursor: pointer;
+    transition: fill 0.15s, r 0.15s;
+    r: 6;
+}
+#graphMap .graph-node:hover {
+    fill: var(--sage-green);
+    r: 8;
+}
+#graphMap .graph-node.selected {
+    fill: var(--green);
+    stroke: var(--dark-green);
+    r: 8;
+}
+#graphMap .graph-node.assigned {
+    fill: var(--green);
+    stroke: var(--dark-green);
+    stroke-width: 2.5;
+}
+#graphMap .graph-node.assigned.selected {
+    fill: var(--dark-green);
+}
+
+/* Node label */
+#graphMap .graph-node-label {
+    font-size: 9px;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 700;
+    fill: var(--dark-green);
+    pointer-events: none;
+    text-anchor: middle;
+}
+
+/* Legend */
+.graph-legend {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--dark-green);
+    display: inline-block;
+}
+.legend-dot.node-dot {
+    background: var(--white);
+}
+.legend-dot.assigned-dot {
+    background: var(--green);
+}
+.legend-line {
+    width: 24px;
+    height: 2.5px;
+    display: inline-block;
+    background: var(--dark-green);
+    border-radius: 2px;
+}
+.legend-line.oneway-line {
+    background: repeating-linear-gradient(
+        to right,
+        var(--dark-green) 0px,
+        var(--dark-green) 6px,
+        transparent 6px,
+        transparent 9px
+    );
+}
+
 /* ─── Modal Overlay ──────────────────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
