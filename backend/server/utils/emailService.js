@@ -42,3 +42,23 @@ export const sendInviteEmail = async (toEmail, inviteLink) => {
 
     await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
 };
+
+// Email change verification
+export const sendEmailChangeCode = async (toEmail, toName, code, expiresIn) => {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+    sendSmtpEmail.sender = {
+        name: process.env.BREVO_SENDER_NAME,
+        email: process.env.BREVO_SENDER_EMAIL
+    };
+
+    sendSmtpEmail.to = [{ email: toEmail, name: toName }];
+    sendSmtpEmail.templateId = 5;
+    sendSmtpEmail.params = {
+        FIRSTNAME: toName,
+        CODE: code,
+        EXPIRES_IN: expiresIn
+    };
+
+    await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+};

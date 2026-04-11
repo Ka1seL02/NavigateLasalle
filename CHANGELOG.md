@@ -237,3 +237,78 @@
   - Dynamic section dropdown handles custom categories not in existing list
   - Sub-office dropdown excludes the office being edited (cannot add itself)
   - Back/cancel navigate to `office.html`
+
+## V0.6 — 11/04/2026
+### Backend
+- Added `Post.js` model:
+  - Fields: title, content (Quill HTML), type (enum: news/announcement/event), office (ObjectId ref Office, null = DLSU-D campus-wide), images ([String], min 1 required), createdAt/updatedAt (auto timestamps)
+  - No isVisible field
+- Added `postRoutes.js`:
+  - `GET /api/posts` — fetch all, public (kiosk needs it), supports `?type=` and `?office=` query filters, populates office name and category
+  - `GET /api/posts/:id` — fetch one, public
+  - `POST /api/posts` — create with uploadNews image upload, enforces min 1 image (protected)
+  - `PATCH /api/posts/:id` — update, handles image removal from Cloudinary, enforces min 1 image remaining (protected)
+  - `DELETE /api/posts/:id` — deletes from DB and Cloudinary (protected)
+  - Wired `/api/posts` into `server.js`
+- Added `Feedback.js` model:
+  - Fields: rating (Number, 1-5, required), comment (String, optional, default null), isRead (Boolean, default false), createdAt/updatedAt (auto timestamps)
+- Added `feedbackRoutes.js`:
+  - `GET /api/feedbacks` — fetch all, sorted newest first, supports `?isRead=true|false` filter (protected)
+  - `POST /api/feedbacks` — create, public (kiosk submits feedback)
+  - `PATCH /api/feedbacks/:id/read` — mark as read (protected)
+  - `DELETE /api/feedbacks/:id` — delete (protected)
+  - Wired `/api/feedbacks` into `server.js`
+- Added `seedFeedbacks.js` — seeds 10 sample feedbacks (mix of read/unread, with/without comments, varied ratings, safe to re-run via duplicate check)
+- Updated `accountRoutes.js`:
+  - `PATCH /api/accounts/me` — update own name only (email removed from this route)
+  - `POST /api/accounts/me/email-change` — generates 6-digit code, saves to Admin doc with 3-minute expiry, sends code to current email via Brevo Template ID 5
+  - `PATCH /api/accounts/me/email-change/verify` — verifies code, applies new email, clears code fields
+  - `PATCH /api/accounts/me/password` — change password with current password verification
+- Updated `Admin.js` model:
+  - Added `emailChangeCode` (String, default null)
+  - Added `emailChangeExpires` (Date, default null)
+  - Added `emailChangePending` (String, default null)
+- Updated `emailService.js`:
+  - Added `sendEmailChangeCode` — sends Brevo Template ID 5 with params: FIRSTNAME, CODE, EXPIRES_IN
+- Added Brevo Template ID 5 — Email Change Verification:
+  - Subject: "Email Change Verification"
+  - Preview: "Use the code to confirm your email change"
+  - Displays 6-digit code in a styled box with expiry notice
+### Frontend — Posts Pages (New)
+- `posts.html` + `posts.css` + `posts.js`:
+  - Card grid sorted newest first, no grouping
+  - Cards show: thumbnail (first image), type badge (News/Announcement/Event), title, office name (DLSU-D if null), date posted
+  - Single row filter controls: search bar, type dropdown, office dropdown (dynamic from fetched posts), date mode toggle (Single/Range), date picker(s), clear filters button (appears only when filters active)
+  - All filters work together simultaneously
+  - View modal: image gallery with auto-swap carousel and dot navigation, type badge, office name, date, title, Quill rich text content, Edit and Delete buttons
+  - Delete confirm modal with confirmation
+- `posts-add.html` + `posts-add.css` + `posts-add.js`:
+  - Two-column layout (form-left / form-right) matching building-add pattern
+  - Fields: title, type dropdown, office dropdown (dynamic from DB, DLSU-D = null), content (Quill), images (min 1 required)
+  - Back link navigates to `posts.html`
+  - Image upload with preview grid, duplicate file detection, remove preview
+  - Validates all required fields before submit
+- `posts-edit.html` + `posts-edit.css` + `posts-edit.js`:
+  - Same layout as posts-add, prefills all fields from DB using `?id=` URL param
+  - Redirects immediately to `posts.html` if no id in URL
+  - Existing images shown with click-to-mark-for-removal (red border + trash overlay), click again to undo
+  - New images appended alongside kept existing images
+  - Validates min 1 image will remain after removals
+  - Office field fix: always appends office to FormData (even empty string) to correctly set null in DB
+### Frontend — Feedbacks Page (New)
+- `feedbacks.html` + `feedbacks.css` + `feedbacks.js`:
+  - Card grid sorted newest first
+  - Filter tabs: All / Unread (with live count badge) / Read
+  - Unread cards styled with green left border and squared left corners (border-radius: 0 12px 12px 0)
+  - Cards show: star rating, comment (or "No comment provided." if null), date
+  - Clicking card opens view modal and auto-marks feedback as read in background
+  - Unread count badge on tab updates live after reading
+  - View modal: star rating, comment, date, Delete button
+  - Delete confirm modal with confirmation
+### Frontend — Settings Page (New)
+- `settings.html` + `settings.css` + `settings.js`:
+  - Three cards: Profile (name), Email Address, Security (password)
+  - Profile card: update name only, prefilled from `GET /api/auth/me`
+  - Email card: current email shown as disabled read-only field, new email input, sends verification code via `POST /api/accounts/me/email-change`
+  - Verification modal: 6-digit code input (numeric only), 3-minute countdown timer, auto-closes and disables verify button on expiry, refreshes displayed email on success
+  - Security card: current password + new password + confirm new password, show/hide toggle on all password fields, min 8 character validation

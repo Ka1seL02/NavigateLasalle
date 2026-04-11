@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global style -->
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Manage your account profile and security.</p>
+            </div>
+        </div>
+
+        <div class="settings-layout">
+
+            <!-- Profile -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-icon">
+                        <i class='bx bx-user'></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-card-title">Profile</h2>
+                        <p class="settings-card-subtitle">Update your display name.</p>
+                    </div>
+                </div>
+                <div class="settings-card-body">
+                    <div class="form-group">
+                        <label for="nameInput">Name</label>
+                        <input type="text" id="nameInput" placeholder="Your name" />
+                    </div>
+                </div>
+                <div class="settings-card-footer">
+                    <button class="save-btn" id="saveProfileBtn">
+                        <i class='bx bx-save'></i> Save Changes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-icon">
+                        <i class='bx bx-envelope'></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-card-title">Email Address</h2>
+                        <p class="settings-card-subtitle">A verification code will be sent to your current email.</p>
+                    </div>
+                </div>
+                <div class="settings-card-body">
+                    <div class="form-group">
+                        <label for="currentEmailDisplay">Current Email</label>
+                        <input type="email" id="currentEmailDisplay" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmailInput">New Email</label>
+                        <input type="email" id="newEmailInput" placeholder="Enter new email address" />
+                    </div>
+                </div>
+                <div class="settings-card-footer">
+                    <button class="save-btn" id="requestEmailChangeBtn">
+                        <i class='bx bx-send'></i> Send Verification Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-icon">
+                        <i class='bx bx-lock-alt'></i>
+                    </div>
+                    <div>
+                        <h2 class="settings-card-title">Security</h2>
+                        <p class="settings-card-subtitle">Change your password.</p>
+                    </div>
+                </div>
+                <div class="settings-card-body">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <div class="password-input-wrap">
+                            <input type="password" id="currentPassword" placeholder="Enter current password" />
+                            <button type="button" class="toggle-password" data-target="currentPassword">
+                                <i class='bx bx-hide'></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <div class="password-input-wrap">
+                            <input type="password" id="newPassword" placeholder="Enter new password" />
+                            <button type="button" class="toggle-password" data-target="newPassword">
+                                <i class='bx bx-hide'></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <div class="password-input-wrap">
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password" />
+                            <button type="button" class="toggle-password" data-target="confirmPassword">
+                                <i class='bx bx-hide'></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-card-footer">
+                    <button class="save-btn" id="savePasswordBtn">
+                        <i class='bx bx-lock-open-alt'></i> Change Password
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Email Verification Modal -->
+    <div class="modal-overlay hidden" id="verifyModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class='bx bx-envelope'></i>
+                </div>
+                <h2>Verify Email Change</h2>
+                <button class="close-btn" id="cancelVerify">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <p>Enter the 6-digit code sent to your current email address. The code expires in <strong id="countdownDisplay">3:00</strong>.</p>
+            <div class="code-input-wrap">
+                <input type="text" id="codeInput" class="code-input" maxlength="6" placeholder="000000" />
+            </div>
+            <div class="modal-footer">
+                <button class="save-btn" id="verifyCodeBtn">
+                    <i class='bx bx-check'></i> Verify & Update Email
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="js/settings.js"></script>
+</body>
+
+</html>

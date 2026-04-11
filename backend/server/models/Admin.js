@@ -33,7 +33,10 @@ const adminSchema = new mongoose.Schema({
     lastLogin: {
         type: Date,
         default: null
-    }
+    },
+    emailChangeCode: { type: String, default: null },
+    emailChangeExpires: { type: Date, default: null },
+    emailChangePending: { type: String, default: null },
 }, { timestamps: true });
 
 export default mongoose.model('Admin', adminSchema);

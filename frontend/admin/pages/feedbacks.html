@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global style -->
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/feedbacks.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1 class="page-title">Feedbacks</h1>
+                <p class="page-subtitle">View and manage user feedback from the kiosk.</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All</button>
+                <button class="filter-tab" data-filter="unread">Unread <span class="unread-count hidden" id="unreadCount"></span></button>
+                <button class="filter-tab" data-filter="read">Read</button>
+            </div>
+
+            <!-- Feedback Grid -->
+            <div id="feedbackList"></div>
+        </div>
+    </main>
+
+    <!-- View Modal -->
+    <div class="modal-overlay hidden" id="viewModalOverlay">
+        <div class="view-modal">
+            <button class="close-btn" id="closeViewModal">
+                <i class='bx bx-x'></i>
+            </button>
+            <div class="modal-body">
+                <div class="modal-rating" id="modalRating"></div>
+                <p class="modal-comment" id="modalComment"></p>
+                <p class="modal-date" id="modalDate"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="delete-modal-btn" id="deleteModalBtn">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay hidden" id="deleteModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                        <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Delete Feedback</h2>
+                <button class="close-btn" id="cancelDelete">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <p>Are you sure you want to delete this feedback? This action cannot be undone.</p>
+            <div class="modal-footer">
+                <button class="delete-confirm-btn" id="confirmDelete">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="js/feedbacks.js"></script>
+</body>
+
+</html>
