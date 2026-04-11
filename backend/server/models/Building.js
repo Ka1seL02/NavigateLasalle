@@ -14,7 +14,7 @@ const buildingSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['building', 'facility', 'gate', 'landmark', 'parking'],
+        enum: ['building', 'facility', 'gate', 'landmark', 'parking', 'road'],
         required: true
     },
     description: {

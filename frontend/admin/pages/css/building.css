@@ -26,10 +26,7 @@ main {
     justify-content: space-between;
     margin-bottom: 1.5rem;
 }
-.page-header-left {
-    display: flex;
-    flex-direction: column;
-}
+.page-header-left { display: flex; flex-direction: column; }
 .page-title {
     display: flex;
     align-items: center;
@@ -76,9 +73,7 @@ main {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25);
 }
-.add-btn i {
-    font-size: 1rem;
-}
+.add-btn i { font-size: 1rem; }
 
 /* ─── Main Content ───────────────────────────────────────────────────────────── */
 .main-content {
@@ -114,30 +109,13 @@ main {
     cursor: pointer;
     transition: all 0.2s;
 }
-.tab-btn:hover {
-    color: var(--dark-green);
-    background: var(--dirty-white);
-}
-.tab-btn.active {
-    color: var(--white);
-    background: var(--dark-green);
-    border-color: var(--dark-green);
-}
-.tab-btn i {
-    font-size: 1rem;
-}
+.tab-btn:hover { color: var(--dark-green); background: var(--dirty-white); }
+.tab-btn.active { color: var(--white); background: var(--dark-green); border-color: var(--dark-green); }
+.tab-btn i { font-size: 1rem; }
 
 /* ─── List View ──────────────────────────────────────────────────────────────── */
-#listView {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-.category-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
+#listView { display: flex; flex-direction: column; gap: 2rem; }
+.category-section { display: flex; flex-direction: column; gap: 1rem; }
 .category-title {
     font-size: 0.75rem;
     font-weight: 700;
@@ -161,15 +139,8 @@ main {
     transition: box-shadow 0.2s, transform 0.15s;
     background: var(--white);
 }
-.building-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-}
-.card-image {
-    width: 100%;
-    height: 130px;
-    object-fit: cover;
-}
+.building-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.card-image { width: 100%; height: 130px; object-fit: cover; }
 .card-image-placeholder {
     width: 100%;
     height: 130px;
@@ -180,9 +151,7 @@ main {
     color: var(--light-grey);
     font-size: 2rem;
 }
-.card-info {
-    padding: 0.75rem;
-}
+.card-info { padding: 0.75rem; }
 .card-dataid {
     font-size: 0.7rem;
     font-weight: 700;
@@ -199,9 +168,7 @@ main {
     color: var(--dark-grey);
     line-height: 1.3;
 }
-.card-hidden {
-    opacity: 0.5;
-}
+.card-hidden { opacity: 0.5; }
 
 /* ─── Map View ───────────────────────────────────────────────────────────────── */
 #mapView {
@@ -209,33 +176,63 @@ main {
     border-radius: 10px;
     border: 1px solid var(--shadow);
     overflow: hidden;
-    background: var(--dirty-white);
+    background: #dbffea;
 }
-#campusMap {
-    width: 100%;
-    height: 600px;
+#campusMap { width: 100%; height: 600px; }
+#campusMap .building { fill: var(--white); stroke: var(--dark-green); stroke-width: 2; cursor: pointer; transition: fill 0.2s; }
+#campusMap .building:hover { fill: var(--dark-green); }
+#campusMap .building.selected { fill: var(--sage-green); stroke: var(--dark-green); stroke-width: 2.5; }
+#campusMap .facility { fill: #dceefb; stroke: #5b9ec9; stroke-width: 2; cursor: pointer; transition: fill 0.2s; }
+#campusMap .facility:hover { fill: #5b9ec9; }
+#campusMap .gate { fill: #fff3cd; stroke: #c9a227; stroke-width: 2; cursor: pointer; transition: fill 0.2s; }
+#campusMap .gate:hover { fill: #c9a227; }
+#campusMap .landmark { fill: #fde8d8; stroke: var(--orange); stroke-width: 2; cursor: pointer; transition: fill 0.2s; }
+#campusMap .landmark:hover { fill: var(--orange); }
+#campusMap .parking { fill: var(--off-white); stroke: var(--light-grey); stroke-width: 2; cursor: pointer; transition: fill 0.2s; }
+#campusMap .parking:hover { fill: var(--light-grey); }
+#campusMap .road { fill: #cecece; pointer-events: none; }
+
+#campusMap .building,
+#campusMap .facility,
+#campusMap .gate,
+#campusMap .landmark {
+    filter: 
+        drop-shadow(3px 2px 0px rgba(0, 0, 0, 0.35))
+        drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.15));
 }
-#campusMap .building {
-    fill: white;
-    stroke: black;
-    stroke-width: 2;
-    cursor: pointer;
-    transition: fill 0.2s;
+
+.map-legend {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
 }
-#campusMap .building:hover { fill: var(--sage-green); }
-#campusMap .building.selected { fill: var(--sage-green); stroke: var(--green); stroke-width: 2.5; }
-#campusMap .facility { fill: #B7D4EA; stroke: black; stroke-width: 2; cursor: pointer; }
-#campusMap .facility:hover { opacity: 0.8; }
-#campusMap .gate { fill: white; stroke: black; stroke-width: 2; cursor: pointer; }
-#campusMap .landmark { fill: #F3E3A2; stroke: black; stroke-width: 2; cursor: pointer; }
-#campusMap .parking { fill: #D7C7A9; stroke: black; stroke-width: 2; cursor: pointer; }
-#campusMap .road { fill: #B3B3B3; }
+.map-legend .legend-item { display: flex; align-items: center; gap: 6px; }
+.map-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid #333;
+}
+.building-dot { background: var(--white); }
+.facility-dot { background: #dceefb; }
+.gate-dot { background: #fff3cd; }
+.landmark-dot { background: #fde8d8; }
+.parking-dot { background: var(--off-white); }
+.road-dot { background: var(--light-grey); border-color: #B3B3B3; }
 
 /* ─── Graph View ─────────────────────────────────────────────────────────────── */
-#graphView {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+#graphView { display: flex; flex-direction: column; gap: 1rem; }
+
+.legend-hint {
+    margin-left: auto;
+    font-style: italic;
+    font-size: 0.7rem;
 }
 
 /* Toolbar */
@@ -266,10 +263,7 @@ main {
     color: var(--light-grey);
     white-space: nowrap;
 }
-.graph-mode-toggle {
-    display: flex;
-    gap: 6px;
-}
+.graph-mode-toggle { display: flex; gap: 6px; }
 .graph-mode-btn {
     display: flex;
     align-items: center;
@@ -286,23 +280,36 @@ main {
     transition: all 0.2s;
     white-space: nowrap;
 }
-.graph-mode-btn:hover {
-    color: var(--dark-green);
-    border-color: var(--dark-green);
-}
-.graph-mode-btn.active {
-    color: var(--white);
-    background: var(--dark-green);
-    border-color: var(--dark-green);
-}
-.graph-mode-btn i {
-    font-size: 0.9rem;
-}
-.graph-edge-options {
+.graph-mode-btn:hover { color: var(--dark-green); border-color: var(--dark-green); }
+.graph-mode-btn.active { color: var(--white); background: var(--dark-green); border-color: var(--dark-green); }
+.graph-mode-btn i { font-size: 0.9rem; }
+
+.graph-edge-options,
+.graph-road-options {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
+
+/* Road name/id inputs */
+.graph-road-input {
+    padding: 6px 10px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.8rem;
+    color: var(--dark-grey);
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 170px;
+}
+.graph-road-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
+}
+.graph-road-input::placeholder { color: var(--light-grey); }
+
 .graph-status {
     font-size: 0.8rem;
     font-family: 'Noto Sans', sans-serif;
@@ -327,14 +334,8 @@ main {
     box-shadow: 0 4px 12px rgba(0, 64, 28, 0.2);
     white-space: nowrap;
 }
-.graph-save-btn:hover {
-    background: var(--green);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25);
-}
-.graph-save-btn i {
-    font-size: 1rem;
-}
+.graph-save-btn:hover { background: var(--green); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25); }
+.graph-save-btn i { font-size: 1rem; }
 
 /* Graph SVG wrapper */
 .graph-map-wrapper {
@@ -343,54 +344,35 @@ main {
     border: 1px solid var(--shadow);
     overflow: hidden;
     background: var(--dirty-white);
-    cursor: crosshair;
 }
-#graphMap {
-    width: 100%;
-    height: 600px;
-    display: block;
-}
+#graphMap { width: 100%; height: 600px; display: block; }
 
-/* Ghost buildings on graph */
-#graphMap .ghost-building {
-    opacity: 0.18;
+/* Ghost buildings */
+#graphMap .ghost-building { opacity: 0.18; pointer-events: none; }
+#graphMap .ghost-building.assignable { opacity: 0.5; pointer-events: all; cursor: pointer; }
+#graphMap .ghost-building.assignable:hover { opacity: 0.75; }
+#graphMap .ghost-building.assigned { opacity: 0.4; stroke: var(--green) !important; stroke-width: 2.5 !important; }
+
+/* Roads */
+#graphMap .graph-road { 
+    fill: #b8c4be;
+    opacity: 1;
     pointer-events: none;
 }
-#graphMap .ghost-building.assignable {
-    opacity: 0.5;
-    pointer-events: all;
-    cursor: pointer;
-}
-#graphMap .ghost-building.assignable:hover {
-    opacity: 0.75;
-}
-#graphMap .ghost-building.assigned {
-    opacity: 0.4;
-    stroke: var(--green);
-    stroke-width: 2.5;
-}
 
-/* Roads on graph */
-#graphMap .graph-road {
-    fill: #C8C8C8;
+/* Road preview while drawing */
+#graphMap .road-preview {
+    fill: rgba(0, 138, 61, 0.2);
+    stroke: var(--green);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 3;
     pointer-events: none;
 }
 
 /* Edges */
-#graphMap .graph-edge {
-    stroke: var(--dark-green);
-    stroke-width: 2.5;
-    pointer-events: none;
-    opacity: 0.85;
-}
-#graphMap .graph-edge.one-way {
-    stroke-dasharray: 6 3;
-}
-
-/* Arrow markers for one-way edges */
-#graphMap .graph-edge-arrow {
-    fill: var(--dark-green);
-}
+#graphMap .graph-edge { stroke: var(--dark-green); stroke-width: 2.5; pointer-events: none; opacity: 0.85; }
+#graphMap .graph-edge.one-way { stroke-dasharray: 6 3; }
+#graphMap .graph-edge-arrow { fill: var(--dark-green); }
 
 /* Nodes */
 #graphMap .graph-node {
@@ -398,28 +380,13 @@ main {
     stroke: var(--dark-green);
     stroke-width: 2.5;
     cursor: pointer;
-    transition: fill 0.15s, r 0.15s;
+    transition: fill 0.15s;
     r: 6;
 }
-#graphMap .graph-node:hover {
-    fill: var(--sage-green);
-    r: 8;
-}
-#graphMap .graph-node.selected {
-    fill: var(--green);
-    stroke: var(--dark-green);
-    r: 8;
-}
-#graphMap .graph-node.assigned {
-    fill: var(--green);
-    stroke: var(--dark-green);
-    stroke-width: 2.5;
-}
-#graphMap .graph-node.assigned.selected {
-    fill: var(--dark-green);
-}
-
-/* Node label */
+#graphMap .graph-node:hover { fill: var(--sage-green); }
+#graphMap .graph-node.selected { fill: var(--green); stroke: var(--dark-green); }
+#graphMap .graph-node.assigned { fill: var(--green); stroke: var(--dark-green); stroke-width: 2.5; }
+#graphMap .graph-node.assigned.selected { fill: var(--dark-green); }
 #graphMap .graph-node-label {
     font-size: 9px;
     font-family: 'Noto Sans', sans-serif;
@@ -440,31 +407,11 @@ main {
     font-family: 'Noto Sans', sans-serif;
     color: var(--light-grey);
 }
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid var(--dark-green);
-    display: inline-block;
-}
-.legend-dot.node-dot {
-    background: var(--white);
-}
-.legend-dot.assigned-dot {
-    background: var(--green);
-}
-.legend-line {
-    width: 24px;
-    height: 2.5px;
-    display: inline-block;
-    background: var(--dark-green);
-    border-radius: 2px;
-}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--dark-green); display: inline-block; }
+.legend-dot.node-dot { background: var(--white); }
+.legend-dot.assigned-dot { background: var(--green); }
+.legend-line { width: 24px; height: 2.5px; display: inline-block; background: var(--dark-green); border-radius: 2px; }
 .legend-line.oneway-line {
     background: repeating-linear-gradient(
         to right,
@@ -475,11 +422,17 @@ main {
     );
 }
 
+.graph-grid line {
+    stroke: rgba(0, 64, 28, 0.06);
+    stroke-width: 1;
+    pointer-events: none;
+}
+
 /* ─── Modal Overlay ──────────────────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0,0,0,0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -496,15 +449,11 @@ main {
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
-.view-modal::-webkit-scrollbar {
-    display: none;
-}
-
-/* Gallery */
+.view-modal::-webkit-scrollbar { display: none; }
 .modal-gallery {
     width: 100%;
     height: 400px;
@@ -514,11 +463,7 @@ main {
     border-radius: 16px 16px 0 0;
     flex-shrink: 0;
 }
-.modal-gallery img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.modal-gallery img { width: 100%; height: 100%; object-fit: cover; }
 .no-image {
     width: 100%;
     height: 100%;
@@ -529,13 +474,8 @@ main {
     color: var(--light-grey);
     gap: 0.5rem;
 }
-.no-image i {
-    font-size: 2.5rem;
-}
-.no-image p {
-    font-size: 0.875rem;
-    font-family: 'Noto Sans', sans-serif;
-}
+.no-image i { font-size: 2.5rem; }
+.no-image p { font-size: 0.875rem; font-family: 'Noto Sans', sans-serif; }
 .gallery-nav {
     position: absolute;
     bottom: 1rem;
@@ -548,15 +488,11 @@ main {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255,255,255,0.5);
     cursor: pointer;
     transition: background 0.2s;
 }
-.gallery-dot.active {
-    background: var(--white);
-}
-
-/* Close button inside gallery */
+.gallery-dot.active { background: var(--white); }
 .view-modal > .close-btn {
     position: absolute;
     top: 0.35rem;
@@ -575,22 +511,9 @@ main {
     transition: background 0.2s;
     z-index: 10;
 }
-.view-modal > .close-btn:hover {
-    background: var(--light-grey);
-}
-
-/* Modal body */
-.modal-body {
-    padding: 1.5rem;
-    text-align: center;
-}
-.modal-meta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 0.5rem;
-}
+.view-modal > .close-btn:hover { background: var(--light-grey); }
+.modal-body { padding: 1.5rem; text-align: center; }
+.modal-meta { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 0.5rem; }
 .modal-category {
     font-size: 0.7rem;
     font-weight: 700;
@@ -602,26 +525,9 @@ main {
     padding: 2px 8px;
     border-radius: 999px;
 }
-.modal-dataid {
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-family: 'Noto Sans', sans-serif;
-    color: var(--light-grey);
-}
-.modal-name {
-    font-family: 'EB Garamond', serif;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--dark-green);
-    margin-bottom: 1rem;
-    line-height: 1.2;
-}
-.modal-description {
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 0.9rem;
-    color: var(--grey);
-    line-height: 1.6;
-}
+.modal-dataid { font-size: 0.75rem; font-weight: 600; font-family: 'Noto Sans', sans-serif; color: var(--light-grey); }
+.modal-name { font-family: 'EB Garamond', serif; font-size: 1.75rem; font-weight: 700; color: var(--dark-green); margin-bottom: 1rem; line-height: 1.2; }
+.modal-description { font-family: 'Noto Sans', sans-serif; font-size: 0.9rem; color: var(--grey); line-height: 1.6; }
 .modal-actions {
     display: flex;
     gap: 0.75rem;
@@ -644,9 +550,7 @@ main {
     cursor: pointer;
     transition: background 0.2s;
 }
-.edit-modal-btn:hover {
-    background: var(--green);
-}
+.edit-modal-btn:hover { background: var(--green); }
 .delete-modal-btn {
     display: flex;
     align-items: center;
@@ -662,9 +566,7 @@ main {
     cursor: pointer;
     transition: all 0.2s;
 }
-.delete-modal-btn:hover {
-    background: var(--light-red);
-}
+.delete-modal-btn:hover { background: var(--light-red); }
 
 /* ─── Delete Confirm Modal ───────────────────────────────────────────────────── */
 .modal {
@@ -674,14 +576,9 @@ main {
     width: 420px;
     font-family: 'Noto Sans', sans-serif;
     position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
 }
-.modal-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 0.75rem;
-}
+.modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0.75rem; }
 .modal-icon {
     width: 38px;
     height: 38px;
@@ -692,19 +589,8 @@ main {
     justify-content: center;
     flex-shrink: 0;
 }
-.modal-header h2 {
-    font-family: 'EB Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--dark-green);
-    flex: 1;
-}
-.modal p {
-    font-size: 0.875rem;
-    color: var(--light-grey);
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-}
+.modal-header h2 { font-family: 'EB Garamond', serif; font-size: 1.5rem; font-weight: 700; color: var(--dark-green); flex: 1; }
+.modal p { font-size: 0.875rem; color: var(--light-grey); line-height: 1.6; margin-bottom: 1.25rem; }
 .close-btn {
     position: absolute;
     top: 1rem;
@@ -722,14 +608,8 @@ main {
     cursor: pointer;
     transition: color 0.2s, background 0.2s;
 }
-.close-btn:hover {
-    color: var(--dark-grey);
-    background: var(--off-white);
-}
-.modal-footer {
-    display: flex;
-    justify-content: center;
-}
+.close-btn:hover { color: var(--dark-grey); background: var(--off-white); }
+.modal-footer { display: flex; justify-content: center; }
 .delete-confirm-btn {
     display: flex;
     align-items: center;
@@ -745,12 +625,7 @@ main {
     cursor: pointer;
     transition: background 0.2s, transform 0.15s;
 }
-.delete-confirm-btn:hover {
-    background: var(--dark-red);
-    transform: translateY(-1px);
-}
+.delete-confirm-btn:hover { background: var(--dark-red); transform: translateY(-1px); }
 
 /* ─── Hidden ─────────────────────────────────────────────────────────────────── */
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }

@@ -10,6 +10,8 @@ let dragOffsetY = 0;
 let newShapeEl = null;
 let newFiles = [];
 let confirmedShape = null;
+let existingBuildings = [];
+let getSVGCoords = null; // set by initZoomPan
 
 // ─── Elements ─────────────────────────────────────────────────────────────────
 const svg = document.getElementById('addCampusMap');
@@ -23,12 +25,106 @@ const step2 = document.getElementById('step2');
 const confirmPositionBtn = document.getElementById('confirmPositionBtn');
 const backToStep1Btn = document.getElementById('backToStep1Btn');
 
+// ─── Zoom / Pan ───────────────────────────────────────────────────────────────
+function initZoomPan(svgEl) {
+    const VIEWBOX_W = 1920;
+    const VIEWBOX_H = 1080;
+    const MIN_SCALE = 0.5;
+    const MAX_SCALE = 8;
+
+    let scale = 1;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let panStart = { x: 0, y: 0 };
+
+    function applyTransform() {
+        svgEl.setAttribute('viewBox', `${-panX / scale} ${-panY / scale} ${VIEWBOX_W / scale} ${VIEWBOX_H / scale}`);
+    }
+
+    svgEl.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * delta));
+        const svgRect = svgEl.getBoundingClientRect();
+        const mouseX = e.clientX - svgRect.left;
+        const mouseY = e.clientY - svgRect.top;
+        panX = mouseX - (mouseX - panX) * (newScale / scale);
+        panY = mouseY - (mouseY - panY) * (newScale / scale);
+        scale = newScale;
+        applyTransform();
+    }, { passive: false });
+
+    svgEl.addEventListener('mousedown', (e) => {
+        if (e.button === 1 || e.altKey) {
+            e.preventDefault();
+            isPanning = true;
+            panStart = { x: e.clientX - panX, y: e.clientY - panY };
+            svgEl.style.cursor = 'grabbing';
+        }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        panX = e.clientX - panStart.x;
+        panY = e.clientY - panStart.y;
+        applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isPanning) {
+            isPanning = false;
+            svgEl.style.cursor = '';
+        }
+    });
+
+    svgEl.addEventListener('contextmenu', (e) => e.preventDefault());
+    applyTransform();
+
+    return function getCoords(e) {
+        const pt = svgEl.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        return pt.matrixTransform(svgEl.getScreenCTM().inverse());
+    };
+}
+
+// ─── Overlap Detection ────────────────────────────────────────────────────────
+function getBoundingBox(shape) {
+    if (shape.type === 'rect') {
+        return {
+            x: parseFloat(shape.x),
+            y: parseFloat(shape.y),
+            width: parseFloat(shape.width),
+            height: parseFloat(shape.height)
+        };
+    } else {
+        return {
+            x: parseFloat(shape.cx) - parseFloat(shape.rx),
+            y: parseFloat(shape.cy) - parseFloat(shape.ry),
+            width: parseFloat(shape.rx) * 2,
+            height: parseFloat(shape.ry) * 2
+        };
+    }
+}
+
+function isOverlapping(a, b) {
+    return !(
+        a.x + a.width < b.x ||
+        b.x + b.width < a.x ||
+        a.y + a.height < b.y ||
+        b.y + b.height < a.y
+    );
+}
+
 // ─── Load Existing Buildings on Map ──────────────────────────────────────────
 async function loadExistingBuildings() {
     try {
         const res = await fetch('/api/buildings', { headers: { 'Accept': 'application/json' } });
         const data = await res.json();
         const ns = 'http://www.w3.org/2000/svg';
+
+        existingBuildings = data.buildings.filter(b => b.category !== 'road');
 
         data.buildings.forEach(b => {
             if (!b.shape) return;
@@ -56,10 +152,18 @@ async function loadExistingBuildings() {
             }
 
             if (!elem) return;
-            elem.classList.add('existing');
-            elem.setAttribute('fill', '#ccc');
-            elem.setAttribute('stroke', '#999');
-            elem.setAttribute('stroke-width', '1');
+
+            if (b.category === 'road') {
+                elem.classList.add('existing');
+                elem.setAttribute('fill', '#cecece');
+                elem.setAttribute('stroke', 'none');
+            } else {
+                elem.classList.add('existing');
+                elem.setAttribute('fill', '#ccc');
+                elem.setAttribute('stroke', '#999');
+                elem.setAttribute('stroke-width', '1');
+            }
+
             svg.appendChild(elem);
         });
 
@@ -117,18 +221,9 @@ function updatePositionDisplay() {
     }
 }
 
-// ─── Get SVG Coordinates from Mouse Event ─────────────────────────────────────
-function getSVGCoords(e) {
-    const pt = svg.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
-}
-
 // ─── Drag Logic ───────────────────────────────────────────────────────────────
-newShapeEl?.addEventListener('mousedown', startDrag);
-
 function startDrag(e) {
+    if (e.altKey) return; // let alt+drag pan the map
     e.preventDefault();
     isDragging = true;
     const coords = getSVGCoords(e);
@@ -205,6 +300,19 @@ applyShapeBtn.addEventListener('click', () => {
 
 // ─── Confirm Position ─────────────────────────────────────────────────────────
 confirmPositionBtn.addEventListener('click', () => {
+    const newBox = getBoundingBox({ ...shapeData, type: shapeType });
+
+    const overlapping = existingBuildings.some(b => {
+        if (!b.shape) return false;
+        const existingBox = getBoundingBox(b.shape);
+        return isOverlapping(newBox, existingBox);
+    });
+
+    if (overlapping) {
+        showToast('error', 'This shape overlaps an existing building. Please reposition it.');
+        return;
+    }
+
     confirmedShape = { ...shapeData, type: shapeType };
     step1.classList.add('hidden');
     step2.classList.remove('hidden');
@@ -328,6 +436,10 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 await loadExistingBuildings();
+
+// Init zoom/pan — replaces the old getSVGCoords function
+getSVGCoords = initZoomPan(svg);
+
 createNewShape();
 
 // Wire drag after shape is created

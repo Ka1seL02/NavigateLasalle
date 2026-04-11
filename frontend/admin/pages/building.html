@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigate La Salle</title>
-    <!-- Global style -->
     <link rel="stylesheet" href="/shared/css/root.css">
     <link rel="stylesheet" href="/shared/css/loading.css">
-    <!-- Specific page style and other resources -->
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/building.css">
@@ -47,13 +45,21 @@
             </div>
 
             <!-- List View -->
-            <div id="listView">
-                <!-- Category sections will be generated here -->
-            </div>
+            <div id="listView"></div>
 
             <!-- Map View -->
             <div id="mapView" class="hidden">
                 <svg id="campusMap" viewBox="0 0 1920 1080"></svg>
+                <!-- Legend -->
+                <div class="map-legend">
+                    <div class="legend-item"><span class="map-legend-dot building-dot"></span> Building</div>
+                    <div class="legend-item"><span class="map-legend-dot facility-dot"></span> Facility</div>
+                    <div class="legend-item"><span class="map-legend-dot gate-dot"></span> Gate</div>
+                    <div class="legend-item"><span class="map-legend-dot landmark-dot"></span> Landmark</div>
+                    <div class="legend-item"><span class="map-legend-dot parking-dot"></span> Parking</div>
+                    <div class="legend-item"><span class="map-legend-dot road-dot"></span> Road</div>
+                    <div class="legend-item legend-hint"> Scroll to zoom · Alt+drag to pan </div>
+                </div>
             </div>
 
             <!-- Graph View -->
@@ -72,22 +78,33 @@
                             <button class="graph-mode-btn" id="modeAssignBtn">
                                 <i class='bx bx-link'></i> Assign
                             </button>
+                            <button class="graph-mode-btn" id="modeRoadBtn">
+                                <i class='bx bx-street-view'></i> Road
+                            </button>
                             <button class="graph-mode-btn" id="modeDeleteBtn">
                                 <i class='bx bx-trash'></i> Delete
                             </button>
                         </div>
                     </div>
                     <div class="graph-toolbar-right">
+                        <!-- Edge options (shown in Edge mode) -->
                         <div class="graph-edge-options hidden" id="edgeOptions">
                             <span class="graph-mode-label">Direction:</span>
                             <div class="graph-mode-toggle">
-                                <button class="graph-mode-btn active" id="edgeBothBtn" data-direction="both">
+                                <button class="graph-mode-btn active" id="edgeBothBtn">
                                     <i class='bx bx-transfer'></i> Two-way
                                 </button>
-                                <button class="graph-mode-btn" id="edgeOneWayBtn" data-direction="one-way">
+                                <button class="graph-mode-btn" id="edgeOneWayBtn">
                                     <i class='bx bx-right-arrow-alt'></i> One-way
                                 </button>
                             </div>
+                        </div>
+                        <!-- Road options (shown in Road mode) -->
+                        <div class="graph-road-options hidden" id="roadOptions">
+                            <input type="text" class="graph-road-input" id="roadNameInput"
+                                placeholder="Road name (e.g. New Road)" />
+                            <input type="text" class="graph-road-input" id="roadDataIdInput"
+                                placeholder="Road ID (unique, e.g. New-Rd.)" />
                         </div>
                         <div class="graph-status" id="graphStatus">Click on the map to place a node</div>
                         <button class="graph-save-btn" id="saveGraphBtn">
@@ -95,16 +112,18 @@
                         </button>
                     </div>
                 </div>
+
                 <!-- Graph SVG -->
                 <div class="graph-map-wrapper">
                     <svg id="graphMap" viewBox="0 0 1920 1080"></svg>
-                </div>
-                <!-- Legend -->
-                <div class="graph-legend">
-                    <div class="legend-item"><span class="legend-dot node-dot"></span> Waypoint Node</div>
-                    <div class="legend-item"><span class="legend-dot assigned-dot"></span> Building Node</div>
-                    <div class="legend-item"><span class="legend-line both-line"></span> Two-way Edge</div>
-                    <div class="legend-item"><span class="legend-line oneway-line"></span> One-way Edge</div>
+                    <!-- Legend -->
+                    <div class="graph-legend">
+                        <div class="legend-item"><span class="legend-dot node-dot"></span> Waypoint Node</div>
+                        <div class="legend-item"><span class="legend-dot assigned-dot"></span> Building Node</div>
+                        <div class="legend-item"><span class="legend-line both-line"></span> Two-way Edge</div>
+                        <div class="legend-item"><span class="legend-line oneway-line"></span> One-way Edge</div>
+                        <div class="legend-item legend-hint"> Scroll to zoom · Alt+drag to pan </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -116,14 +135,12 @@
             <button class="close-btn" id="closeViewModal">
                 <i class='bx bx-x'></i>
             </button>
-            <!-- Image Gallery -->
             <div class="modal-gallery" id="modalGallery">
                 <div class="no-image">
                     <i class='bx bx-image'></i>
                     <p>No images available</p>
                 </div>
             </div>
-            <!-- Modal Content -->
             <div class="modal-body">
                 <div class="modal-meta">
                     <span class="modal-category" id="modalCategory"></span>

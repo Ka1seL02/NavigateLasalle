@@ -2,7 +2,8 @@ import showToast from './toast.js';
 import { showLoading, hideLoading } from '/shared/js/loading.js';
 
 // ─── State ────────────────────────────────────────────────────────────────────
-let allBuildings = [];
+let allBuildings = [];  // non-road buildings
+let allRoads = [];      // road category only
 let selectedBuildingId = null;
 let currentImageIndex = 0;
 let autoSwapInterval = null;
@@ -68,13 +69,14 @@ addBuildingBtn.addEventListener('click', () => {
     window.location.href = 'building-add.html';
 });
 
-// ─── Fetch Buildings ──────────────────────────────────────────────────────────
+// ─── Fetch All Data ───────────────────────────────────────────────────────────
 async function fetchBuildings() {
     await showLoading();
     try {
         const res = await fetch('/api/buildings', { headers: { 'Accept': 'application/json' } });
         const data = await res.json();
-        allBuildings = data.buildings;
+        allRoads = data.buildings.filter(b => b.category === 'road');
+        allBuildings = data.buildings.filter(b => b.category !== 'road');
         buildingsCount.textContent = allBuildings.length;
         renderList();
         if (savedView === 'map') renderMap();
@@ -83,6 +85,19 @@ async function fetchBuildings() {
         showToast('error', 'Failed to load buildings.');
     } finally {
         hideLoading();
+    }
+}
+
+// ─── Refresh Roads Only ───────────────────────────────────────────────────────
+async function refreshRoads() {
+    try {
+        const res = await fetch('/api/buildings', { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        allRoads = data.buildings.filter(b => b.category === 'road');
+        allBuildings = data.buildings.filter(b => b.category !== 'road');
+        buildingsCount.textContent = allBuildings.length;
+    } catch (err) {
+        showToast('error', 'Failed to refresh roads.');
     }
 }
 
@@ -135,32 +150,106 @@ function renderList() {
     });
 }
 
-// ─── Render Map ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// ─── ZOOM / PAN HELPER ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function initZoomPan(svg) {
+    const VIEWBOX_W = 1920;
+    const VIEWBOX_H = 1080;
+    const MIN_SCALE = 0.5;
+    const MAX_SCALE = 8;
+
+    let scale = 1;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let panStart = { x: 0, y: 0 };
+
+    function applyTransform() {
+        svg.setAttribute('viewBox', `${-panX / scale} ${-panY / scale} ${VIEWBOX_W / scale} ${VIEWBOX_H / scale}`);
+    }
+
+    svg.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * delta));
+        const svgRect = svg.getBoundingClientRect();
+        const mouseX = e.clientX - svgRect.left;
+        const mouseY = e.clientY - svgRect.top;
+        panX = mouseX - (mouseX - panX) * (newScale / scale);
+        panY = mouseY - (mouseY - panY) * (newScale / scale);
+        scale = newScale;
+        applyTransform();
+    }, { passive: false });
+
+    svg.addEventListener('mousedown', (e) => {
+        if (e.button === 1 || e.altKey) {
+            e.preventDefault();
+            isPanning = true;
+            panStart = { x: e.clientX - panX, y: e.clientY - panY };
+            svg.style.cursor = 'grabbing';
+        }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        panX = e.clientX - panStart.x;
+        panY = e.clientY - panStart.y;
+        applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isPanning) {
+            isPanning = false;
+            svg.style.cursor = '';
+        }
+    });
+
+    svg.addEventListener('contextmenu', (e) => e.preventDefault());
+    applyTransform();
+
+    return function getSVGCoords(e) {
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+        return { x: Math.round(svgP.x), y: Math.round(svgP.y) };
+    };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ─── MAP VIEW ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let mapZoomInitialized = false;
+
 function renderMap() {
     const svg = document.getElementById('campusMap');
     svg.innerHTML = '';
     const ns = 'http://www.w3.org/2000/svg';
 
-    // ── Roads (hardcoded, non-interactive) ──
-    roadData.forEach(r => {
+    // ── Roads (from DB, non-interactive) ──
+    allRoads.forEach(r => {
+        if (!r.shape) return;
         let elem;
-        if (r.type === 'rect') {
+        if (r.shape.type === 'rect') {
             elem = document.createElementNS(ns, 'rect');
-            elem.setAttribute('x', r.x);
-            elem.setAttribute('y', r.y);
-            elem.setAttribute('width', r.width);
-            elem.setAttribute('height', r.height);
-            if (r.rotate) {
-                const cx = r.x + r.width / 2;
-                const cy = r.y + r.height / 2;
-                elem.setAttribute('transform', `rotate(${r.rotate}, ${cx}, ${cy})`);
+            elem.setAttribute('x', r.shape.x);
+            elem.setAttribute('y', r.shape.y);
+            elem.setAttribute('width', r.shape.width);
+            elem.setAttribute('height', r.shape.height);
+            if (r.shape.rotate) {
+                const cx = r.shape.x + r.shape.width / 2;
+                const cy = r.shape.y + r.shape.height / 2;
+                elem.setAttribute('transform', `rotate(${r.shape.rotate}, ${cx}, ${cy})`);
             }
-        } else if (r.type === 'ellipse') {
+        } else if (r.shape.type === 'ellipse') {
             elem = document.createElementNS(ns, 'ellipse');
-            elem.setAttribute('cx', r.cx);
-            elem.setAttribute('cy', r.cy);
-            elem.setAttribute('rx', r.rx);
-            elem.setAttribute('ry', r.ry);
+            elem.setAttribute('cx', r.shape.cx);
+            elem.setAttribute('cy', r.shape.cy);
+            elem.setAttribute('rx', r.shape.rx);
+            elem.setAttribute('ry', r.shape.ry);
         }
         if (!elem) return;
         elem.classList.add('road');
@@ -170,9 +259,7 @@ function renderMap() {
     // ── Buildings (interactive) ──
     allBuildings.forEach(b => {
         if (!b.shape) return;
-
         let elem;
-
         if (b.shape.type === 'rect') {
             elem = document.createElementNS(ns, 'rect');
             elem.setAttribute('x', b.shape.x);
@@ -193,9 +280,7 @@ function renderMap() {
             elem.setAttribute('rx', b.shape.rx);
             elem.setAttribute('ry', b.shape.ry);
         }
-
         if (!elem) return;
-
         elem.classList.add(b.category);
         elem.dataset.id = b._id;
         elem.dataset.dataId = b.dataId;
@@ -205,58 +290,33 @@ function renderMap() {
     svg.addEventListener('click', (e) => {
         const target = e.target;
         if (!target.dataset.id) return;
-
         const building = allBuildings.find(b => b._id === target.dataset.id);
         if (building) openViewModal(building);
     });
+
+    if (!mapZoomInitialized) {
+        initZoomPan(svg);
+        mapZoomInitialized = true;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ─── GRAPH VIEW ───────────────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── Hardcoded Road Data (from campus SVG) ────────────────────────────────────
-const roadData = [
-    // EAST
-    { id: 'AEA-Rd.', type: 'rect', x: 98, y: 497, width: 333, height: 30 },
-    { id: 'AP-Rd.', type: 'rect', x: 205, y: 696, width: 30, height: 287 },
-    { id: 'Chapel-Rd.', type: 'rect', x: 272, y: 443, width: 30, height: 55 },
-    { id: 'G1-Entry', type: 'rect', x: 429, y: 1012, width: 30, height: 52 },
-    { id: 'Gate-4-Way-Rd.', type: 'rect', x: 69, y: 444, width: 30, height: 620 },
-    { id: 'IL-Rd.', type: 'rect', x: 459, y: 982, width: 188, height: 30 },
-    { id: 'JPAC-Rd.', type: 'rect', x: 98, y: 982, width: 331, height: 30 },
-    { id: 'JS-Rd.', type: 'rect', x: 353, y: 696, width: 30, height: 287 },
-    { id: 'Lake-Ave.', type: 'rect', x: 429, y: 165, width: 30, height: 816 },
-    { id: 'LCDC-Rd.', type: 'rect', x: 98, y: 667, width: 333, height: 30 },
-    { id: 'Museo-Drive', type: 'rect', x: 218, y: 414, width: 213, height: 30 },
-    { id: 'Park-Trail-1', type: 'rect', x: 458, y: 243, width: 219, height: 12 },
-    { id: 'Park-Trail-2', type: 'rect', x: 532, y: 276.5, width: 177.43, height: 12, rotate: 22.47 },
-    { id: 'PC-Campos-Ave.-1', type: 'rect', x: 646, y: 555.5, width: 30, height: 507.5 },
-    { id: 'PC-Campos-Ave.-2', type: 'rect', x: 647, y: 527, width: 149.3, height: 30, rotate: -21 },
-    { id: 'PC-Campos-Ave.-3', type: 'rect', x: 708, y: 144, width: 30, height: 400, rotate: -19 },
-    { id: 'West-Ave.-1', type: 'rect', x: 429, y: 136, width: 801, height: 30 },
-    // WEST
-    { id: 'Acacia-Ave.', type: 'rect', x: 720, y: 352, width: 510, height: 30 },
-    { id: 'Academy-Lane', type: 'rect', x: 704, y: 254, width: 497, height: 12 },
-    { id: 'G3-Entry', type: 'rect', x: 1862, y: 136, width: 44, height: 30 },
-    { id: 'GS-Drive-PA-Rd.', type: 'rect', x: 1227, y: 136, width: 461, height: 30 },
-    { id: 'Oval-Rd.-1', type: 'rect', x: 1228, y: 352, width: 488, height: 30 },
-    { id: 'Oval-Rd.-2', type: 'rect', x: 1686, y: 136, width: 30, height: 217 },
-    { id: 'Oval-Rd.-3', type: 'rect', x: 1715, y: 136, width: 118, height: 30 },
-    { id: 'PA-Rd.', type: 'rect', x: 1686, y: 27, width: 30, height: 110 },
-    { id: 'West-Ave.-2', type: 'rect', x: 1200, y: 165, width: 30, height: 188 },
-    // ROTUNDAS
-    { id: 'G1-Rotunda', type: 'ellipse', cx: 411 + 66 / 2, cy: 968 + 58 / 2, rx: 66 / 2, ry: 58 / 2 },
-    { id: 'G3-Rotunda', type: 'ellipse', cx: 1822 + 56 / 2, cy: 124 + 53 / 2, rx: 56 / 2, ry: 53 / 2 },
-];
-
-// ─── Graph State ──────────────────────────────────────────────────────────────
-let graphNodes = [];       // [{ id, x, y, buildingId }]
-let graphEdges = [];       // [{ from, to, weight, type, direction }]
-let graphMode = 'node';    // 'node' | 'edge' | 'assign' | 'delete'
-let selectedNodeId = null; // id of first selected node (for edge drawing)
+let graphNodes = [];
+let graphEdges = [];
+let graphMode = 'node';
+let selectedNodeId = null;
 let edgeDirection = 'both';
 let graphInitialized = false;
+let graphZoomInitialized = false;
+let getGraphSVGCoords = null;
+
+// Road drawing state
+let isDrawingRoad = false;
+let roadDrawStart = null;
+let roadPreviewElem = null;
 
 // ─── Graph Elements ───────────────────────────────────────────────────────────
 const graphMapSvg = document.getElementById('graphMap');
@@ -266,21 +326,30 @@ const modeNodeBtn = document.getElementById('modeNodeBtn');
 const modeEdgeBtn = document.getElementById('modeEdgeBtn');
 const modeAssignBtn = document.getElementById('modeAssignBtn');
 const modeDeleteBtn = document.getElementById('modeDeleteBtn');
+const modeRoadBtn = document.getElementById('modeRoadBtn');
 const edgeOptions = document.getElementById('edgeOptions');
 const edgeBothBtn = document.getElementById('edgeBothBtn');
 const edgeOneWayBtn = document.getElementById('edgeOneWayBtn');
+const roadOptions = document.getElementById('roadOptions');
+const roadNameInput = document.getElementById('roadNameInput');
+const roadDataIdInput = document.getElementById('roadDataIdInput');
 
 // ─── Mode Switcher ────────────────────────────────────────────────────────────
 function setGraphMode(mode) {
     graphMode = mode;
     selectedNodeId = null;
+    isDrawingRoad = false;
+    roadDrawStart = null;
+    if (roadPreviewElem) { roadPreviewElem.remove(); roadPreviewElem = null; }
 
-    [modeNodeBtn, modeEdgeBtn, modeAssignBtn, modeDeleteBtn].forEach(b => b.classList.remove('active'));
+    [modeNodeBtn, modeEdgeBtn, modeAssignBtn, modeDeleteBtn, modeRoadBtn]
+        .forEach(b => b.classList.remove('active'));
+    edgeOptions.classList.add('hidden');
+    roadOptions.classList.add('hidden');
 
     if (mode === 'node') {
         modeNodeBtn.classList.add('active');
         graphStatus.textContent = 'Click anywhere on the map to place a node';
-        edgeOptions.classList.add('hidden');
         graphMapSvg.style.cursor = 'crosshair';
     } else if (mode === 'edge') {
         modeEdgeBtn.classList.add('active');
@@ -290,13 +359,16 @@ function setGraphMode(mode) {
     } else if (mode === 'assign') {
         modeAssignBtn.classList.add('active');
         graphStatus.textContent = 'Click a node, then click a building to assign it';
-        edgeOptions.classList.add('hidden');
         graphMapSvg.style.cursor = 'default';
     } else if (mode === 'delete') {
         modeDeleteBtn.classList.add('active');
-        graphStatus.textContent = 'Click a node or edge to delete it';
-        edgeOptions.classList.add('hidden');
+        graphStatus.textContent = 'Click a node, edge, or road to delete it';
         graphMapSvg.style.cursor = 'default';
+    } else if (mode === 'road') {
+        modeRoadBtn.classList.add('active');
+        graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
+        roadOptions.classList.remove('hidden');
+        graphMapSvg.style.cursor = 'crosshair';
     }
 
     redrawGraph();
@@ -306,6 +378,7 @@ modeNodeBtn.addEventListener('click', () => setGraphMode('node'));
 modeEdgeBtn.addEventListener('click', () => setGraphMode('edge'));
 modeAssignBtn.addEventListener('click', () => setGraphMode('assign'));
 modeDeleteBtn.addEventListener('click', () => setGraphMode('delete'));
+modeRoadBtn.addEventListener('click', () => setGraphMode('road'));
 
 edgeBothBtn.addEventListener('click', () => {
     edgeDirection = 'both';
@@ -318,22 +391,11 @@ edgeOneWayBtn.addEventListener('click', () => {
     edgeBothBtn.classList.remove('active');
 });
 
-// ─── Generate Node ID ─────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function generateNodeId() {
     return 'node_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
 }
 
-// ─── SVG Coordinate Helper ────────────────────────────────────────────────────
-function getSVGCoords(e) {
-    const svg = graphMapSvg;
-    const pt = svg.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-    const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-    return { x: Math.round(svgP.x), y: Math.round(svgP.y) };
-}
-
-// ─── Edge Weight (Euclidean distance) ─────────────────────────────────────────
 function calcWeight(n1, n2) {
     return Math.round(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)));
 }
@@ -344,10 +406,17 @@ async function renderGraph() {
         await fetchGraph();
         graphInitialized = true;
     }
+
     redrawGraph();
+
+    if (!graphZoomInitialized) {
+        getGraphSVGCoords = initZoomPan(graphMapSvg);
+        graphZoomInitialized = true;
+        initRoadDrawing();
+        initNodeDragging();
+    }
 }
 
-// ─── Fetch existing graph from backend ───────────────────────────────────────
 async function fetchGraph() {
     try {
         const res = await fetch('/api/mapgraph', { headers: { 'Accept': 'application/json' } });
@@ -357,10 +426,155 @@ async function fetchGraph() {
             graphEdges = data.edges || [];
         }
     } catch (err) {
-        // No graph yet, start fresh
         graphNodes = [];
         graphEdges = [];
     }
+}
+
+// ─── Road Drawing ─────────────────────────────────────────────────────────────
+function initRoadDrawing() {
+    const ns = 'http://www.w3.org/2000/svg';
+
+    graphMapSvg.addEventListener('mousedown', (e) => {
+        if (graphMode !== 'road') return;
+        if (e.button !== 0 || e.altKey) return;
+
+        const coords = getGraphSVGCoords(e);
+        roadDrawStart = coords;
+        isDrawingRoad = true;
+
+        roadPreviewElem = document.createElementNS(ns, 'rect');
+        roadPreviewElem.setAttribute('x', coords.x);
+        roadPreviewElem.setAttribute('y', coords.y);
+        roadPreviewElem.setAttribute('width', 0);
+        roadPreviewElem.setAttribute('height', 0);
+        roadPreviewElem.classList.add('road-preview');
+        graphMapSvg.appendChild(roadPreviewElem);
+    });
+
+    graphMapSvg.addEventListener('mousemove', (e) => {
+        if (!isDrawingRoad || !roadPreviewElem || !roadDrawStart) return;
+        const coords = getGraphSVGCoords(e);
+        const x = Math.min(coords.x, roadDrawStart.x);
+        const y = Math.min(coords.y, roadDrawStart.y);
+        const w = Math.abs(coords.x - roadDrawStart.x);
+        const h = Math.abs(coords.y - roadDrawStart.y);
+        roadPreviewElem.setAttribute('x', x);
+        roadPreviewElem.setAttribute('y', y);
+        roadPreviewElem.setAttribute('width', w);
+        roadPreviewElem.setAttribute('height', h);
+        graphStatus.textContent = `Road: x:${x} y:${y} w:${Math.round(w)} h:${Math.round(h)}`;
+    });
+
+    graphMapSvg.addEventListener('mouseup', async (e) => {
+        if (!isDrawingRoad || !roadDrawStart || e.button !== 0) return;
+
+        const coords = getGraphSVGCoords(e);
+        const x = Math.min(coords.x, roadDrawStart.x);
+        const y = Math.min(coords.y, roadDrawStart.y);
+        const w = Math.abs(coords.x - roadDrawStart.x);
+        const h = Math.abs(coords.y - roadDrawStart.y);
+
+        isDrawingRoad = false;
+        roadDrawStart = null;
+        if (roadPreviewElem) { roadPreviewElem.remove(); roadPreviewElem = null; }
+
+        if (w < 5 && h < 5) {
+            graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
+            return;
+        }
+
+        const name = roadNameInput.value.trim() || 'New Road';
+        const dataId = roadDataIdInput.value.trim();
+
+        if (!dataId) {
+            showToast('error', 'Please enter a Road ID before drawing.');
+            graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
+            return;
+        }
+
+        await showLoading();
+        try {
+            const res = await fetch('/api/buildings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    dataId,
+                    category: 'road',
+                    shape: {
+                        type: 'rect',
+                        x: Math.round(x),
+                        y: Math.round(y),
+                        width: Math.round(w),
+                        height: Math.round(h)
+                    }
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                showToast('error', data.error || 'Failed to save road.');
+            } else {
+                showToast('success', `Road "${name}" saved!`);
+                roadNameInput.value = '';
+                roadDataIdInput.value = '';
+                await refreshRoads();
+                redrawGraph();
+            }
+        } catch (err) {
+            showToast('error', 'Failed to save road.');
+        } finally {
+            hideLoading();
+            graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
+        }
+    });
+}
+
+// ─── Node Dragging ────────────────────────────────────────────────────────────
+function initNodeDragging() {
+    let isDraggingNode = false;
+    let draggingNodeId = null;
+    let nodeDragOffsetX = 0;
+    let nodeDragOffsetY = 0;
+
+    graphMapSvg.addEventListener('mousedown', (e) => {
+        if (graphMode !== 'node') return;
+        if (e.button !== 0 || e.altKey) return;
+        if (!e.target.classList.contains('graph-node')) { return };
+
+        isDraggingNode = true;
+        draggingNodeId = e.target.dataset.nodeId;
+        const coords = getGraphSVGCoords(e);
+        const node = graphNodes.find(n => n.id === draggingNodeId);
+        nodeDragOffsetX = coords.x - node.x;
+        nodeDragOffsetY = coords.y - node.y;
+        e.stopPropagation();
+    });
+
+    graphMapSvg.addEventListener('mousemove', (e) => {
+        if (!isDraggingNode || !draggingNodeId) return;
+        const coords = getGraphSVGCoords(e);
+        const node = graphNodes.find(n => n.id === draggingNodeId);
+        if (!node) return;
+        node.x = Math.round(coords.x - nodeDragOffsetX);
+        node.y = Math.round(coords.y - nodeDragOffsetY);
+        graphStatus.textContent = `Node: (${node.x}, ${node.y})`;
+        redrawGraph();
+    });
+
+    graphMapSvg.addEventListener('mouseup', () => {
+        isDraggingNode = false;
+        draggingNodeId = null;
+    });
+
+    graphMapSvg.addEventListener('mousemove', (e) => {
+        if (isDraggingNode) return;
+        if (graphMode !== 'node') return;
+        if (!e.target.classList.contains('graph-node')) {
+            const coords = getGraphSVGCoords(e);
+            graphStatus.textContent = `Map position: (${coords.x}, ${coords.y})`;
+        }
+    });
 }
 
 // ─── Full SVG Redraw ──────────────────────────────────────────────────────────
@@ -368,7 +582,7 @@ function redrawGraph() {
     const ns = 'http://www.w3.org/2000/svg';
     graphMapSvg.innerHTML = '';
 
-    // ── Defs (arrow marker for one-way edges) ──
+    // ── Defs ──
     const defs = document.createElementNS(ns, 'defs');
     defs.innerHTML = `
         <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
@@ -377,29 +591,69 @@ function redrawGraph() {
     `;
     graphMapSvg.appendChild(defs);
 
-    // ── Roads (background) ──
-    roadData.forEach(r => {
+    // ── Grid Lines ──
+    const gridSize = 40;
+    const gridGroup = document.createElementNS(ns, 'g');
+    gridGroup.classList.add('graph-grid');
+
+    for (let x = 0; x <= 1920; x += gridSize) {
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', 0);
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', 1080);
+        gridGroup.appendChild(line);
+    }
+
+    for (let y = 0; y <= 1080; y += gridSize) {
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', 0);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', 1920);
+        line.setAttribute('y2', y);
+        gridGroup.appendChild(line);
+    }
+
+    graphMapSvg.appendChild(gridGroup);
+
+    // ── Roads ──
+    allRoads.forEach(r => {
+        if (!r.shape) return;
         let elem;
-        if (r.type === 'rect') {
+        if (r.shape.type === 'rect') {
             elem = document.createElementNS(ns, 'rect');
-            elem.setAttribute('x', r.x);
-            elem.setAttribute('y', r.y);
-            elem.setAttribute('width', r.width);
-            elem.setAttribute('height', r.height);
-            if (r.rotate) {
-                const cx = r.x + r.width / 2;
-                const cy = r.y + r.height / 2;
-                elem.setAttribute('transform', `rotate(${r.rotate}, ${cx}, ${cy})`);
+            elem.setAttribute('x', r.shape.x);
+            elem.setAttribute('y', r.shape.y);
+            elem.setAttribute('width', r.shape.width);
+            elem.setAttribute('height', r.shape.height);
+            if (r.shape.rotate) {
+                const cx = r.shape.x + r.shape.width / 2;
+                const cy = r.shape.y + r.shape.height / 2;
+                elem.setAttribute('transform', `rotate(${r.shape.rotate}, ${cx}, ${cy})`);
             }
-        } else if (r.type === 'ellipse') {
+        } else if (r.shape.type === 'ellipse') {
             elem = document.createElementNS(ns, 'ellipse');
-            elem.setAttribute('cx', r.cx);
-            elem.setAttribute('cy', r.cy);
-            elem.setAttribute('rx', r.rx);
-            elem.setAttribute('ry', r.ry);
+            elem.setAttribute('cx', r.shape.cx);
+            elem.setAttribute('cy', r.shape.cy);
+            elem.setAttribute('rx', r.shape.rx);
+            elem.setAttribute('ry', r.shape.ry);
         }
         if (!elem) return;
         elem.classList.add('graph-road');
+        elem.dataset.roadId = r._id;
+        elem.dataset.roadName = r.name;
+
+        if (graphMode === 'delete') {
+            elem.style.cursor = 'pointer';
+            elem.style.pointerEvents = 'all';
+            elem.addEventListener('click', (e) => {
+                if (e.target.classList.contains('graph-edge')) return;
+                if (e.target.tagName.toLowerCase() === 'line') return;
+                e.stopPropagation();
+                deleteRoad(r._id, r.name);
+            });
+        }
+
         graphMapSvg.appendChild(elem);
     });
 
@@ -409,7 +663,6 @@ function redrawGraph() {
     allBuildings.forEach(b => {
         if (!b.shape) return;
         let elem;
-
         if (b.shape.type === 'rect') {
             elem = document.createElementNS(ns, 'rect');
             elem.setAttribute('x', b.shape.x);
@@ -430,24 +683,15 @@ function redrawGraph() {
             elem.setAttribute('rx', b.shape.rx);
             elem.setAttribute('ry', b.shape.ry);
         }
-
         if (!elem) return;
-
         elem.setAttribute('fill', '#888');
         elem.setAttribute('stroke', '#333');
         elem.setAttribute('stroke-width', '1.5');
         elem.classList.add('ghost-building');
-        elem.dataset.buildingId = b.dataId;
+        elem.dataset.buildingId = b._id;
         elem.dataset.buildingName = b.name;
-
-        if (assignedBuildingIds.has(b.dataId)) {
-            elem.classList.add('assigned');
-        }
-
-        if (graphMode === 'assign' && selectedNodeId) {
-            elem.classList.add('assignable');
-        }
-
+        if (assignedBuildingIds.has(b._id)) elem.classList.add('assigned');
+        if (graphMode === 'assign' && selectedNodeId) elem.classList.add('assignable');
         graphMapSvg.appendChild(elem);
     });
 
@@ -463,32 +707,39 @@ function redrawGraph() {
         line.setAttribute('x2', toNode.x);
         line.setAttribute('y2', toNode.y);
         line.classList.add('graph-edge');
-
         if (edge.type === 'one-way') {
             line.classList.add('one-way');
             line.setAttribute('marker-end', 'url(#arrowhead)');
         }
-
         line.dataset.from = edge.from;
         line.dataset.to = edge.to;
 
-        // Delete mode — edges are clickable
         if (graphMode === 'delete') {
             line.style.cursor = 'pointer';
             line.style.pointerEvents = 'all';
             line.addEventListener('click', (e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 graphEdges = graphEdges.filter(ed => !(ed.from === edge.from && ed.to === edge.to));
+                graphStatus.textContent = 'Edge deleted.';
                 redrawGraph();
             });
         }
-
         graphMapSvg.appendChild(line);
     });
 
     // ── Nodes ──
     graphNodes.forEach(node => {
         const g = document.createElementNS(ns, 'g');
+
+        if (node.buildingId) {
+            const label = document.createElementNS(ns, 'text');
+            label.setAttribute('x', node.x);
+            label.setAttribute('y', node.y - 10);
+            label.classList.add('graph-node-label');
+            label.textContent = allBuildings.find(b => b._id === node.buildingId)?.dataId || node.buildingId;
+            g.appendChild(label);
+        }
 
         const circle = document.createElementNS(ns, 'circle');
         circle.setAttribute('cx', node.x);
@@ -499,45 +750,57 @@ function redrawGraph() {
         if (node.id === selectedNodeId) circle.classList.add('selected');
         circle.dataset.nodeId = node.id;
 
-        // Label if assigned to a building
-        if (node.buildingId) {
-            const label = document.createElementNS(ns, 'text');
-            label.setAttribute('x', node.x);
-            label.setAttribute('y', node.y - 10);
-            label.classList.add('graph-node-label');
-            label.textContent = node.buildingId;
-            g.appendChild(label);
-        }
-
         g.appendChild(circle);
         graphMapSvg.appendChild(g);
     });
 
-    // ── SVG Click (place node or handle edge/assign/delete) ──
     graphMapSvg.addEventListener('click', handleGraphClick);
 }
 
-// ─── Handle SVG Click ─────────────────────────────────────────────────────────
+// ─── Delete Road ──────────────────────────────────────────────────────────────
+async function deleteRoad(id, name) {
+    if (!confirm(`Delete road "${name}"? This cannot be undone.`)) return;
+
+    await showLoading();
+    try {
+        const res = await fetch(`/api/buildings/${id}`, {
+            method: 'DELETE',
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            showToast('error', data.error || 'Failed to delete road.');
+        } else {
+            showToast('success', `Road "${name}" deleted.`);
+            await refreshRoads();
+            redrawGraph();
+        }
+    } catch (err) {
+        showToast('error', 'Failed to delete road.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// ─── Handle Graph Click ───────────────────────────────────────────────────────
 function handleGraphClick(e) {
+    if (e.altKey) return;
     const target = e.target;
 
-    // ── NODE MODE: place a node ──
+    // ── NODE MODE ──
     if (graphMode === 'node') {
-        // Don't place if clicked on existing node
         if (target.classList.contains('graph-node')) return;
-
-        const coords = getSVGCoords(e);
-        const newNode = { id: generateNodeId(), x: coords.x, y: coords.y, buildingId: null };
-        graphNodes.push(newNode);
+        if (target.classList.contains('graph-road')) return;
+        const coords = getGraphSVGCoords(e);
+        graphNodes.push({ id: generateNodeId(), x: coords.x, y: coords.y, buildingId: null });
         graphStatus.textContent = `Node placed at (${coords.x}, ${coords.y})`;
         redrawGraph();
         return;
     }
 
-    // ── EDGE MODE: connect two nodes ──
+    // ── EDGE MODE ──
     if (graphMode === 'edge') {
         if (!target.classList.contains('graph-node')) {
-            // Clicked empty space — deselect
             if (selectedNodeId) {
                 selectedNodeId = null;
                 graphStatus.textContent = 'Click a node to start an edge';
@@ -545,53 +808,36 @@ function handleGraphClick(e) {
             }
             return;
         }
-
         const clickedId = target.dataset.nodeId;
-
         if (!selectedNodeId) {
-            // First node selected
             selectedNodeId = clickedId;
             graphStatus.textContent = 'Now click another node to connect';
             redrawGraph();
             return;
         }
-
         if (selectedNodeId === clickedId) {
-            // Clicked same node — deselect
             selectedNodeId = null;
             graphStatus.textContent = 'Click a node to start an edge';
             redrawGraph();
             return;
         }
-
-        // Check edge limit (max 10 per node)
         const fromCount = graphEdges.filter(ed => ed.from === selectedNodeId || ed.to === selectedNodeId).length;
         const toCount = graphEdges.filter(ed => ed.from === clickedId || ed.to === clickedId).length;
-
         if (fromCount >= 10 || toCount >= 10) {
             showToast('error', 'A node can have at most 10 connections.');
-            selectedNodeId = null;
-            redrawGraph();
-            return;
+            selectedNodeId = null; redrawGraph(); return;
         }
-
-        // Check if edge already exists
-        const exists = graphEdges.some(
-            ed => (ed.from === selectedNodeId && ed.to === clickedId) ||
-                  (ed.from === clickedId && ed.to === selectedNodeId)
+        const exists = graphEdges.some(ed =>
+            (ed.from === selectedNodeId && ed.to === clickedId) ||
+            (ed.from === clickedId && ed.to === selectedNodeId)
         );
         if (exists) {
             showToast('error', 'These nodes are already connected.');
-            selectedNodeId = null;
-            redrawGraph();
-            return;
+            selectedNodeId = null; redrawGraph(); return;
         }
-
-        // Create edge
         const fromNode = graphNodes.find(n => n.id === selectedNodeId);
         const toNode = graphNodes.find(n => n.id === clickedId);
         const weight = calcWeight(fromNode, toNode);
-
         graphEdges.push({
             from: selectedNodeId,
             to: clickedId,
@@ -599,58 +845,47 @@ function handleGraphClick(e) {
             type: edgeDirection,
             direction: edgeDirection === 'one-way' ? 'from→to' : null
         });
-
         graphStatus.textContent = `Connected! Weight: ${weight}px. Click another node to continue.`;
-        selectedNodeId = clickedId; // allow chaining
+        selectedNodeId = clickedId;
         redrawGraph();
         return;
     }
 
-    // ── ASSIGN MODE: assign building to node ──
+    // ── ASSIGN MODE ──
     if (graphMode === 'assign') {
-        // Clicked a node → select it
         if (target.classList.contains('graph-node')) {
             selectedNodeId = target.dataset.nodeId;
             const node = graphNodes.find(n => n.id === selectedNodeId);
-            const currentAssignment = node.buildingId ? ` (currently: ${node.buildingId})` : '';
-            graphStatus.textContent = `Node selected${currentAssignment}. Now click a building to assign.`;
+            const cur = node.buildingId ? ` (currently: ${node.buildingId})` : '';
+            graphStatus.textContent = `Node selected${cur}. Now click a building to assign.`;
             redrawGraph();
             return;
         }
-
-        // Clicked a ghost building → assign to selected node
         if (target.classList.contains('ghost-building') && selectedNodeId) {
             const buildingId = target.dataset.buildingId;
             const buildingName = target.dataset.buildingName;
-
+            graphNodes.forEach(n => { if (n.buildingId === buildingId) n.buildingId = null; });
             const node = graphNodes.find(n => n.id === selectedNodeId);
             if (node) {
-                // Remove old assignment for this building if any
-                graphNodes.forEach(n => {
-                    if (n.buildingId === buildingId) n.buildingId = null;
-                });
                 node.buildingId = buildingId;
-                graphStatus.textContent = `Assigned "${buildingName}" to node. Select another node to continue.`;
+                graphStatus.textContent = `Assigned "${buildingName}". Select another node to continue.`;
                 selectedNodeId = null;
                 redrawGraph();
             }
             return;
         }
-
-        // Clicked empty space — deselect
-        if (!target.classList.contains('graph-node') && !target.classList.contains('ghost-building')) {
-            selectedNodeId = null;
-            graphStatus.textContent = 'Click a node, then click a building to assign it';
-            redrawGraph();
-        }
+        selectedNodeId = null;
+        graphStatus.textContent = 'Click a node, then click a building to assign it';
+        redrawGraph();
         return;
     }
 
-    // ── DELETE MODE: delete node ──
+    // ── DELETE MODE ──
     if (graphMode === 'delete') {
+        // Road deletion is handled by the click listener on the road elem itself
+        // Node deletion handled here
         if (target.classList.contains('graph-node')) {
             const nodeId = target.dataset.nodeId;
-            // Remove node and all its edges
             graphNodes = graphNodes.filter(n => n.id !== nodeId);
             graphEdges = graphEdges.filter(ed => ed.from !== nodeId && ed.to !== nodeId);
             graphStatus.textContent = 'Node and its edges deleted.';
@@ -666,10 +901,7 @@ saveGraphBtn.addEventListener('click', async () => {
     try {
         const res = await fetch('/api/mapgraph', {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({ nodes: graphNodes, edges: graphEdges })
         });
         const data = await res.json();
@@ -725,7 +957,6 @@ function openViewModal(building) {
                 </div>
             ` : ''}
         `;
-
         if (building.images.length > 1) {
             modalGallery.querySelectorAll('.gallery-dot').forEach(dot => {
                 dot.addEventListener('click', () => {
@@ -776,7 +1007,6 @@ const deleteModalOverlay = document.getElementById('deleteModalOverlay');
 const cancelDelete = document.getElementById('cancelDelete');
 const confirmDelete = document.getElementById('confirmDelete');
 const deleteTargetName = document.getElementById('deleteTargetName');
-
 let deleteId = null;
 
 function openDeleteModal(id, name) {
@@ -792,17 +1022,14 @@ cancelDelete.addEventListener('click', () => {
 
 confirmDelete.addEventListener('click', async () => {
     if (!deleteId) return;
-
     deleteModalOverlay.classList.add('hidden');
     await showLoading();
-
     try {
         const res = await fetch(`/api/buildings/${deleteId}`, {
             method: 'DELETE',
             headers: { 'Accept': 'application/json' }
         });
         const data = await res.json();
-
         if (!res.ok) {
             showToast('error', data.error || 'Failed to delete building.');
         } else {

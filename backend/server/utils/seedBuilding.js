@@ -90,12 +90,22 @@ const seed = async () => {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log('✅ MongoDB Connected');
 
-        await Building.deleteMany({});
-        console.log('🗑️ Cleared existing buildings');
+        let inserted = 0;
+        let skipped = 0;
 
-        await Building.insertMany(buildings);
-        console.log(`✅ Seeded ${buildings.length} map elements successfully`);
+        for (const building of buildings) {
+            const exists = await Building.findOne({ dataId: building.dataId });
+            if (exists) {
+                console.log(`⏭️ Skipping existing: ${building.dataId}`);
+                skipped++;
+                continue;
+            }
+            await Building.create(building);
+            console.log(`✅ Seeded: ${building.dataId}`);
+            inserted++;
+        }
 
+        console.log(`\n🎉 Done! Inserted: ${inserted}, Skipped: ${skipped}`);
         process.exit(0);
     } catch (err) {
         console.error('❌ Seed failed:', err.message);
