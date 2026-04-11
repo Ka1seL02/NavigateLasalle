@@ -79,7 +79,6 @@
   - Toast notifications for success/error
 
 ## V0.3 — 10/04/2026
-
 ### Frontend — Sidebar (Revamp)
 - Removed collapse toggle entirely — sidebar is now fixed width (80px)
 - Removed admin name/role display from sidebar
@@ -88,7 +87,6 @@
 - Theme toggle becomes clickable icon in footer (moon/sun)
 - Sign Out button at bottom with icon and label
 - Modals updated to match new design language (blur backdrop, EB Garamond headings)
-
 ### Frontend — Auth Pages Redesign
 - login.css — full redesign: fluid layout, EB Garamond headings, Noto Sans body,
   staggered entrance animations, green glow on input focus, lift effect on button,
@@ -98,7 +96,6 @@
 - reset-password.css — matching redesign, password rules styled as card,
   disabled button handled via CSS :disabled pseudo-class
 - register.css — matching redesign, readonly email field styled, expired modal
-
 ### Frontend — Accounts Page
 - accounts.css — full redesign: dirty-white background, white card main-content,
   Noto Sans typography, sticky table headers, no row dividers with hover highlight,
@@ -106,7 +103,6 @@
 - Added "you" badge on current logged-in user's row
 - Fixed table stretching on large screens
 - Fixed main-content card height via align-items: flex-start on main
-
 ### Frontend — FAQ Page
 - faq.css — full redesign matching design language
 - faq.html — added Create FAQ modal with floating label inputs and Delete FAQ modal
@@ -116,7 +112,6 @@
   - Fixed double deleteBtn declaration bug
   - Fixed openDeleteFaqModal scope issue
   - Smooth collapse/expand animation via max-height transition
-
 ## V0.4 — 11/04/2026
 ### Backend
 - Added cloudinary.js config
@@ -165,40 +160,80 @@
   - Step 2: Building info form — name, dataId, category, status, description, images
   - Existing buildings shown as faded reference on map
   - Back to map button returns to Step 1
-s
+
 ## V0.5 — 11/04/2026
 ### Backend
-- Added MapGraph.js model:
-  - Single document collection storing the full campus graph
-  - Nodes: id, x, y, buildingId (null if road waypoint)
+- Added `road` as a valid category in `Building.js` model enum
+- Added `seedRoads.js` — seeds 28 campus roads into the buildings collection:
+  - All named roads, trails, and rotundas from the campus SVG map
+  - Skips existing entries (safe to re-run, no deleteMany)
+- Added `MapGraph.js` model:
+  - Single document collection storing the full campus navigation graph
+  - Nodes: id, x, y, buildingId (stores Building `_id`, null if road waypoint)
   - Edges: from, to, weight (auto-calculated Euclidean distance), type (both/one-way), direction (from→to / to→from)
-- Added mapGraphRoutes.js:
-  - GET /api/mapgraph — fetch graph (public, kiosk will need it later)
-  - PUT /api/mapgraph — save entire graph, replaces existing (protected)
-  - Validates edge references exist as nodes
+- Added `mapGraphRoutes.js`:
+  - `GET /api/mapgraph` — fetch graph (public, kiosk will need it later)
+  - `PUT /api/mapgraph` — save entire graph, replaces existing (protected)
+  - Validates edge node references exist
   - Enforces max 10 edges per node
-- Wired /api/mapgraph into server.js
+- Added `Office.js` model:
+  - Fields: name, category (free text String, no enum), head, description (Quill HTML), email, phone, officeHours, images (Cloudinary), personnel ([{role, name}]), subOffices ([ObjectId ref Office]), building (ObjectId ref Building), isVisible
+  - category is dynamic — managed from frontend, not hardcoded in model
+- Added `officeRoutes.js`:
+  - `GET /api/offices` — get all, supports `?building=id` query filter for fetching offices by building
+  - `GET /api/offices/:id` — get one
+  - `POST /api/offices` — create with uploadOffice image upload
+  - `PATCH /api/offices/:id` — update, handles image removal from Cloudinary
+  - `DELETE /api/offices/:id` — deletes from DB, Cloudinary, and removes from any parent subOffices arrays
+- Wired `/api/mapgraph` and `/api/offices` into `server.js`
 ### Frontend — Building Page (Updated)
-- building.html — added Graph tab alongside List and Map
-- building.css — added full Graph view styles:
-  - Toolbar with mode buttons and edge direction toggle
-  - Ghost building styles (faded, assignable, assigned states)
-  - Node styles (default, selected, assigned)
-  - Edge styles (solid for two-way, dashed for one-way with arrowhead)
-  - Legend for node/edge types
-- building.js:
-  - Map view now renders hardcoded roads as non-interactive background layer
-  - Graph view — full graph editor implementation:
-    - Node mode: click anywhere on map to place a waypoint node
-    - Edge mode: click node A then node B to connect, auto-calculates weight
-      from Euclidean distance, supports chaining, enforces 10-edge limit
-    - Assign mode: click a node then click a faded building to link building
-      to that node as its map entry point
-    - Delete mode: click a node to remove it and all its edges, click an
-      edge to remove just that edge
+- `building.html`:
+  - Added Graph tab alongside List and Map
+  - Map view legend added below canvas (building types + scroll/pan hint)
+  - View modal now shows "Offices in this Building" section (read-only, fetched from `/api/offices?building=id`, hidden if none)
+- `building.css`:
+  - Added Graph view styles: toolbar, ghost buildings, node styles, edge styles, grid, road preview, legend
+  - Added map legend styles
+  - Added modal offices section styles
+  - Updated map building colors to pastel palette, road color muted
+  - Added drop-shadow to buildings, facilities, gates, landmarks for subtle 3D depth
+- `building.js`:
+  - Splits fetched data into `allBuildings` (non-road) and `allRoads` (category: road)
+  - Roads now fetched from DB dynamically — no hardcoded road data
+  - Map view renders roads from DB as non-interactive background layer before buildings
+  - Map view: zoom (scroll) and pan (Alt+drag) via `initZoomPan()`
+  - Graph view — full graph editor:
+    - Node mode: click empty space to place node, click+drag existing node to reposition, hover shows live map coordinates, placed node shows x/y coordinates
+    - Edge mode: click node A then node B to connect, auto-calculates Euclidean weight, supports chaining, enforces 10-edge limit, blocks duplicate edges
+    - Assign mode: click node then click faded building ghost to assign — stores Building `_id` not dataId, node label displays dataId via lookup
+    - Delete mode: click node to remove it and all its edges, click edge line to remove just that edge, click road shape to delete road from DB
+    - Road mode: fill in road name and ID, click and drag to draw new rect road segment, saves to DB via POST /api/buildings
+    - Grid overlay (40px squares) for node placement alignment
     - Loads existing graph from backend on first tab open
     - Save Graph button PUTs full graph state to /api/mapgraph
     - Edge direction toggle (Two-way / One-way) shown only in Edge mode
-    - One-way edges render with arrowhead marker
-    - Assigned nodes show building dataId as label
-    - Ghost buildings highlight when assignable, show assigned state when linkeds
+    - One-way edges render dashed with arrowhead marker
+    - Ghost buildings show assigned state (green stroke) when linked to a node
+- `building-add.js`:
+  - Added zoom/pan via `initZoomPan()` — scroll to zoom, Alt+drag to pan
+  - getSVGCoords replaced with version returned by initZoomPan
+  - Overlap detection on Confirm Position — checks new shape bounding box against all existing non-road buildings, blocks if overlapping
+  - Roads rendered as muted grey reference layer on add map
+### Frontend — Office Pages (New)
+- `offices.html` + `office.css` + `office.js`:
+  - Card grid grouped by section/category with search filter (name, category, head)
+  - View modal: gallery with auto-swap carousel, section badge, visibility badge (orange if under maintenance), name, head, contact info pills (email/phone/hours), Quill description, personnel list, sub-offices list, building reference
+  - Delete modal with confirmation — also cleans up subOffices references in parent offices
+- `office-add.html` + `office-add.css` + `office-add.js`:
+  - Straight form, no map editor (offices have no SVG shape)
+  - Dynamic section dropdown: unique categories fetched from DB + always includes "Unaffiliated" + "+ Create New Section" option which reveals a text input
+  - Building dropdown populated from DB (roads excluded)
+  - Sub-offices: searchable dropdown, selected offices shown as removable green tags
+  - Personnel: add/remove rows with role and name inputs
+  - Back/cancel navigate to `office.html`
+- `office-edit.html` + `office-edit.css` + `office-edit.js`:
+  - Same layout as office-add, prefills all fields from DB
+  - Existing images shown with X to mark for removal (toggle, click again to undo)
+  - Dynamic section dropdown handles custom categories not in existing list
+  - Sub-office dropdown excludes the office being edited (cannot add itself)
+  - Back/cancel navigate to `office.html`

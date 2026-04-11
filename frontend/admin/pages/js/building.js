@@ -787,7 +787,6 @@ function handleGraphClick(e) {
     if (e.altKey) return;
     const target = e.target;
 
-    // ── NODE MODE ──
     if (graphMode === 'node') {
         if (target.classList.contains('graph-node')) return;
         if (target.classList.contains('graph-road')) return;
@@ -798,7 +797,6 @@ function handleGraphClick(e) {
         return;
     }
 
-    // ── EDGE MODE ──
     if (graphMode === 'edge') {
         if (!target.classList.contains('graph-node')) {
             if (selectedNodeId) {
@@ -851,12 +849,11 @@ function handleGraphClick(e) {
         return;
     }
 
-    // ── ASSIGN MODE ──
     if (graphMode === 'assign') {
         if (target.classList.contains('graph-node')) {
             selectedNodeId = target.dataset.nodeId;
             const node = graphNodes.find(n => n.id === selectedNodeId);
-            const cur = node.buildingId ? ` (currently: ${node.buildingId})` : '';
+            const cur = node.buildingId ? ` (currently: ${allBuildings.find(b => b._id === node.buildingId)?.dataId})` : '';
             graphStatus.textContent = `Node selected${cur}. Now click a building to assign.`;
             redrawGraph();
             return;
@@ -880,10 +877,7 @@ function handleGraphClick(e) {
         return;
     }
 
-    // ── DELETE MODE ──
     if (graphMode === 'delete') {
-        // Road deletion is handled by the click listener on the road elem itself
-        // Node deletion handled here
         if (target.classList.contains('graph-node')) {
             const nodeId = target.dataset.nodeId;
             graphNodes = graphNodes.filter(n => n.id !== nodeId);
@@ -928,13 +922,16 @@ const modalCategory = document.getElementById('modalCategory');
 const modalDataId = document.getElementById('modalDataId');
 const modalName = document.getElementById('modalName');
 const modalDescription = document.getElementById('modalDescription');
+const modalOfficesSection = document.getElementById('modalOfficesSection');
+const modalOfficesList = document.getElementById('modalOfficesList');
 const editModalBtn = document.getElementById('editModalBtn');
 const deleteModalBtn = document.getElementById('deleteModalBtn');
 
-function openViewModal(building) {
+async function openViewModal(building) {
     selectedBuildingId = building._id;
     currentImageIndex = 0;
 
+    // ── Gallery ──
     function startAutoSwap(images) {
         clearInterval(autoSwapInterval);
         autoSwapInterval = setInterval(() => {
@@ -981,7 +978,35 @@ function openViewModal(building) {
     modalCategory.textContent = building.category;
     modalDataId.textContent = building.dataId;
     modalName.textContent = building.name;
-    modalDescription.innerHTML = building.description || '<p style="color: var(--light-grey); font-family: Noto Sans, sans-serif; font-size: 0.9rem;">No description available.</p>';
+    modalDescription.innerHTML = building.description ||
+        '<p style="color: var(--light-grey); font-family: Noto Sans, sans-serif; font-size: 0.9rem;">No description available.</p>';
+
+    // ── Offices in this building ──
+    modalOfficesSection.classList.add('hidden');
+    modalOfficesList.innerHTML = '';
+    try {
+        const res = await fetch(`/api/offices?building=${building._id}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const offices = data.offices || [];
+            if (offices.length > 0) {
+                modalOfficesSection.classList.remove('hidden');
+                modalOfficesList.innerHTML = offices.map(o => `
+                    <div class="modal-office-item">
+                        <i class='bx bx-buildings'></i>
+                        <div>
+                            <p class="modal-office-name">${o.name}</p>
+                            ${o.head ? `<p class="modal-office-head">${o.head}</p>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+    } catch (err) {
+        // silently fail — offices section just stays hidden
+    }
 
     editModalBtn.onclick = () => {
         const currentView = mapView.classList.contains('hidden') ? 'list' : 'map';

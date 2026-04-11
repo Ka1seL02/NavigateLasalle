@@ -5,9 +5,9 @@ import connectDB from './config/db.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { verifyToken } from './middleware/auth.js';
-
 import authRoutes from './routes/authRoutes.js';
 import buildingRoutes from './routes/buildingRoutes.js';
+import officeRoutes from './routes/officeRoutes.js';
 import mapGraphRoutes from './routes/mapGraphRoutes.js';
 import accountRoutes from './routes/accountRoutes.js';
 import faqRoutes from './routes/faqRoutes.js';
@@ -33,6 +33,7 @@ app.use(express.static(join(__dirname, '../../frontend')));
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/buildings', buildingRoutes);
+app.use('/api/offices', officeRoutes);
 app.use('/api/mapgraph', mapGraphRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/faq', faqRoutes);

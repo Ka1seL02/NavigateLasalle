@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global style -->
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/office-add.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/quill@2.0.2/dist/quill.snow.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <a href="office.html" class="back-link">
+                    <i class='bx bx-chevron-left'></i> Back to Offices
+                </a>
+                <h1 class="page-title">Add New Office</h1>
+            </div>
+        </div>
+
+        <div class="form-layout">
+            <!-- Left Column -->
+            <div class="form-left">
+
+                <!-- Basic Info -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Basic Information</h2>
+
+                    <div class="form-group">
+                        <label for="name">Office Name <span class="required">*</span></label>
+                        <input type="text" id="name" placeholder="e.g. Office of the University Registrar" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Section <span class="required">*</span></label>
+                        <select id="category">
+                            <option value="">— Select a section —</option>
+                            <option value="Unaffiliated">Unaffiliated</option>
+                            <!-- Existing categories populated by JS -->
+                            <option value="__new__">+ Create New Section</option>
+                        </select>
+                        <input
+                            type="text"
+                            id="newCategoryInput"
+                            class="hidden"
+                            placeholder="Type new category name..."
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="head">Office Head</label>
+                        <input type="text" id="head" placeholder="e.g. Brother Iñigo Riola FSC" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="toggle-row">
+                            <label class="switch">
+                                <input type="checkbox" id="isVisible" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span class="toggle-label" id="visibilityLabel">Open</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Contact Information</h2>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="e.g. registrar@dlsud.edu.ph" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" id="phone" placeholder="e.g. (046) 481-1900" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="officeHours">Office Hours</label>
+                        <input type="text" id="officeHours" placeholder="e.g. Mon–Fri, 8:00 AM – 5:00 PM" />
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Description</h2>
+                    <div id="quillEditor"></div>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-right">
+
+                <!-- Images -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Images</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <i class='bx bx-cloud-upload'></i>
+                        <p>Click or drag to upload images</p>
+                        <span>JPG, PNG, WEBP</span>
+                        <input type="file" id="imageInput" multiple accept="image/*" />
+                    </div>
+                    <div class="new-image-previews" id="newImagePreviews"></div>
+                </div>
+
+                <!-- Building -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Building</h2>
+                    <div class="form-group">
+                        <label for="building">Located In</label>
+                        <select id="building">
+                            <option value="">— None —</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sub Offices -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Sub Offices</h2>
+                    <p class="form-card-hint">Select offices that fall under this office.</p>
+                    <div class="form-group">
+                        <div class="search-select-wrapper">
+                            <input type="text" id="subOfficeSearch" placeholder="Search offices..." class="search-select-input" />
+                            <div class="search-select-dropdown hidden" id="subOfficeDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="selected-tags" id="selectedSubOffices"></div>
+                </div>
+
+                <!-- Personnel -->
+                <div class="form-card">
+                    <h2 class="form-card-title">Personnel</h2>
+                    <p class="form-card-hint">Add roles and names of key personnel.</p>
+                    <div class="personnel-list" id="personnelList"></div>
+                    <button class="add-personnel-btn" id="addPersonnelBtn" type="button">
+                        <i class='bx bx-plus'></i> Add Personnel
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <a href="office.html" class="cancel-btn">Cancel</a>
+            <button class="save-btn" id="saveBtn">
+                <i class='bx bx-save'></i> Create Office
+            </button>
+        </div>
+
+    </main>
+
+    <script src="https://unpkg.com/quill@2.0.2/dist/quill.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="js/office-add.js"></script>
+</body>
+
+</html>
