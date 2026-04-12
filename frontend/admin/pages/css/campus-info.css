@@ -126,7 +126,7 @@ main {
     padding: 1.5rem;
 }
 
-/* ─── Content Preview ────────────────────────────────────────────────────────── */
+/* ─── Rich Text Preview ──────────────────────────────────────────────────────── */
 .section-content-preview {
     font-family: 'Noto Sans', sans-serif;
     font-size: 0.875rem;
@@ -137,6 +137,14 @@ main {
 .section-content-preview ul,
 .section-content-preview ol { padding-left: 1.25rem; margin-bottom: 0.5rem; }
 .section-content-preview strong { color: var(--dark-grey); }
+.section-content-preview h1,
+.section-content-preview h2,
+.section-content-preview h3 {
+    font-family: 'EB Garamond', serif;
+    color: var(--dark-green);
+    margin-bottom: 0.4rem;
+    margin-top: 0.75rem;
+}
 .section-content-empty {
     font-size: 0.875rem;
     font-family: 'Noto Sans', sans-serif;
@@ -144,28 +152,46 @@ main {
     font-style: italic;
 }
 
-/* ─── Quill Editor ───────────────────────────────────────────────────────────── */
-.section-quill-wrap {
-    display: none;
-}
-.section-quill-wrap.active {
-    display: block;
-}
-.section-quill-wrap .ql-container {
-    border: none;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 0.875rem;
-    min-height: 150px;
-}
-.section-quill-wrap .ql-toolbar {
-    border: none;
-    border-bottom: 1px solid var(--shadow);
+/* ─── Core Value Preview ─────────────────────────────────────────────────────── */
+.core-value-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
     background: var(--off-white);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-radius: 10px;
 }
+.core-value-preview-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--dark-green);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.core-value-preview-content { flex: 1; }
+.core-value-preview-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark-green);
+    margin-bottom: 0.25rem;
+}
+.core-value-preview-desc {
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--grey);
+    line-height: 1.5;
+}
+.core-value-preview-desc p { margin: 0; }
+
+/* ─── Quill Editor ───────────────────────────────────────────────────────────── */
+.section-quill-wrap { display: none; }
+.section-quill-wrap.active { display: block; }
 .section-quill-editor-wrap {
     border: 1.5px solid var(--shadow);
     border-radius: 8px;
@@ -176,7 +202,62 @@ main {
     border-color: var(--green);
     box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
 }
+.section-quill-editor-wrap .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--shadow);
+    background: var(--off-white);
+}
+.section-quill-editor-wrap .ql-container {
+    border: none;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    min-height: 150px;
+}
 .section-quill-editor-wrap .ql-editor { min-height: 150px; }
+
+/* ─── Icon Selector ──────────────────────────────────────────────────────────── */
+.icon-selector-wrap {
+    display: none;
+    margin-bottom: 1rem;
+}
+.icon-selector-wrap.active { display: block; }
+.icon-selector-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.icon-selector-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.icon-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1.5px solid var(--shadow);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--dark-grey);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.icon-option:hover {
+    border-color: var(--green);
+    background: var(--sage-green);
+    color: var(--dark-green);
+}
+.icon-option.selected {
+    border-color: var(--dark-green);
+    background: var(--dark-green);
+    color: var(--white);
+}
 
 /* ─── Section Footer ─────────────────────────────────────────────────────────── */
 .section-card-footer {
@@ -186,9 +267,7 @@ main {
     justify-content: flex-end;
     gap: 0.75rem;
 }
-.section-card-footer.active {
-    display: flex;
-}
+.section-card-footer.active { display: flex; }
 .cancel-edit-btn {
     padding: 8px 16px;
     font-family: 'Noto Sans', sans-serif;

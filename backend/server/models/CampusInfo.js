@@ -16,6 +16,15 @@ const campusInfoSchema = new mongoose.Schema(
         content: {
             type: String,
             default: null
+        },
+        icon: {
+            type: String,
+            default: null
+        },
+        type: {
+            type: String,
+            enum: ['rich_text', 'core_value'],
+            default: 'rich_text'
         }
     },
     { timestamps: true }

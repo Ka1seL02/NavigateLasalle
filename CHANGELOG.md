@@ -393,3 +393,60 @@
   - Error handling with button feedback
   - Fetches HTML from `feedback.html` via JS — same pattern as admin sidebar
   - No `type="module"` needed — plain script tag on each page
+
+## V0.8 — 12/04/2026
+### Backend
+- Added `CampusInfo.js` model:
+  - Fields: key (unique String), label (String), content (Quill HTML, default null), icon (String, default null), type (enum: 'rich_text' | 'core_value', default 'rich_text')
+  - Timestamps auto
+- Added `campusInfoRoutes.js`:
+  - `GET /api/campus-info` — fetch all sections sorted by createdAt, public
+  - `GET /api/campus-info/:key` — fetch single section by key, public
+  - `PATCH /api/campus-info/:key` — update content and/or icon, protected (verifyToken)
+  - Wired `/api/campus-info` into `server.js`
+- Added `seedCampusInfo.js` — seeds 8 sections:
+  - `mission` — rich_text
+  - `vision` — rich_text
+  - `about` — rich_text
+  - `core_value_1` (Faith) — core_value, icon: bx-church
+  - `core_value_2` (Service) — core_value, icon: bx-donate-heart
+  - `core_value_3` (Communion in Mission) — core_value, icon: bx-group
+  - `hymn` — rich_text
+  - `contact` — rich_text
+  - Safe to re-run (skips existing keys)
+### Frontend — Admin (New)
+- `campus-info.html` + `campus-info.css` + `campus-info.js`:
+  - One card per section, no add or delete — edit only
+  - Each card shows: icon, label, last updated date, Edit button
+  - **Rich text sections** — Quill editor inline, preview shows rendered HTML
+  - **Core value sections** — icon picker grid (16 Boxicons options) + Quill editor for description
+  - Preview mode by default, clicking Edit switches to editor inline
+  - Cancel restores original content
+  - Content loaded into Quill only when Edit is opened (fixes empty editor bug)
+  - Save patches via `PATCH /api/campus-info/:key`
+  - Updates preview and last updated date after save
+### Frontend — User Side (New)
+- `campus-info.html` + `campus-info.css` + `campus-info.js`:
+  - Full page snap scroll — one section per viewport height
+  - Vertical dot indicator (right side) with hover label, adapts color per section background, wrapped in glass pill for visibility
+  - Clicking dot navigates to that section
+  - IntersectionObserver updates active dot on scroll
+  - **Section 1 — Mission & Vision** (campus bg + bleeding white card):
+    - Two-column layout — Mission left, Vision right, divider in between
+    - Each column has label, title, and rich text content
+  - **Section 2 — About DLSU-D** (white bg):
+    - Large decorative "1977" year in sage green on left
+    - Content block on right with label, title, rich text
+  - **Section 3 — Core Values** (campus bg + bleeding white card):
+    - Left side: big title and subtitle
+    - Right side: stacked value cards each with icon, name, description and green left border accent
+  - **Section 4 — Alma Mater Hymn** (dirty white bg):
+    - Centered layout with music icon, scrollable hymn content box in italic EB Garamond
+  - **Section 5 — Contact Information** (campus bg + bleeding white card):
+    - Two-column content layout
+  - **Section 6 — Our Offices** (dirty white bg):
+    - Sticky header (Directory label + Our Offices title) and search bar
+    - Scrollable office cards grid below, grouped by category
+    - Cards show: office name, office hours, email, phone
+    - Clicking card opens full detail modal with gallery, category badge, name, head, contact info pills, description (Quill rendered with correct list styles), personnel list, building location
+    - Category groups have top margin spacing between them

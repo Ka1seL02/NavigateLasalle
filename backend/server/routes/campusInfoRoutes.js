@@ -27,17 +27,18 @@ router.get('/:key', async (req, res) => {
     }
 });
 
-// ─── PATCH update section content ─────────────────────────────────────────────
-// Protected — admin only, can only update content not key or label
+// ─── PATCH update section ─────────────────────────────────────────────────────
+// Protected — admin only
 router.patch('/:key', verifyToken, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { content, icon } = req.body;
         const section = await CampusInfo.findOne({ key: req.params.key });
         if (!section) return res.status(404).json({ error: 'Section not found.' });
 
-        section.content = content ?? null;
-        await section.save();
+        if (content !== undefined) section.content = content ?? null;
+        if (icon !== undefined) section.icon = icon ?? null;
 
+        await section.save();
         res.json({ message: 'Section updated successfully.', section });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
