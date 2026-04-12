@@ -56,30 +56,56 @@ document.getElementById('backBtn').addEventListener('click', () => history.back(
 
 // ─── Fetch Data ───────────────────────────────────────────────────────────────
 async function fetchAll() {
-    const [buildingsRes, officesRes, graphRes] = await Promise.all([
-        fetch('/api/buildings'),
-        fetch('/api/offices'),
-        fetch('/api/mapgraph')
-    ]);
+    try {
+        const [buildingsRes, officesRes, graphRes] = await Promise.all([
+            fetch('/api/buildings'),
+            fetch('/api/offices'),
+            fetch('/api/mapgraph')
+        ]);
 
-    const buildingsData = await buildingsRes.json();
-    const officesData = await officesRes.json();
-    const graphData = await graphRes.json();
+        const buildingsData = await buildingsRes.json();
+        const officesData = await officesRes.json();
+        const graphData = await graphRes.json();
 
-    allRoads = buildingsData.buildings.filter(b => b.category === 'road');
-    allBuildings = buildingsData.buildings.filter(b => b.category !== 'road');
-    allOffices = officesData.offices;
-    graph = graphData;
+        allRoads = buildingsData.buildings.filter(b => b.category === 'road');
+        allBuildings = buildingsData.buildings.filter(b => b.category !== 'road');
+        allOffices = officesData.offices;
+        graph = graphData;
 
-    renderMap();
-    renderLeftPanel();
+        renderMap();
+        renderLeftPanel();
+    } catch (err) {
+        console.error('fetchAll error:', err);
+    }
+}
+
+// ─── Category Helpers ─────────────────────────────────────────────────────────
+function getCategoryClass(category) {
+    switch (category) {
+        case 'building': return 'building';
+        case 'facility': return 'facility';
+        case 'gate': return 'gate';
+        case 'landmark': return 'landmark';
+        case 'parking': return 'parking';
+        default: return 'building';
+    }
+}
+
+function getCategoryIcon(category) {
+    switch (category) {
+        case 'building': return 'bx-buildings';
+        case 'facility': return 'bx-football';
+        case 'gate': return 'bx-door-open';
+        case 'landmark': return 'bx-map-pin';
+        case 'parking': return 'bx-car';
+        default: return 'bx-buildings';
+    }
 }
 
 // ─── Render Map ───────────────────────────────────────────────────────────────
 function renderMap() {
     svg.innerHTML = '';
 
-    // Add arrowhead marker for one-way edges
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     defs.innerHTML = `
         <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
@@ -88,10 +114,8 @@ function renderMap() {
     `;
     svg.appendChild(defs);
 
-    // Render roads first (bottom layer)
     allRoads.forEach(road => renderShape(road, 'road'));
 
-    // Render buildings by category
     allBuildings.forEach(b => {
         const cls = getCategoryClass(b.category);
         const elem = renderShape(b, cls);
@@ -133,43 +157,46 @@ function renderShape(b, cls) {
     return elem;
 }
 
-function getCategoryClass(category) {
-    switch (category) {
-        case 'building': return 'building';
-        case 'facility': return 'facility';
-        case 'gate': return 'gate';
-        case 'landmark': return 'landmark';
-        case 'parking': return 'parking';
-        default: return 'building';
-    }
-}
-
 // ─── Building Click ───────────────────────────────────────────────────────────
 function onBuildingClick(building) {
-    // Deselect previous
     svg.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
 
-    // Select new
     const elem = svg.querySelector(`[data-id="${building._id}"]`);
     if (elem) elem.classList.add('selected');
 
     selectedBuilding = building;
     openRightPanel(building);
 
-    // Highlight in left panel
     document.querySelectorAll('.panel-item').forEach(el => el.classList.remove('active'));
     const panelItem = leftPanelList.querySelector(`[data-id="${building._id}"]`);
     if (panelItem) panelItem.classList.add('active');
 }
 
+// ─── Left Panel Toggle ────────────────────────────────────────────────────────
+const leftPanel = document.getElementById('leftPanel');
+const panelToggleBtn = document.getElementById('panelToggleBtn');
+const panelExpandBtn = document.getElementById('panelExpandBtn');
+
+panelToggleBtn.addEventListener('click', () => {
+    leftPanel.classList.add('collapsed');
+    panelExpandBtn.classList.remove('hidden');
+});
+
+panelExpandBtn.addEventListener('click', () => {
+    leftPanel.classList.remove('collapsed');
+    panelExpandBtn.classList.add('hidden');
+});
+
 // ─── Right Panel ──────────────────────────────────────────────────────────────
 function openRightPanel(building) {
     rightPanel.classList.remove('hidden');
 
-    // Gallery
     const images = building.images ?? [];
-    let galleryIndex = 0;
+    const offices = allOffices.filter(o => o.building?._id === building._id || o.building === building._id);
+    const isUnderMaintenance = !building.isVisible;
 
+    // Gallery
+    let galleryIndex = 0;
     if (images.length > 0) {
         infoGallery.innerHTML = `
             <img src="${images[0]}" alt="${building.name}" id="galleryHeroImg" />
@@ -181,7 +208,6 @@ function openRightPanel(building) {
                 </div>
             ` : ''}
         `;
-
         if (images.length > 1) {
             infoGallery.querySelectorAll('.gallery-dot').forEach(dot => {
                 dot.addEventListener('click', () => {
@@ -201,16 +227,18 @@ function openRightPanel(building) {
         `;
     }
 
-    // Info Body
-    const offices = allOffices.filter(o => o.building?._id === building._id || o.building === building._id);
-    const isUnderMaintenance = !building.isVisible;
-
-    infoBody.innerHTML = `
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+    // Sticky Header
+    const infoStickyHeader = document.getElementById('infoStickyHeader');
+    infoStickyHeader.innerHTML = `
+        <div class="info-header-badges">
             <span class="info-category-badge">${capitalize(building.category)}</span>
             ${isUnderMaintenance ? `<span class="info-status-badge">Under Maintenance</span>` : ''}
         </div>
         <h2 class="info-name">${building.name}</h2>
+    `;
+
+    // Scrollable Body
+    infoBody.innerHTML = `
         ${building.description ? `<div class="info-description">${building.description}</div>` : ''}
         ${offices.length > 0 ? `
             <p class="info-section-title">Offices in this Building</p>
@@ -232,6 +260,8 @@ rightPanelClose.addEventListener('click', () => {
     rightPanel.classList.add('hidden');
     svg.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     document.querySelectorAll('.panel-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('infoStickyHeader').innerHTML = '';
+    infoBody.innerHTML = '';
     selectedBuilding = null;
 });
 
@@ -240,14 +270,12 @@ function renderLeftPanel(search = '') {
     leftPanelList.innerHTML = '';
     const q = search.toLowerCase();
 
-    // Filter buildings
     const filteredBuildings = allBuildings.filter(b =>
         !q ||
         b.name.toLowerCase().includes(q) ||
         b.dataId.toLowerCase().includes(q)
     );
 
-    // Filter offices
     const filteredOffices = allOffices.filter(o =>
         q && (
             o.name.toLowerCase().includes(q) ||
@@ -256,35 +284,73 @@ function renderLeftPanel(search = '') {
     );
 
     if (filteredBuildings.length === 0 && filteredOffices.length === 0) {
-        leftPanelList.innerHTML = `
-            <div style="padding:2rem; text-align:center; color:var(--light-grey); font-size:0.8rem;">
-                No results found.
-            </div>
-        `;
+        leftPanelList.innerHTML = `<div class="panel-empty">No results found.</div>`;
         return;
     }
 
-    // Render buildings
     if (filteredBuildings.length > 0) {
-        const title = document.createElement('p');
-        title.className = 'panel-section-title';
-        title.textContent = `Buildings (${filteredBuildings.length})`;
-        leftPanelList.appendChild(title);
-
+        const grouped = {};
         filteredBuildings.forEach(b => {
-            const item = createPanelItem(b.name, b.dataId, getCategoryClass(b.category), () => {
-                onBuildingClick(b);
-                focusOnBuilding(b);
-            }, () => {
-                selectedBuilding = b;
-                openDirectionsModal(b);
+            const cat = b.category ?? 'building';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(b);
+        });
+
+        const categoryOrder = ['building', 'facility', 'gate', 'landmark', 'parking'];
+        const categoryLabels = {
+            building: 'Buildings',
+            facility: 'Facilities',
+            gate: 'Gates',
+            landmark: 'Landmarks',
+            parking: 'Parking'
+        };
+
+        categoryOrder.forEach(cat => {
+            if (!grouped[cat] || grouped[cat].length === 0) return;
+
+            const items = grouped[cat];
+            const cls = getCategoryClass(cat);
+
+            const section = document.createElement('div');
+            section.className = 'panel-category-section';
+
+            const header = document.createElement('div');
+            header.className = 'panel-category-header';
+            header.innerHTML = `
+                <div class="panel-item-icon ${cls}">
+                    <i class='bx ${getCategoryIcon(cat)}'></i>
+                </div>
+                <span class="panel-category-label">${categoryLabels[cat]} (${items.length})</span>
+                <i class='bx bx-chevron-down panel-category-chevron'></i>
+            `;
+
+            const itemsContainer = document.createElement('div');
+            itemsContainer.className = 'panel-category-items';
+
+            items.forEach(b => {
+                const item = createPanelItem(b.name, b.dataId, cls, () => {
+                    onBuildingClick(b);
+                    focusOnBuilding(b);
+                }, () => {
+                    selectedBuilding = b;
+                    openDirectionsModal(b);
+                });
+                item.dataset.id = b._id;
+                itemsContainer.appendChild(item);
             });
-            item.dataset.id = b._id;
-            leftPanelList.appendChild(item);
+
+            // Toggle collapse — no inline styles
+            header.addEventListener('click', () => {
+                const isCollapsed = itemsContainer.classList.toggle('collapsed');
+                header.querySelector('.panel-category-chevron').classList.toggle('collapsed', isCollapsed);
+            });
+
+            section.appendChild(header);
+            section.appendChild(itemsContainer);
+            leftPanelList.appendChild(section);
         });
     }
 
-    // Render offices (only when searching)
     if (filteredOffices.length > 0) {
         const title = document.createElement('p');
         title.className = 'panel-section-title';
@@ -294,7 +360,6 @@ function renderLeftPanel(search = '') {
         filteredOffices.forEach(o => {
             const buildingName = o.building?.name ?? 'Unknown Building';
             const item = createPanelItem(o.name, buildingName, 'office', () => {
-                // Find and highlight the building
                 const building = allBuildings.find(b => b._id === (o.building?._id ?? o.building));
                 if (building) {
                     onBuildingClick(building);
@@ -407,18 +472,15 @@ function clampViewBox() {
     viewBox.y = Math.max(0, Math.min(viewBox.y, 1080 - viewBox.h));
 }
 
-// Scroll to zoom
 svg.addEventListener('wheel', (e) => {
     e.preventDefault();
     const factor = e.deltaY > 0 ? 1.1 : 0.9;
     const newW = viewBox.w * factor;
     const newH = viewBox.h * factor;
 
-    // Check zoom limits
     const scaleW = 1920 / newW;
     if (scaleW < MIN_ZOOM || scaleW > MAX_ZOOM) return;
 
-    // Zoom toward mouse position
     const rect = svg.getBoundingClientRect();
     const mx = (e.clientX - rect.left) / rect.width;
     const my = (e.clientY - rect.top) / rect.height;
@@ -432,7 +494,6 @@ svg.addEventListener('wheel', (e) => {
     applyViewBox();
 }, { passive: false });
 
-// Pan
 svg.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('building') ||
         e.target.classList.contains('facility') ||
@@ -461,7 +522,6 @@ window.addEventListener('mouseup', () => {
     svg.style.cursor = 'grab';
 });
 
-// Zoom buttons
 document.getElementById('zoomIn').addEventListener('click', () => {
     const factor = 0.8;
     const newW = viewBox.w * factor;
@@ -501,10 +561,7 @@ function openDirectionsModal(building) {
     fromInput.value = '';
     fromDropdown.classList.add('hidden');
     selectedFromId = null;
-
-    // Reset quick start buttons
     document.querySelectorAll('.quick-start-btn').forEach(btn => btn.classList.remove('active'));
-
     directionsModal.classList.remove('hidden');
 }
 
@@ -520,7 +577,6 @@ directionsModal.addEventListener('click', (e) => {
     if (e.target === directionsModal) directionsModal.classList.add('hidden');
 });
 
-// From Input search
 fromInput.addEventListener('input', () => {
     const q = fromInput.value.trim().toLowerCase();
     if (!q) {
@@ -556,7 +612,6 @@ fromInput.addEventListener('input', () => {
     fromDropdown.classList.remove('hidden');
 });
 
-// Quick start buttons
 document.querySelectorAll('.quick-start-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const dataId = btn.dataset.id;
@@ -572,7 +627,6 @@ document.querySelectorAll('.quick-start-btn').forEach(btn => {
     });
 });
 
-// Mode toggle
 document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -593,11 +647,9 @@ function getNeighbors(nodeId, nodes, edges, mode) {
     const neighbors = [];
     edges.forEach(edge => {
         if (mode === 'walking') {
-            // Walking — all edges bidirectional
             if (edge.from === nodeId) neighbors.push({ id: edge.to, weight: edge.weight });
             else if (edge.to === nodeId) neighbors.push({ id: edge.from, weight: edge.weight });
         } else {
-            // Vehicle — respect one-way
             if (edge.type === 'both') {
                 if (edge.from === nodeId) neighbors.push({ id: edge.to, weight: edge.weight });
                 else if (edge.to === nodeId) neighbors.push({ id: edge.from, weight: edge.weight });
@@ -631,7 +683,6 @@ function aStar(startNodeId, endNodeId, nodes, edges, mode) {
     fScore[startNodeId] = heuristic(nodeMap[startNodeId], nodeMap[endNodeId]);
 
     while (openSet.size > 0) {
-        // Get node with lowest fScore
         let current = null;
         let lowestF = Infinity;
         openSet.forEach(id => {
@@ -642,7 +693,6 @@ function aStar(startNodeId, endNodeId, nodes, edges, mode) {
         });
 
         if (current === endNodeId) {
-            // Reconstruct path
             const path = [];
             let cur = current;
             while (cur) {
@@ -666,20 +716,19 @@ function aStar(startNodeId, endNodeId, nodes, edges, mode) {
         });
     }
 
-    return null; // No path found
+    return null;
 }
 
 // ─── Find Route ───────────────────────────────────────────────────────────────
 findRouteBtn.addEventListener('click', () => {
     if (!selectedFromId) {
-        fromInput.style.borderColor = 'var(--red)';
-        setTimeout(() => fromInput.style.borderColor = '', 2000);
+        fromInput.classList.add('input-error');
+        setTimeout(() => fromInput.classList.remove('input-error'), 2000);
         return;
     }
 
     if (!selectedBuilding) return;
 
-    // Find nodes assigned to from and to buildings
     const fromNode = graph.nodes.find(n => n.buildingId === selectedFromId);
     const toNode = graph.nodes.find(n => n.buildingId === selectedBuilding._id);
 
@@ -717,14 +766,12 @@ function drawPath(nodeIds) {
     const points = nodeIds.map(id => nodeMap[id]).filter(Boolean);
     if (points.length < 2) return;
 
-    // Draw path line
     const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
     polyline.setAttribute('points', points.map(n => `${n.x},${n.y}`).join(' '));
     polyline.classList.add('path-line');
     svg.appendChild(polyline);
     currentPathElements.push(polyline);
 
-    // Start marker
     const start = points[0];
     const startCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     startCircle.setAttribute('cx', start.x);
@@ -734,7 +781,6 @@ function drawPath(nodeIds) {
     svg.appendChild(startCircle);
     currentPathElements.push(startCircle);
 
-    // End marker
     const end = points[points.length - 1];
     const endCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     endCircle.setAttribute('cx', end.x);
@@ -744,7 +790,6 @@ function drawPath(nodeIds) {
     svg.appendChild(endCircle);
     currentPathElements.push(endCircle);
 
-    // Focus map on path midpoint
     const midIndex = Math.floor(points.length / 2);
     const mid = points[midIndex];
     viewBox.x = mid.x - 500;

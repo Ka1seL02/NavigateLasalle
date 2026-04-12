@@ -38,7 +38,9 @@
 
     <!-- Map Layout -->
     <div class="map-layout">
-
+        <button class="left-panel-collapsed-btn hidden" id="panelExpandBtn">
+            <i class='bx bx-chevron-right'></i>
+        </button>
         <!-- Left Panel -->
         <aside class="left-panel" id="leftPanel">
             <div class="left-panel-header">
@@ -49,6 +51,9 @@
                         <i class='bx bx-x'></i>
                     </button>
                 </div>
+                <button class="panel-toggle-btn" id="panelToggleBtn" title="Collapse panel">
+                    <i class='bx bx-chevron-left'></i>
+                </button>
             </div>
             <div class="left-panel-list" id="leftPanelList">
                 <!-- Populated by JS -->
@@ -90,10 +95,13 @@
                 </div>
             </div>
 
-            <!-- Building Info -->
-            <div class="info-body" id="infoBody">
+            <!-- Sticky Building Header -->
+            <div class="info-sticky-header" id="infoStickyHeader">
                 <!-- Populated by JS -->
             </div>
+
+            <!-- Scrollable Body -->
+            <div class="info-body" id="infoBody"></div>
 
             <!-- Get Directions Button -->
             <div class="info-footer">
@@ -126,7 +134,8 @@
                 <div class="directions-field">
                     <label>Starting Point</label>
                     <div class="from-search-wrap">
-                        <input type="text" id="fromInput" placeholder="Type building name or ID..." autocomplete="off" />
+                        <input type="text" id="fromInput" placeholder="Type building name or ID..."
+                            autocomplete="off" />
                         <div class="from-dropdown hidden" id="fromDropdown"></div>
                     </div>
                     <div class="quick-starts">

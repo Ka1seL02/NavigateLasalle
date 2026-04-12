@@ -312,3 +312,84 @@
   - Email card: current email shown as disabled read-only field, new email input, sends verification code via `POST /api/accounts/me/email-change`
   - Verification modal: 6-digit code input (numeric only), 3-minute countdown timer, auto-closes and disables verify button on expiry, refreshes displayed email on success
   - Security card: current password + new password + confirm new password, show/hide toggle on all password fields, min 8 character validation
+
+## V0.7 — 12/04/2026
+### Backend
+- Made `GET /api/buildings` and `GET /api/buildings/:id` public — kiosk no longer requires auth to fetch buildings
+- Made `GET /api/offices` and `GET /api/offices/:id` public — kiosk no longer requires auth to fetch offices
+- Made `GET /api/faqs` public, now filters `isVisible: true` at DB level — kiosk no longer requires auth, hidden FAQs excluded automatically
+- Added `weatherRoutes.js`:
+  - `GET /api/weather` — public, proxies OpenWeatherMap API using coordinates for Dasmariñas, Cavite (lat: 14.3294, lon: 120.9367), returns temp, feels_like, condition, description, icon, humidity, city
+  - Wired `/api/weather` into `server.js`
+  - `OPENWEATHER_API_KEY` added to `.env`
+### Frontend — User Side (New)
+- `home.html` + `home.css` + `home.js`:
+  - Fullscreen glassmorphism layout with campus background image
+  - Top bar: DLSU-D logo, school name, live clock (updates every second)
+  - Left panel: news/announcements carousel — fetches latest 5 posts, auto-slides every 5 seconds, manual prev/next arrows, dot navigation, Read More links to `news-detail.html`
+  - Right panel: weather widget (temp, description, humidity, icon, city) refreshes every 10 minutes + 2x2 quick access grid (Interactive Map, Learn about the Campus, Virtual Tour, FAQs)
+  - View More News links to `news.html`
+  - Loading via `Promise.all` for weather and posts simultaneously
+- `news.html` + `news.css` + `news.js`:
+  - Clean white page with dark green top bar, back button, live clock
+  - Posts grouped by date (e.g. "April 12, 2026"), only dates with posts shown
+  - Sorted newest first, no grouping by type
+  - Filters: type dropdown (News/Announcement/Event), month selector, year selector (dynamic from actual post dates)
+  - All filters work together simultaneously
+  - Sticky header with title and filters
+  - Cards show: thumbnail, type badge, title, office name
+  - Links to `news-detail.html?id=...`
+- `news-detail.html` + `news-detail.css` + `news-detail.js`:
+  - Clean white page, same top bar pattern
+  - Back button uses `history.back()` — returns to wherever user came from (home or news list)
+  - Hero image at top, thumbnail gallery below (click to swap hero) — only shown if more than 1 image
+  - Sticky meta: type badge, office name, date
+  - Title in EB Garamond
+  - Full Quill rich text content rendered
+  - Redirects to `news.html` if no `?id=` in URL
+- `faqs.html` + `faqs.css` + `faqs.js`:
+  - Clean white page, same top bar pattern
+  - Back button uses `history.back()`
+  - Accordion — only one FAQ open at a time, clicking same one closes it
+  - Search bar highlights matching text in both question and answer with yellow highlight
+  - Only visible FAQs shown (filtered at DB level)
+  - Sticky header with title, subtitle, and search bar
+  - Empty state for no results
+- `map.html` + `map.css` + `map.js`:
+  - Full screen interactive campus map
+  - SVG rendered from DB data (`/api/buildings`, `/api/mapgraph`)
+  - Roads rendered as bottom layer, buildings on top grouped by category with color coding
+  - Buildings have drop-shadow for subtle 3D lifted effect
+  - Zoom (scroll wheel) and pan (drag) with canvas limits — cannot pan outside 1920x1080 SVG bounds
+  - Zoom buttons (+/-/reset) fixed top right of map
+  - **Left panel** (collapsible):
+    - Search bar takes remaining space next to collapse toggle button
+    - Buildings grouped by category (Buildings, Facilities, Gates, Landmarks, Parking) — each category collapsible
+    - Offices only appear when searching
+    - Each item has focus (crosshair) and directions (navigation) action buttons
+    - Clicking item focuses map on that building
+  - **Right info panel** (slides in on building click):
+    - Image carousel with dot navigation (sticky top)
+    - Sticky building header: category badge, maintenance badge if applicable, building name
+    - Scrollable body: description, offices list with office hours
+    - Sticky footer: Get Directions button
+  - **Directions modal**:
+    - Destination pre-filled from selected building
+    - From: searchable input with dropdown + 3 quick start buttons (Ayuntamiento ADG, Magdalo Gate G1, Magdiwang Gate G3)
+    - Travel mode toggle: Walking / Vehicle
+    - Walking — all edges bidirectional; Vehicle — respects one-way edge direction
+  - **A* pathfinding** implemented:
+    - Animated dashed green path drawn on SVG
+    - Green circle = start, red circle = end
+    - Map auto-focuses on path midpoint after route found
+    - Route bar at bottom shows From → To with Clear Route button
+    - Error handling for no node assigned and no path found
+  - **Map Legend** bottom left — Building, Facility, Gate, Landmark, Parking
+  - **Feedback FAB** excluded from map legend overlap via placement
+- `feedback.html` + `feedback.js` + `feedback.css` (User-side shared component):
+  - Floating action button fixed bottom right on all user pages
+  - Clicking opens modal with 5-star rating (hover preview, click to select) and optional comment textarea
+  - Submit → `POST /api/feedbacks` → success state with auto-close after 2.5 seconds
+  - Error handling with button feedback
+  - Fetches HTML from `feedback.html` via JS — same pattern as admin sidebar
+  - No `type="module"` needed — plain script tag on each page

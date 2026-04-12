@@ -99,13 +99,68 @@ html, body {
     flex-direction: column;
     z-index: 20;
     overflow: hidden;
+    transition: width 0.3s ease;
 }
 .left-panel-header {
     padding: 1rem;
     border-bottom: 1px solid var(--shadow);
     background: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
+.panel-toggle-btn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--shadow);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-grey);
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+.panel-toggle-btn:hover {
+    background: var(--dark-green);
+    border-color: var(--dark-green);
+    color: var(--white);
+}
+.left-panel.collapsed {
+    width: 0;
+    border: none;
+}
+.left-panel-collapsed-btn {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 48px;
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark-grey);
+    font-size: 1rem;
+    z-index: 25;
+    transition: background 0.2s;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+}
+.left-panel-collapsed-btn:hover {
+    background: var(--dark-green);
+    color: var(--white);
+}
+.left-panel-collapsed-btn.hidden { display: none; }
 .search-bar {
+    flex: 1;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -239,6 +294,14 @@ html, body {
     border-color: var(--dark-green);
     color: var(--white);
 }
+/* ─── Empty State ────────────────────────────────────────────────────────────── */
+.panel-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--light-grey);
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+}
 
 /* ─── Map Container ──────────────────────────────────────────────────────────── */
 .map-container {
@@ -349,8 +412,8 @@ html, body {
 /* ─── Map Legend ─────────────────────────────────────────────────────────────── */
 .map-legend {
     position: absolute;
-    bottom: 1rem;
-    left: 1rem;
+    bottom: 5rem;
+    right: 1rem;
     background: rgba(255,255,255,0.92);
     border: 1px solid var(--shadow);
     border-radius: 10px;
@@ -492,6 +555,22 @@ html, body {
 }
 .gallery-dot.active { background: var(--white); }
 
+/* Sticky Header */
+.info-header-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.info-sticky-header {
+    padding: 1rem 1.25rem 0.75rem;
+    background: var(--white);
+    border-bottom: 1px solid var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
 /* Info Body */
 .info-body {
     flex: 1;
@@ -572,6 +651,7 @@ html, body {
 /* Info Footer */
 .info-footer {
     padding: 1rem;
+    padding-bottom: 5rem;
     border-top: 1px solid var(--shadow);
     flex-shrink: 0;
 }
@@ -820,6 +900,63 @@ html, body {
     transition: background 0.2s;
 }
 .route-bar-clear:hover { background: rgba(255,255,255,0.3); }
+
+.input-error {
+    border-color: var(--red) !important;
+}
+
+/* ─── Category Sections ──────────────────────────────────────────────────────── */
+.panel-category-section {
+    display: flex;
+    flex-direction: column;
+}
+.panel-category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s;
+    user-select: none;
+}
+.panel-category-header:hover { background: var(--off-white); }
+.panel-category-label {
+    flex: 1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--light-grey);
+    font-family: 'Noto Sans', sans-serif;
+}
+.panel-category-chevron {
+    font-size: 1rem;
+    color: var(--light-grey);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+.panel-category-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 0.5rem;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    max-height: 2000px;
+}
+.panel-category-items.collapsed {
+    max-height: 0;
+}
+.panel-category-chevron {
+    font-size: 1rem;
+    color: var(--light-grey);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+.panel-category-chevron.collapsed {
+    transform: rotate(-90deg);
+}
 
 /* ─── Hidden ─────────────────────────────────────────────────────────────────── */
 .hidden { display: none !important; }
