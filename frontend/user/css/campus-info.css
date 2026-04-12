@@ -1,0 +1,507 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+/* ─── Top Bar ────────────────────────────────────────────────────────────────── */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 50;
+    background: var(--dark-green);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    color: var(--white);
+    font-size: 1.3rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,255,255,0.25); }
+.school-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: var(--white);
+    padding: 2px;
+}
+.school-name { display: flex; flex-direction: column; }
+.school-name-top {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.05em;
+}
+.school-name-bottom {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 0.12em;
+}
+.top-bar-right { display: flex; align-items: center; }
+.live-clock { display: flex; flex-direction: column; align-items: flex-end; }
+.clock-time {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.05em;
+}
+.clock-date { font-size: 0.72rem; color: rgba(255,255,255,0.7); }
+
+/* ─── Sections Container ─────────────────────────────────────────────────────── */
+.sections-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+/* ─── Section ────────────────────────────────────────────────────────────────── */
+.ci-section {
+    width: 100%;
+    height: calc(100vh - 64px);
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Odd sections — campus bg */
+.ci-section.bg-campus {
+    background-image: url('../img/home_bg.jpg');
+    background-size: cover;
+    background-position: center;
+}
+.ci-section.bg-campus::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+/* Even sections — white bg */
+.ci-section.bg-white {
+    background: var(--white);
+}
+
+/* ─── Content Card ───────────────────────────────────────────────────────────── */
+.ci-card {
+    position: relative;
+    z-index: 2;
+    width: 90%;
+    max-width: 800px;
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 3rem 3.5rem 4rem;
+    margin-top: auto;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+}
+
+/* On white sections, card is just content centered */
+.ci-section.bg-white .ci-card {
+    border-radius: 24px;
+    margin-top: 0;
+    box-shadow: none;
+    padding: 2.5rem 3.5rem;
+    border: 1px solid var(--shadow);
+}
+
+/* ─── Card Content ───────────────────────────────────────────────────────────── */
+.ci-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-family: 'Noto Sans', sans-serif;
+    margin-bottom: 0.5rem;
+}
+.ci-section-title {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--dark-green);
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+}
+.ci-section-content {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: clamp(0.875rem, 1.2vw, 1rem);
+    color: var(--grey);
+    line-height: 1.8;
+}
+.ci-section-content p { margin-bottom: 0.75rem; }
+.ci-section-content ul,
+.ci-section-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.ci-section-content li { margin-bottom: 0.5rem; }
+.ci-section-content strong { color: var(--dark-green); }
+.ci-section-content h1,
+.ci-section-content h2,
+.ci-section-content h3 {
+    font-family: 'EB Garamond', serif;
+    color: var(--dark-green);
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+.ci-empty {
+    font-size: 0.9rem;
+    color: var(--light-grey);
+    font-style: italic;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+/* ─── Offices Section ────────────────────────────────────────────────────────── */
+.ci-section.offices-section {
+    height: auto;
+    min-height: calc(100vh - 64px);
+    align-items: flex-start;
+    padding: 3rem 0;
+    background: var(--dirty-white);
+}
+.ci-section.offices-section .ci-card {
+    border-radius: 16px;
+    border: 1px solid var(--shadow);
+    padding: 2rem;
+    box-shadow: none;
+    width: 95%;
+    max-width: 1100px;
+}
+
+/* Offices search */
+.offices-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 10px 14px;
+    border: 1.5px solid var(--shadow);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.offices-search:focus-within {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
+}
+.offices-search i { color: var(--light-grey); font-size: 1.1rem; flex-shrink: 0; }
+.offices-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--dark-grey);
+    background: transparent;
+}
+.offices-search input::placeholder { color: var(--light-grey); }
+
+/* Offices list */
+.offices-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.office-category-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--light-grey);
+    font-family: 'Noto Sans', sans-serif;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--shadow);
+    margin-bottom: 0.75rem;
+}
+.office-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+}
+
+/* Office card */
+.office-card {
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.office-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+.office-card.card-hidden { opacity: 0.5; }
+.office-card-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+    line-height: 1.3;
+}
+.office-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-top: 0.25rem;
+}
+.office-card-info-item {
+    font-size: 0.75rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.office-card-info-item i { font-size: 0.85rem; color: var(--green); }
+
+/* ─── Dot Indicator ──────────────────────────────────────────────────────────── */
+.section-dots {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 40;
+}
+.section-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, width 0.2s, height 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.section-dot.active {
+    background: var(--dark-green);
+    transform: scale(1.3);
+}
+.section-dot.on-white {
+    background: rgba(0,0,0,0.2);
+    box-shadow: none;
+}
+.section-dot.on-white.active {
+    background: var(--dark-green);
+}
+
+/* ─── Office Modal ───────────────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    backdrop-filter: blur(4px);
+}
+.office-modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 90vw;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    scrollbar-width: none;
+}
+.office-modal::-webkit-scrollbar { display: none; }
+.office-modal-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 30px;
+    height: 30px;
+    background: rgba(0,0,0,0.4);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    z-index: 5;
+    transition: background 0.2s;
+}
+.office-modal-close:hover { background: rgba(0,0,0,0.6); }
+.office-modal-gallery {
+    width: 100%;
+    height: 220px;
+    background: var(--off-white);
+    overflow: hidden;
+    position: relative;
+    border-radius: 20px 20px 0 0;
+    flex-shrink: 0;
+}
+.office-modal-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-grey);
+    gap: 0.5rem;
+}
+.no-image i { font-size: 2.5rem; }
+.no-image p { font-size: 0.875rem; font-family: 'Noto Sans', sans-serif; }
+.office-modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.office-modal-category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--sage-green);
+    color: var(--dark-green);
+    width: fit-content;
+    font-family: 'Noto Sans', sans-serif;
+}
+.office-modal-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-green);
+    line-height: 1.2;
+}
+.office-modal-head {
+    font-size: 0.875rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--light-grey);
+    font-style: italic;
+}
+.office-modal-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.office-modal-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--grey);
+    background: var(--off-white);
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+.office-modal-info-item i { color: var(--green); font-size: 0.9rem; }
+.office-modal-description {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--grey);
+    line-height: 1.6;
+}
+.office-modal-description p { margin-bottom: 0.5rem; }
+.office-modal-section-title {
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark-green);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--shadow);
+    margin-top: 0.5rem;
+}
+.office-modal-personnel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.personnel-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--off-white);
+    border-radius: 8px;
+}
+.personnel-role {
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--green);
+    min-width: 140px;
+}
+.personnel-name {
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+}
+.office-modal-building {
+    font-size: 0.8rem;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+    padding: 0.5rem 0.75rem;
+    background: var(--off-white);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ─── Empty State ────────────────────────────────────────────────────────────── */
+.offices-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--light-grey);
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+}
+
+/* ─── Hidden ─────────────────────────────────────────────────────────────────── */
+.hidden { display: none !important; }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/campus-info.css">
+    <link rel="stylesheet" href="css/feedback.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <button class="back-btn" id="backBtn">
+                <i class='bx bx-chevron-left'></i>
+            </button>
+            <img src="img/dlsud-logo.png" alt="DLSU-D" class="school-logo" />
+            <div class="school-name">
+                <span class="school-name-top">De La Salle University</span>
+                <span class="school-name-bottom">DASMARIÑAS</span>
+            </div>
+        </div>
+        <div class="top-bar-right">
+            <div class="live-clock">
+                <span class="clock-time" id="clockTime"></span>
+                <span class="clock-date" id="clockDate"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dot Indicator -->
+    <nav class="section-dots" id="sectionDots"></nav>
+
+    <!-- Sections Container -->
+    <div class="sections-container" id="sectionsContainer">
+        <!-- Populated by JS -->
+    </div>
+
+    <!-- Office Detail Modal -->
+    <div class="modal-overlay hidden" id="officeModalOverlay">
+        <div class="office-modal">
+            <button class="office-modal-close" id="officeModalClose">
+                <i class='bx bx-x'></i>
+            </button>
+
+            <div class="office-modal-gallery" id="officeModalGallery">
+                <div class="no-image">
+                    <i class='bx bx-buildings'></i>
+                    <p>No images available</p>
+                </div>
+            </div>
+
+            <div class="office-modal-body" id="officeModalBody">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/campus-info.js"></script>
+    <script src="js/feedback.js"></script>
+</body>
+
+</html>
