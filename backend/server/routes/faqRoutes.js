@@ -4,12 +4,11 @@ import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(verifyToken);
-
 // ─── Get All FAQs ─────────────────────────────────────────────────────────────
+// Public — kiosk needs it
 router.get('/', async (req, res) => {
     try {
-        const faqs = await FAQ.find().sort({ createdAt: -1 });
+        const faqs = await FAQ.find({ isVisible: true }).sort({ createdAt: -1 });
         res.json({ faqs });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
@@ -17,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // ─── Create FAQ ───────────────────────────────────────────────────────────────
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     const { question, answer } = req.body;
 
     try {
@@ -39,14 +38,13 @@ router.post('/', async (req, res) => {
 });
 
 // ─── Update FAQ (question, answer, visibility) ────────────────────────────────
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', verifyToken, async (req, res) => {
     const { question, answer, isVisible } = req.body;
 
     try {
         const faq = await FAQ.findById(req.params.id);
         if (!faq) return res.status(404).json({ error: 'FAQ not found' });
 
-        // Check unique question if it's being changed
         if (question && question.trim() !== faq.question) {
             const existing = await FAQ.findOne({ question: question.trim() });
             if (existing) {
@@ -67,7 +65,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // ─── Delete FAQ ───────────────────────────────────────────────────────────────
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const faq = await FAQ.findById(req.params.id);
         if (!faq) return res.status(404).json({ error: 'FAQ not found' });

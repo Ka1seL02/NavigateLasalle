@@ -6,9 +6,8 @@ import cloudinary from '../config/cloudinary.js';
 
 const router = express.Router();
 
-router.use(verifyToken);
-
 // ─── Get All Buildings ────────────────────────────────────────────────────────
+// Public — kiosk needs it
 router.get('/', async (req, res) => {
     try {
         const buildings = await Building.find().sort({ category: 1, name: 1 });
@@ -19,6 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 // ─── Get One Building ─────────────────────────────────────────────────────────
+// Public — kiosk needs it
 router.get('/:id', async (req, res) => {
     try {
         const building = await Building.findById(req.params.id);
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── Create Building ──────────────────────────────────────────────────────────
-router.post('/', (req, res, next) => {
+router.post('/', verifyToken, (req, res, next) => {
     uploadBuilding.array('images', 10)(req, res, (err) => {
         if (err) {
             if (err.code === 'LIMIT_FILE_SIZE') {
@@ -71,7 +71,7 @@ router.post('/', (req, res, next) => {
 });
 
 // ─── Update Building ──────────────────────────────────────────────────────────
-router.patch('/:id', (req, res, next) => {
+router.patch('/:id', verifyToken, (req, res, next) => {
     uploadBuilding.array('images', 10)(req, res, (err) => {
         if (err) {
             if (err.code === 'LIMIT_FILE_SIZE') {
@@ -123,7 +123,7 @@ router.patch('/:id', (req, res, next) => {
 });
 
 // ─── Delete Building ──────────────────────────────────────────────────────────
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const building = await Building.findById(req.params.id);
         if (!building) return res.status(404).json({ error: 'Building not found' });

@@ -6,9 +6,8 @@ import cloudinary from '../config/cloudinary.js';
 
 const router = express.Router();
 
-router.use(verifyToken);
-
 // ─── Get All Offices ──────────────────────────────────────────────────────────
+// Public — kiosk needs it
 router.get('/', async (req, res) => {
     try {
         const filter = {};
@@ -25,6 +24,7 @@ router.get('/', async (req, res) => {
 });
 
 // ─── Get One Office ───────────────────────────────────────────────────────────
+// Public — kiosk needs it
 router.get('/:id', async (req, res) => {
     try {
         const office = await Office.findById(req.params.id)
@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── Create Office ────────────────────────────────────────────────────────────
-router.post('/', (req, res, next) => {
+router.post('/', verifyToken, (req, res, next) => {
     uploadOffice.array('images', 10)(req, res, (err) => {
         if (err) {
             if (err.code === 'LIMIT_FILE_SIZE') {
@@ -86,7 +86,7 @@ router.post('/', (req, res, next) => {
 });
 
 // ─── Update Office ────────────────────────────────────────────────────────────
-router.patch('/:id', (req, res, next) => {
+router.patch('/:id', verifyToken, (req, res, next) => {
     uploadOffice.array('images', 10)(req, res, (err) => {
         if (err) {
             if (err.code === 'LIMIT_FILE_SIZE') {
@@ -108,7 +108,6 @@ router.patch('/:id', (req, res, next) => {
             isVisible, removeImages
         } = req.body;
 
-        // Handle image removal from Cloudinary
         if (removeImages) {
             const toRemove = typeof removeImages === 'string' ? JSON.parse(removeImages) : removeImages;
             for (const url of toRemove) {
@@ -118,7 +117,6 @@ router.patch('/:id', (req, res, next) => {
             office.images = office.images.filter(img => !toRemove.includes(img));
         }
 
-        // Add new images
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(f => f.path);
             office.images = [...office.images, ...newImages];
@@ -144,18 +142,16 @@ router.patch('/:id', (req, res, next) => {
 });
 
 // ─── Delete Office ────────────────────────────────────────────────────────────
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const office = await Office.findById(req.params.id);
         if (!office) return res.status(404).json({ error: 'Office not found' });
 
-        // Delete images from Cloudinary
         for (const url of office.images) {
             const publicId = url.split('/').slice(-2).join('/').split('.')[0];
             await cloudinary.uploader.destroy(publicId);
         }
 
-        // Remove this office from any parent office's subOffices array
         await Office.updateMany(
             { subOffices: office._id },
             { $pull: { subOffices: office._id } }

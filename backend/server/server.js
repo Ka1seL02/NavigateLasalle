@@ -14,6 +14,7 @@ import officeRoutes from './routes/officeRoutes.js';
 import faqRoutes from './routes/faqRoutes.js';
 import accountRoutes from './routes/accountRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
+import weatherRoutes from './routes/weatherRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,6 +43,7 @@ app.use('/api/offices', officeRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
+app.use('/api/weather', weatherRoutes);
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((req, res) => {

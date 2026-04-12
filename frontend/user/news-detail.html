@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/news-detail.css">
+    <link rel="stylesheet" href="css/feedback.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <button class="back-btn" id="backBtn">
+                <i class='bx bx-chevron-left'></i>
+            </button>
+            <img src="img/dlsud-logo.png" alt="DLSU-D" class="school-logo" />
+            <div class="school-name">
+                <span class="school-name-top">De La Salle University</span>
+                <span class="school-name-bottom">DASMARIÑAS</span>
+            </div>
+        </div>
+        <div class="top-bar-right">
+            <div class="live-clock">
+                <span class="clock-time" id="clockTime"></span>
+                <span class="clock-date" id="clockDate"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="detail-main" id="detailMain">
+        <!-- Injected by JS -->
+    </main>
+
+    <script type="module" src="js/news-detail.js"></script>
+    <script src="js/feedback.js"></script>
+</body>
+
+</html>
