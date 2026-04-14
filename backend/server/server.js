@@ -29,6 +29,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
+// ─── Landing Page ──────────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+    res.sendFile(join(__dirname, '../../frontend/user/home.html'));
+});
+// ─── Admin Page ────────────────────────────────────────────────────────────────
+app.get('/admin', express.static(join(__dirname, '../../frontend/admin')));
+
 // ─── Protected Admin Pages ────────────────────────────────────────────────────
 app.use('/admin/pages', verifyToken, express.static(join(__dirname, '../../frontend/admin/pages')));
 
