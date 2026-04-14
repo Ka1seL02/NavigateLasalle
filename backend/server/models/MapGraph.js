@@ -11,7 +11,8 @@ const EdgeSchema = new mongoose.Schema({
     from: { type: String, required: true },
     to: { type: String, required: true },
     weight: { type: Number, required: true },
-    type: { type: String, enum: ['both', 'one-way'], default: 'both' },
+    type: { type: String, enum: ['pedestrian', 'vehicle', 'both'], default: 'both' },
+    oneWay: { type: Boolean, default: false },
     direction: { type: String, enum: ['from→to', 'to→from'], default: null }
 }, { _id: false });
 

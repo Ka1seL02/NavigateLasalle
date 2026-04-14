@@ -71,6 +71,9 @@
                     <div class="graph-toolbar-left">
                         <span class="graph-mode-label">Mode:</span>
                         <div class="graph-mode-toggle">
+                            <button class="graph-mode-btn" id="modeNoSelectBtn">
+                                <i class='bx bx-pointer'></i> No Select
+                            </button>
                             <button class="graph-mode-btn active" id="modeNodeBtn">
                                 <i class='bx bx-radio-circle-marked'></i> Node
                             </button>
@@ -91,9 +94,20 @@
                     <div class="graph-toolbar-right">
                         <!-- Edge options (shown in Edge mode) -->
                         <div class="graph-edge-options hidden" id="edgeOptions">
-                            <span class="graph-mode-label">Direction:</span>
+                            <span class="graph-mode-label">Type:</span>
                             <div class="graph-mode-toggle">
+                                <button class="graph-mode-btn" id="edgePedestrianBtn">
+                                    <i class='bx bx-walk'></i> Pedestrian
+                                </button>
+                                <button class="graph-mode-btn" id="edgeVehicleBtn">
+                                    <i class='bx bx-car'></i> Vehicle
+                                </button>
                                 <button class="graph-mode-btn active" id="edgeBothBtn">
+                                    <i class='bx bx-transfer'></i> Both
+                                </button>
+                            </div>
+                            <div class="graph-mode-toggle" id="edgeDirectionToggle">
+                                <button class="graph-mode-btn active" id="edgeTwoWayBtn">
                                     <i class='bx bx-transfer'></i> Two-way
                                 </button>
                                 <button class="graph-mode-btn" id="edgeOneWayBtn">
@@ -123,7 +137,10 @@
                             </div>
                         </div>
                         <div class="graph-status" id="graphStatus">Click on the map to place a node</div>
-                        <button class="graph-save-btn" id="saveGraphBtn">
+                        <button class="graph-undo-btn" id="undoGraphBtn" disabled>
+                            <i class='bx bx-undo'></i> Undo
+                        </button>
+                        <button class="graph-save-btn" id="saveGraphBtn" disabled>
                             <i class='bx bx-save'></i> Save Graph
                         </button>
                     </div>
@@ -136,8 +153,10 @@
                     <div class="graph-legend">
                         <div class="legend-item"><span class="legend-dot node-dot"></span> Waypoint Node</div>
                         <div class="legend-item"><span class="legend-dot assigned-dot"></span> Building Node</div>
-                        <div class="legend-item"><span class="legend-line both-line"></span> Two-way Edge</div>
-                        <div class="legend-item"><span class="legend-line oneway-line"></span> One-way Edge</div>
+                        <div class="legend-item"><span class="legend-line pedestrian-line"></span> Pedestrian</div>
+                        <div class="legend-item"><span class="legend-line vehicle-line"></span> Vehicle</div>
+                        <div class="legend-item"><span class="legend-line both-line"></span> Both</div>
+                        <div class="legend-item"><span class="legend-line oneway-line"></span> One-way</div>
                         <div class="legend-item legend-hint"> Scroll to zoom · Alt+drag to pan </div>
                     </div>
                 </div>

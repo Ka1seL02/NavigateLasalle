@@ -339,7 +339,6 @@ function renderLeftPanel(search = '') {
                 itemsContainer.appendChild(item);
             });
 
-            // Toggle collapse — no inline styles
             header.addEventListener('click', () => {
                 const isCollapsed = itemsContainer.classList.toggle('collapsed');
                 header.querySelector('.panel-category-chevron').classList.toggle('collapsed', isCollapsed);
@@ -649,14 +648,22 @@ function heuristic(nodeA, nodeB) {
 function getNeighbors(nodeId, nodes, edges, mode) {
     const neighbors = [];
     edges.forEach(edge => {
+        const isWalkable = edge.type === 'pedestrian' || edge.type === 'both';
+        const isDrivable = edge.type === 'vehicle' || edge.type === 'both';
+
         if (mode === 'walking') {
+            // Walking: only walkable edges, always bidirectional
+            if (!isWalkable) return;
             if (edge.from === nodeId) neighbors.push({ id: edge.to, weight: edge.weight });
             else if (edge.to === nodeId) neighbors.push({ id: edge.from, weight: edge.weight });
         } else {
-            if (edge.type === 'both') {
+            // Vehicle: only drivable edges, respect oneWay
+            if (!isDrivable) return;
+            if (!edge.oneWay) {
                 if (edge.from === nodeId) neighbors.push({ id: edge.to, weight: edge.weight });
                 else if (edge.to === nodeId) neighbors.push({ id: edge.from, weight: edge.weight });
-            } else if (edge.type === 'one-way') {
+            } else {
+                // One-way — check direction
                 if (edge.direction === 'from→to' && edge.from === nodeId) {
                     neighbors.push({ id: edge.to, weight: edge.weight });
                 } else if (edge.direction === 'to→from' && edge.to === nodeId) {

@@ -488,3 +488,29 @@
   - Loading overlay shown during fetch, hidden in `finally`
   - Error toast on fetch failure
   - Added system icon for website
+
+## V1.0 — 14/04/2026
+### Backend — Graph
+- Modified MapGraph.js
+  - replaced 'type' and 'direction' fields
+  - replaced exisiting 'edge'(edge is connection of nodes) category with 3 new ones ['pedestrian', 'vehicle', 'both']
+- Modified mapGraphRoutes.js
+  - Adding validation for the new one way/direction logic
+  - Added 'oneWay: Boolean' - separate from type, only relevant for 'vehicle' and 'both'
+  - 'direction' stay as-is, but now only set when oneWay: true
+  - Route validates that pedestrian edges can't be one-way, and one-way edges must have a direction
+### Frontend - Admin/map[js, css, html]
+- Added additional controls
+  - Add noselect mode to setGraphMode()
+  - Add edge type selector UI (pedestrian / vehicle / both) in edge options, replacing the old two-way/one-way toggle (one-way becomes a sub-option only when vehicle or both is selected)
+  - Update handleGraphClick edge creation to use new type + oneWay + direction schema
+  - Update redrawGraph edge rendering — color-code by type instead of just dashed for one-way
+  - Add undo stack: undoStack, savedSnapshot, markDirty(), undoLastAction()
+  - Wire save button to reset dirty state, disable both buttons when clean
+  - Add pushUndo() calls at every mutation point (add node, add edge, delete node, delete edge, move node, assign building)
+  - Edges are now color-coded: blue (pedestrian), orange (vehicle), dark green (both)
+### Frontend - User/map.js
+- Update logic in wayfinding to fit upgraded model
+  - Derives isWalkable (pedestrian or both) and isDrivable (vehicle or both) from the edge type
+  - Walking mode: filters to walkable edges only, always traverses both directions
+  - Vehicle mode: filters to drivable edges only, then checks edge.oneWay (boolean) instead of the old edge.type === 'one-way', and uses edge.direction to determine which way is allowed

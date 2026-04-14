@@ -306,10 +306,16 @@ let graphNodes = [];
 let graphEdges = [];
 let graphMode = 'node';
 let selectedNodeId = null;
-let edgeDirection = 'both';
+let edgeType = 'both';      // 'pedestrian' | 'vehicle' | 'both'
+let edgeOneWay = false;     // only relevant when edgeType is 'vehicle' or 'both'
 let graphInitialized = false;
 let graphZoomInitialized = false;
 let getGraphSVGCoords = null;
+
+// ─── Undo / Dirty State ───────────────────────────────────────────────────────
+let undoStack = [];         // array of snapshots { nodes, edges }
+let savedSnapshot = null;   // deep copy of last saved state
+let isDirty = false;
 
 // ─── Road Drawing State ───────────────────────────────────────────────────────
 let isDrawingRoad = false;
@@ -325,13 +331,19 @@ let roadMoveOffsetY = 0;
 const graphMapSvg = document.getElementById('graphMap');
 const graphStatus = document.getElementById('graphStatus');
 const saveGraphBtn = document.getElementById('saveGraphBtn');
+const undoGraphBtn = document.getElementById('undoGraphBtn');
+const modeNoSelectBtn = document.getElementById('modeNoSelectBtn');
 const modeNodeBtn = document.getElementById('modeNodeBtn');
 const modeEdgeBtn = document.getElementById('modeEdgeBtn');
 const modeAssignBtn = document.getElementById('modeAssignBtn');
 const modeDeleteBtn = document.getElementById('modeDeleteBtn');
 const modeRoadBtn = document.getElementById('modeRoadBtn');
 const edgeOptions = document.getElementById('edgeOptions');
+const edgePedestrianBtn = document.getElementById('edgePedestrianBtn');
+const edgeVehicleBtn = document.getElementById('edgeVehicleBtn');
 const edgeBothBtn = document.getElementById('edgeBothBtn');
+const edgeDirectionToggle = document.getElementById('edgeDirectionToggle');
+const edgeTwoWayBtn = document.getElementById('edgeTwoWayBtn');
 const edgeOneWayBtn = document.getElementById('edgeOneWayBtn');
 const roadOptions = document.getElementById('roadOptions');
 const roadNameInput = document.getElementById('roadNameInput');
@@ -351,12 +363,16 @@ function setGraphMode(mode) {
     roadDrawStart = null;
     if (roadPreviewElem) { roadPreviewElem.remove(); roadPreviewElem = null; }
 
-    [modeNodeBtn, modeEdgeBtn, modeAssignBtn, modeDeleteBtn, modeRoadBtn]
+    [modeNoSelectBtn, modeNodeBtn, modeEdgeBtn, modeAssignBtn, modeDeleteBtn, modeRoadBtn]
         .forEach(b => b.classList.remove('active'));
     edgeOptions.classList.add('hidden');
     roadOptions.classList.add('hidden');
 
-    if (mode === 'node') {
+    if (mode === 'noselect') {
+        modeNoSelectBtn.classList.add('active');
+        graphStatus.textContent = 'No Select — freely pan and zoom without triggering actions';
+        graphMapSvg.style.cursor = 'default';
+    } else if (mode === 'node') {
         modeNodeBtn.classList.add('active');
         graphStatus.textContent = 'Click anywhere on the map to place a node';
         graphMapSvg.style.cursor = 'crosshair';
@@ -386,6 +402,7 @@ function setGraphMode(mode) {
         }
     }
     saveGraphBtn.style.display = mode === 'road' ? 'none' : 'flex';
+    undoGraphBtn.style.display = mode === 'road' ? 'none' : 'flex';
     redrawGraph();
 }
 
@@ -398,21 +415,52 @@ function showRoadControls(hasPending) {
     if (roadCancelBtn) roadCancelBtn.style.display = hasPending ? 'flex' : 'none';
 }
 
+modeNoSelectBtn.addEventListener('click', () => setGraphMode('noselect'));
 modeNodeBtn.addEventListener('click', () => setGraphMode('node'));
 modeEdgeBtn.addEventListener('click', () => setGraphMode('edge'));
 modeAssignBtn.addEventListener('click', () => setGraphMode('assign'));
 modeDeleteBtn.addEventListener('click', () => setGraphMode('delete'));
 modeRoadBtn.addEventListener('click', () => setGraphMode('road'));
 
+// ─── Edge Type + Direction Buttons ───────────────────────────────────────────
+function updateEdgeDirectionVisibility() {
+    // Pedestrian is always two-way — hide the toggle
+    if (edgeType === 'pedestrian') {
+        edgeDirectionToggle.classList.add('hidden');
+        edgeOneWay = false;
+    } else {
+        edgeDirectionToggle.classList.remove('hidden');
+    }
+}
+
+edgePedestrianBtn.addEventListener('click', () => {
+    edgeType = 'pedestrian';
+    edgeOneWay = false;
+    [edgePedestrianBtn, edgeVehicleBtn, edgeBothBtn].forEach(b => b.classList.remove('active'));
+    edgePedestrianBtn.classList.add('active');
+    updateEdgeDirectionVisibility();
+});
+edgeVehicleBtn.addEventListener('click', () => {
+    edgeType = 'vehicle';
+    [edgePedestrianBtn, edgeVehicleBtn, edgeBothBtn].forEach(b => b.classList.remove('active'));
+    edgeVehicleBtn.classList.add('active');
+    updateEdgeDirectionVisibility();
+});
 edgeBothBtn.addEventListener('click', () => {
-    edgeDirection = 'both';
+    edgeType = 'both';
+    [edgePedestrianBtn, edgeVehicleBtn, edgeBothBtn].forEach(b => b.classList.remove('active'));
     edgeBothBtn.classList.add('active');
+    updateEdgeDirectionVisibility();
+});
+edgeTwoWayBtn.addEventListener('click', () => {
+    edgeOneWay = false;
+    edgeTwoWayBtn.classList.add('active');
     edgeOneWayBtn.classList.remove('active');
 });
 edgeOneWayBtn.addEventListener('click', () => {
-    edgeDirection = 'one-way';
+    edgeOneWay = true;
     edgeOneWayBtn.classList.add('active');
-    edgeBothBtn.classList.remove('active');
+    edgeTwoWayBtn.classList.remove('active');
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -423,6 +471,46 @@ function generateNodeId() {
 function calcWeight(n1, n2) {
     return Math.round(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)));
 }
+
+// ─── Undo / Dirty Helpers ─────────────────────────────────────────────────────
+function snapshot() {
+    return JSON.stringify({ nodes: graphNodes, edges: graphEdges });
+}
+
+function pushUndo() {
+    undoStack.push(snapshot());
+    markDirty();
+}
+
+function markDirty() {
+    isDirty = true;
+    saveGraphBtn.disabled = false;
+    undoGraphBtn.disabled = false;
+}
+
+function markClean() {
+    isDirty = false;
+    undoStack = [];
+    saveGraphBtn.disabled = true;
+    undoGraphBtn.disabled = true;
+}
+
+undoGraphBtn.addEventListener('click', () => {
+    if (undoStack.length === 0) return;
+    const prev = JSON.parse(undoStack.pop());
+    graphNodes = prev.nodes;
+    graphEdges = prev.edges;
+    selectedNodeId = null;
+    // If we've undone back to the saved state, mark clean
+    if (undoStack.length === 0 && savedSnapshot && snapshot() === savedSnapshot) {
+        markClean();
+    } else {
+        // Still dirty but update button state
+        saveGraphBtn.disabled = false;
+        undoGraphBtn.disabled = undoStack.length === 0;
+    }
+    redrawGraph();
+});
 
 // ─── Render Pending Road ──────────────────────────────────────────────────────
 function renderPendingRoad() {
@@ -484,6 +572,8 @@ async function fetchGraph() {
         graphNodes = [];
         graphEdges = [];
     }
+    savedSnapshot = snapshot();
+    markClean();
 }
 
 // ─── Road Drawing ─────────────────────────────────────────────────────────────
@@ -679,6 +769,7 @@ function initNodeDragging() {
         const node = graphNodes.find(n => n.id === draggingNodeId);
         nodeDragOffsetX = coords.x - node.x;
         nodeDragOffsetY = coords.y - node.y;
+        pushUndo(); // snapshot before drag starts
         e.stopPropagation();
     });
 
@@ -825,7 +916,13 @@ function redrawGraph() {
         line.setAttribute('x1', fromNode.x); line.setAttribute('y1', fromNode.y);
         line.setAttribute('x2', toNode.x); line.setAttribute('y2', toNode.y);
         line.classList.add('graph-edge');
-        if (edge.type === 'one-way') {
+        // Color-code by edge type
+        const edgeClass = edge.type === 'pedestrian' ? 'edge-pedestrian'
+            : edge.type === 'vehicle' ? 'edge-vehicle'
+            : 'edge-both';
+        line.classList.add(edgeClass);
+        // One-way marker (only applicable to vehicle or both)
+        if (edge.oneWay) {
             line.classList.add('one-way');
             line.setAttribute('marker-end', 'url(#arrowhead)');
         }
@@ -837,6 +934,7 @@ function redrawGraph() {
             line.addEventListener('click', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
+                pushUndo();
                 graphEdges = graphEdges.filter(ed => !(ed.from === edge.from && ed.to === edge.to));
                 graphStatus.textContent = 'Edge deleted.';
                 redrawGraph();
@@ -897,6 +995,7 @@ async function deleteRoad(id, name) {
 // ─── Handle Graph Click ───────────────────────────────────────────────────────
 function handleGraphClick(e) {
     if (e.altKey) return;
+    if (graphMode === 'noselect') return;
     const target = e.target;
 
     if (graphMode === 'node') {
@@ -904,6 +1003,7 @@ function handleGraphClick(e) {
         if (target.classList.contains('graph-road')) return;
         if (target.classList.contains('road-pending')) return;
         const coords = getGraphSVGCoords(e);
+        pushUndo();
         graphNodes.push({ id: generateNodeId(), x: coords.x, y: coords.y, buildingId: null });
         graphStatus.textContent = `Node placed at (${coords.x}, ${coords.y})`;
         redrawGraph();
@@ -926,7 +1026,16 @@ function handleGraphClick(e) {
         const fromNode = graphNodes.find(n => n.id === selectedNodeId);
         const toNode = graphNodes.find(n => n.id === clickedId);
         const weight = calcWeight(fromNode, toNode);
-        graphEdges.push({ from: selectedNodeId, to: clickedId, weight, type: edgeDirection, direction: edgeDirection === 'one-way' ? 'from→to' : null });
+        const isOneWay = edgeType !== 'pedestrian' && edgeOneWay;
+        pushUndo();
+        graphEdges.push({
+            from: selectedNodeId,
+            to: clickedId,
+            weight,
+            type: edgeType,
+            oneWay: isOneWay,
+            direction: isOneWay ? 'from→to' : null
+        });
         graphStatus.textContent = `Connected! Weight: ${weight}px. Click another node to continue.`;
         selectedNodeId = clickedId;
         redrawGraph();
@@ -944,6 +1053,7 @@ function handleGraphClick(e) {
         if (target.classList.contains('ghost-building') && selectedNodeId) {
             const buildingId = target.dataset.buildingId;
             const buildingName = target.dataset.buildingName;
+            pushUndo();
             graphNodes.forEach(n => { if (n.buildingId === buildingId) n.buildingId = null; });
             const node = graphNodes.find(n => n.id === selectedNodeId);
             if (node) { node.buildingId = buildingId; graphStatus.textContent = `Assigned "${buildingName}". Select another node to continue.`; selectedNodeId = null; redrawGraph(); }
@@ -957,6 +1067,7 @@ function handleGraphClick(e) {
     if (graphMode === 'delete') {
         if (target.classList.contains('graph-node')) {
             const nodeId = target.dataset.nodeId;
+            pushUndo();
             graphNodes = graphNodes.filter(n => n.id !== nodeId);
             graphEdges = graphEdges.filter(ed => ed.from !== nodeId && ed.to !== nodeId);
             graphStatus.textContent = 'Node and its edges deleted.';
@@ -977,7 +1088,11 @@ saveGraphBtn.addEventListener('click', async () => {
         });
         const data = await res.json();
         if (!res.ok) { showToast('error', data.error || 'Failed to save graph.'); }
-        else { showToast('success', 'Graph saved successfully!'); }
+        else {
+            showToast('success', 'Graph saved successfully!');
+            savedSnapshot = snapshot();
+            markClean();
+        }
     } catch (err) {
         showToast('error', 'Failed to save graph.');
     } finally {

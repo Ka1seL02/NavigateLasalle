@@ -330,12 +330,33 @@ main {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s, opacity 0.2s;
     box-shadow: 0 4px 12px rgba(0, 64, 28, 0.2);
     white-space: nowrap;
 }
-.graph-save-btn:hover { background: var(--green); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25); }
+.graph-save-btn:hover:not(:disabled) { background: var(--green); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 138, 61, 0.25); }
+.graph-save-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 .graph-save-btn i { font-size: 1rem; }
+
+.graph-undo-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    background: var(--white);
+    border: 1.5px solid var(--dark-green);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.graph-undo-btn:hover:not(:disabled) { background: var(--dirty-white); transform: translateY(-1px); }
+.graph-undo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.graph-undo-btn i { font-size: 1rem; }
 
 /* Graph SVG wrapper */
 .graph-map-wrapper {
@@ -377,9 +398,12 @@ main {
 }
 
 /* Edges */
-#graphMap .graph-edge { stroke: var(--dark-green); stroke-width: 2.5; pointer-events: none; opacity: 0.85; }
+#graphMap .graph-edge { stroke-width: 2.5; pointer-events: none; opacity: 0.85; }
+#graphMap .graph-edge.edge-pedestrian { stroke: #2979FF; }
+#graphMap .graph-edge.edge-vehicle { stroke: #E65100; }
+#graphMap .graph-edge.edge-both { stroke: var(--dark-green); }
 #graphMap .graph-edge.one-way { stroke-dasharray: 6 3; }
-#graphMap .graph-edge-arrow { fill: var(--dark-green); }
+#graphMap .graph-edge-arrow { fill: currentColor; }
 
 /* Nodes */
 #graphMap .graph-node {
@@ -418,7 +442,10 @@ main {
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--dark-green); display: inline-block; }
 .legend-dot.node-dot { background: var(--white); }
 .legend-dot.assigned-dot { background: var(--green); }
-.legend-line { width: 24px; height: 2.5px; display: inline-block; background: var(--dark-green); border-radius: 2px; }
+.legend-line { width: 24px; height: 2.5px; display: inline-block; border-radius: 2px; }
+.legend-line.pedestrian-line { background: #2979FF; }
+.legend-line.vehicle-line { background: #E65100; }
+.legend-line.both-line { background: var(--dark-green); }
 .legend-line.oneway-line {
     background: repeating-linear-gradient(
         to right,

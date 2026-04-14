@@ -4,25 +4,23 @@ import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// GET /api/mapgraph — get the graph (or empty if none yet)
+// GET /api/mapgraph
 router.get('/', async (req, res) => {
     try {
         let graph = await MapGraph.findOne();
-        if (!graph) {
-            graph = { nodes: [], edges: [] };
-        }
+        if (!graph) graph = { nodes: [], edges: [] };
         res.json(graph);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch map graph' });
     }
 });
 
-// PUT /api/mapgraph — save entire graph (replaces existing)
+// PUT /api/mapgraph
 router.put('/', verifyToken, async (req, res) => {
     try {
         const { nodes, edges } = req.body;
 
-        // Validate node edge connections exist
+        // Validate node references
         const nodeIds = new Set(nodes.map(n => n.id));
         for (const edge of edges) {
             if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) {
@@ -37,6 +35,21 @@ router.put('/', verifyToken, async (req, res) => {
             edgeCount[edge.to] = (edgeCount[edge.to] || 0) + 1;
             if (edgeCount[edge.from] > 10 || edgeCount[edge.to] > 10) {
                 return res.status(400).json({ error: `Node ${edge.from} or ${edge.to} exceeds 10 edge limit` });
+            }
+        }
+
+        // Validate one-way logic:
+        // pedestrian edges can never be one-way
+        // one-way edges must have a direction
+        for (const edge of edges) {
+            if (edge.type === 'pedestrian' && edge.oneWay) {
+                return res.status(400).json({ error: `Pedestrian edges cannot be one-way` });
+            }
+            if (edge.oneWay && !edge.direction) {
+                return res.status(400).json({ error: `One-way edge must have a direction` });
+            }
+            if (!edge.oneWay) {
+                edge.direction = null;
             }
         }
 
