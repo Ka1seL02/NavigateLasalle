@@ -499,7 +499,7 @@
   - Added 'oneWay: Boolean' - separate from type, only relevant for 'vehicle' and 'both'
   - 'direction' stay as-is, but now only set when oneWay: true
   - Route validates that pedestrian edges can't be one-way, and one-way edges must have a direction
-### Frontend - Admin/map[js, css, html]
+### Frontend — Admin/map[js, css, html]
 - Added additional controls
   - Add noselect mode to setGraphMode()
   - Add edge type selector UI (pedestrian / vehicle / both) in edge options, replacing the old two-way/one-way toggle (one-way becomes a sub-option only when vehicle or both is selected)
@@ -509,8 +509,18 @@
   - Wire save button to reset dirty state, disable both buttons when clean
   - Add pushUndo() calls at every mutation point (add node, add edge, delete node, delete edge, move node, assign building)
   - Edges are now color-coded: blue (pedestrian), orange (vehicle), dark green (both)
-### Frontend - User/map.js
+### Frontend — User/map.js
 - Update logic in wayfinding to fit upgraded model
   - Derives isWalkable (pedestrian or both) and isDrivable (vehicle or both) from the edge type
   - Walking mode: filters to walkable edges only, always traverses both directions
   - Vehicle mode: filters to drivable edges only, then checks edge.oneWay (boolean) instead of the old edge.type === 'one-way', and uses edge.direction to determine which way is allowed
+
+## V1.1 — 15/04/2026
+### Frontend — User Interactive Map
+- Improve/Added draw-on path animation 
+  - replaced the old 'polyline' with marching dashes by 'SVG' path element and is making a fill in/snake like transition from start to destination
+- Hybrid vehicle + wall fallback
+  - When vehicle route finds no route, instead of 'no route' finds the closest drivable node to the pedestrian-only destination
+  - Run A* for vehicle leg (start -> dropoff) in yellow and walk leg (dropoff -> destination) in green, sequentially after the vehicle animation finishes
+  - The route bar shows: 🚗 Drive to [Building], then 🚶 walk to [Destination]
+  - If even the hybrid approach can't find a path, it falls back to the original "No route found" message.

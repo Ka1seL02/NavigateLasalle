@@ -381,17 +381,30 @@ html, body {
     pointer-events: none;
 }
 
-/* Path overlay */
+/* Path overlay — draw-on entrance animation */
 #campusMap .path-line {
     fill: none;
     stroke: var(--light-green);
-    stroke-width: 5;
+    stroke-width: 6;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: 12 6;
-    animation: dash-move 1s linear infinite;
     pointer-events: none;
+    /* stroke-dasharray / stroke-dashoffset set dynamically by JS */
 }
+
+/* Vehicle leg — slightly thicker, different colour to distinguish */
+#campusMap .path-line.path-vehicle {
+    stroke: #f59e0b;   /* amber */
+    stroke-width: 7;
+}
+
+/* Walk leg — green, slightly thinner */
+#campusMap .path-line.path-walk {
+    stroke: var(--light-green);
+    stroke-width: 5;
+    stroke-dasharray: unset; /* solid line; JS overrides for animation */
+}
+
 #campusMap .path-start {
     fill: var(--dark-green);
     stroke: var(--white);
@@ -403,11 +416,30 @@ html, body {
     stroke: var(--white);
     stroke-width: 2;
     pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+#campusMap .path-end--hidden {
+    opacity: 0;
 }
 
-@keyframes dash-move {
-    to { stroke-dashoffset: -18; }
+/* Dropoff marker — amber circle with white border, pulse once it appears */
+#campusMap .path-dropoff {
+    fill: #f59e0b;
+    stroke: var(--white);
+    stroke-width: 2.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
+#campusMap .path-dropoff.path-end--hidden {
+    opacity: 0;
+}
+
+/* Route bar hybrid label icons inline */
+.route-bar-info i {
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
 
 /* ─── Map Legend ─────────────────────────────────────────────────────────────── */
 .map-legend {

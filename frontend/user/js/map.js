@@ -729,6 +729,45 @@ function aStar(startNodeId, endNodeId, nodes, edges, mode) {
     return null;
 }
 
+// ─── Find Nearest Drivable Node to a Target ───────────────────────────────────
+// Returns the node ID that is (a) reachable by vehicle from fromNodeId and
+// (b) closest in straight-line distance to targetNode.
+function findNearestVehicleDropoff(fromNodeId, targetNode, nodes, edges) {
+    const nodeMap = {};
+    nodes.forEach(n => nodeMap[n.id] = n);
+
+    // BFS/Dijkstra over vehicle edges to collect all reachable nodes
+    const visited = new Set();
+    const queue = [fromNodeId];
+    visited.add(fromNodeId);
+
+    while (queue.length) {
+        const current = queue.shift();
+        const neighbors = getNeighbors(current, nodes, edges, 'vehicle');
+        neighbors.forEach(({ id }) => {
+            if (!visited.has(id)) {
+                visited.add(id);
+                queue.push(id);
+            }
+        });
+    }
+
+    // Among reachable vehicle nodes, find the one closest to targetNode
+    let bestId = null;
+    let bestDist = Infinity;
+    visited.forEach(id => {
+        const n = nodeMap[id];
+        if (!n) return;
+        const d = Math.hypot(n.x - targetNode.x, n.y - targetNode.y);
+        if (d < bestDist) {
+            bestDist = d;
+            bestId = id;
+        }
+    });
+
+    return bestId;
+}
+
 // ─── Find Route ───────────────────────────────────────────────────────────────
 findRouteBtn.addEventListener('click', () => {
     if (!selectedFromId) {
@@ -752,13 +791,40 @@ findRouteBtn.addEventListener('click', () => {
     const path = aStar(fromNode.id, toNode.id, graph.nodes, graph.edges, selectedMode);
 
     if (!path) {
+        // ── Hybrid fallback: vehicle gets as close as possible, then walk ──
+        if (selectedMode === 'vehicle') {
+            const dropoffId = findNearestVehicleDropoff(fromNode.id, toNode, graph.nodes, graph.edges);
+
+            if (dropoffId && dropoffId !== fromNode.id) {
+                const vehiclePath = aStar(fromNode.id, dropoffId, graph.nodes, graph.edges, 'vehicle');
+                const walkPath = aStar(dropoffId, toNode.id, graph.nodes, graph.edges, 'walking');
+
+                if (vehiclePath && walkPath) {
+                    drawHybridPath(vehiclePath, walkPath);
+                    directionsModal.classList.add('hidden');
+
+                    const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
+                    const dropoffNode = graph.nodes.find(n => n.id === dropoffId);
+                    const dropoffBuilding = allBuildings.find(b => b._id === dropoffNode?.buildingId);
+                    const dropoffLabel = dropoffBuilding?.name ?? 'nearest road';
+
+                    routeBarText.innerHTML = `
+                        <i class='bx bx-car'></i> Drive to ${dropoffLabel},
+                        then <i class='bx bx-walk'></i> walk to ${selectedBuilding.name}
+                    `;
+                    routeBar.classList.remove('hidden');
+                    return;
+                }
+            }
+        }
+
         routeBarText.textContent = 'No route found. Try a different mode.';
         routeBar.classList.remove('hidden');
         directionsModal.classList.add('hidden');
         return;
     }
 
-    drawPath(path);
+    drawPath(path, selectedMode);
     directionsModal.classList.add('hidden');
 
     const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
@@ -767,7 +833,8 @@ findRouteBtn.addEventListener('click', () => {
 });
 
 // ─── Draw Path ────────────────────────────────────────────────────────────────
-function drawPath(nodeIds) {
+// mode: 'walking' | 'vehicle' — affects the CSS class for colouring
+function drawPath(nodeIds, mode = 'walking') {
     clearPath();
 
     const nodeMap = {};
@@ -776,12 +843,28 @@ function drawPath(nodeIds) {
     const points = nodeIds.map(id => nodeMap[id]).filter(Boolean);
     if (points.length < 2) return;
 
-    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    polyline.setAttribute('points', points.map(n => `${n.x},${n.y}`).join(' '));
-    polyline.classList.add('path-line');
-    svg.appendChild(polyline);
-    currentPathElements.push(polyline);
+    // Use SVG <path> so getTotalLength() works for the draw-on animation
+    const d = 'M ' + points.map(n => `${n.x},${n.y}`).join(' L ');
+    const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathEl.setAttribute('d', d);
+    pathEl.classList.add('path-line');
+    if (mode === 'vehicle') pathEl.classList.add('path-vehicle');
+    svg.appendChild(pathEl);
+    currentPathElements.push(pathEl);
 
+    // Animate: draw from total length → 0 (fill-in entrance)
+    requestAnimationFrame(() => {
+        const len = pathEl.getTotalLength();
+        pathEl.style.strokeDasharray = len;
+        pathEl.style.strokeDashoffset = len;
+        pathEl.style.transition = 'none';
+        // Force reflow so the browser registers the start state
+        pathEl.getBoundingClientRect();
+        pathEl.style.transition = `stroke-dashoffset ${Math.max(0.6, len / 600)}s cubic-bezier(0.4, 0, 0.2, 1)`;
+        pathEl.style.strokeDashoffset = '0';
+    });
+
+    // Start dot
     const start = points[0];
     const startCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     startCircle.setAttribute('cx', start.x);
@@ -791,15 +874,23 @@ function drawPath(nodeIds) {
     svg.appendChild(startCircle);
     currentPathElements.push(startCircle);
 
+    // End dot — fade in after the line finishes drawing
     const end = points[points.length - 1];
     const endCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     endCircle.setAttribute('cx', end.x);
     endCircle.setAttribute('cy', end.y);
     endCircle.setAttribute('r', 10);
-    endCircle.classList.add('path-end');
+    endCircle.classList.add('path-end', 'path-end--hidden');
     svg.appendChild(endCircle);
     currentPathElements.push(endCircle);
 
+    requestAnimationFrame(() => {
+        const len = pathEl.getTotalLength();
+        const delay = Math.max(0.6, len / 600);
+        setTimeout(() => endCircle.classList.remove('path-end--hidden'), delay * 1000);
+    });
+
+    // Pan to show the full path
     const midIndex = Math.floor(points.length / 2);
     const mid = points[midIndex];
     viewBox.x = mid.x - 500;
@@ -808,6 +899,109 @@ function drawPath(nodeIds) {
     viewBox.h = 600;
     clampViewBox();
     applyViewBox();
+}
+
+// ─── Draw Hybrid Path (vehicle leg + walk leg) ────────────────────────────────
+function drawHybridPath(vehicleNodeIds, walkNodeIds) {
+    clearPath();
+
+    const nodeMap = {};
+    graph.nodes.forEach(n => nodeMap[n.id] = n);
+
+    function buildPathEl(nodeIds, cssClass, delayMs = 0) {
+        const points = nodeIds.map(id => nodeMap[id]).filter(Boolean);
+        if (points.length < 2) return null;
+
+        const d = 'M ' + points.map(n => `${n.x},${n.y}`).join(' L ');
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('d', d);
+        pathEl.classList.add('path-line', cssClass);
+        svg.appendChild(pathEl);
+        currentPathElements.push(pathEl);
+
+        requestAnimationFrame(() => {
+            const len = pathEl.getTotalLength();
+            const dur = Math.max(0.6, len / 600);
+            pathEl.style.strokeDasharray = len;
+            pathEl.style.strokeDashoffset = len;
+            pathEl.style.transition = 'none';
+            pathEl.getBoundingClientRect();
+
+            setTimeout(() => {
+                pathEl.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(0.4, 0, 0.2, 1)`;
+                pathEl.style.strokeDashoffset = '0';
+            }, delayMs);
+        });
+
+        return points;
+    }
+
+    const vPoints = buildPathEl(vehicleNodeIds, 'path-vehicle', 0);
+    // Walk leg starts after vehicle leg finishes — estimate vehicle duration
+    const vLen = vPoints ? vPoints.reduce((acc, p, i, arr) => {
+        if (i === 0) return 0;
+        return acc + Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y);
+    }, 0) : 0;
+    const vDur = Math.max(600, vLen / 0.6); // ms
+
+    const wPoints = buildPathEl(walkNodeIds, 'path-walk', vDur);
+
+    // Start dot
+    const allPoints = [...(vPoints || [])];
+    if (allPoints.length) {
+        const startCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        startCircle.setAttribute('cx', allPoints[0].x);
+        startCircle.setAttribute('cy', allPoints[0].y);
+        startCircle.setAttribute('r', 10);
+        startCircle.classList.add('path-start');
+        svg.appendChild(startCircle);
+        currentPathElements.push(startCircle);
+    }
+
+    // Dropoff marker (where you park & walk)
+    const dropoff = vPoints?.[vPoints.length - 1];
+    if (dropoff) {
+        const dropoffCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dropoffCircle.setAttribute('cx', dropoff.x);
+        dropoffCircle.setAttribute('cy', dropoff.y);
+        dropoffCircle.setAttribute('r', 10);
+        dropoffCircle.classList.add('path-dropoff', 'path-end--hidden');
+        svg.appendChild(dropoffCircle);
+        currentPathElements.push(dropoffCircle);
+        setTimeout(() => dropoffCircle.classList.remove('path-end--hidden'), vDur);
+    }
+
+    // End dot
+    const endPts = wPoints || vPoints;
+    const end = endPts?.[endPts.length - 1];
+    if (end) {
+        const endCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        endCircle.setAttribute('cx', end.x);
+        endCircle.setAttribute('cy', end.y);
+        endCircle.setAttribute('r', 10);
+        endCircle.classList.add('path-end', 'path-end--hidden');
+        svg.appendChild(endCircle);
+        currentPathElements.push(endCircle);
+
+        const wLen = wPoints ? wPoints.reduce((acc, p, i, arr) => {
+            if (i === 0) return 0;
+            return acc + Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y);
+        }, 0) : 0;
+        const wDur = Math.max(600, wLen / 0.6);
+        setTimeout(() => endCircle.classList.remove('path-end--hidden'), vDur + wDur);
+    }
+
+    // Pan to middle of full combined path
+    const allPts = [...(vPoints || []), ...(wPoints || [])];
+    if (allPts.length) {
+        const mid = allPts[Math.floor(allPts.length / 2)];
+        viewBox.x = mid.x - 500;
+        viewBox.y = mid.y - 300;
+        viewBox.w = 1000;
+        viewBox.h = 600;
+        clampViewBox();
+        applyViewBox();
+    }
 }
 
 function clearPath() {
