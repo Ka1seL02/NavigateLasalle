@@ -370,6 +370,9 @@ function renderLeftPanel(search = '') {
                 if (building) {
                     selectedBuilding = building;
                     openDirectionsModal(building);
+                } else {
+                    routeBarText.textContent = 'No location assigned for this office.';
+                    routeBar.classList.remove('hidden');
                 }
             });
             leftPanelList.appendChild(item);

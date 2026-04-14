@@ -359,7 +359,14 @@ main {
     opacity: 1;
     pointer-events: none;
 }
-
+#graphMap .road-pending {
+    fill: rgba(0, 138, 61, 0.25);
+    stroke: var(--green);
+    stroke-width: 2;
+    stroke-dasharray: 6 3;
+    pointer-events: all;
+    cursor: grab;
+}
 /* Road preview while drawing */
 #graphMap .road-preview {
     fill: rgba(0, 138, 61, 0.2);

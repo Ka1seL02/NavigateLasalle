@@ -107,6 +107,20 @@
                                 placeholder="Road name (e.g. New Road)" />
                             <input type="text" class="graph-road-input" id="roadDataIdInput"
                                 placeholder="Road ID (unique, e.g. New-Rd.)" />
+                            <div id="roadDimGroup" style="display:none; align-items:center; gap:6px;">
+                                <input type="number" class="graph-road-input" id="roadWidthInput" placeholder="Width"
+                                    style="width:80px;" />
+                                <input type="number" class="graph-road-input" id="roadHeightInput" placeholder="Height"
+                                    style="width:80px;" />
+                                <input type="number" class="graph-road-input" id="roadRotateInput" placeholder="Rotate°"
+                                    value="0" style="width:80px;" />
+                                <button class="graph-mode-btn" id="roadApplyBtn" style="display:none;"><i
+                                        class='bx bx-refresh'></i> Apply</button>
+                                <button class="graph-mode-btn" id="roadSaveBtn" style="display:none;"><i
+                                        class='bx bx-save'></i> Save</button>
+                                <button class="graph-mode-btn" id="roadCancelBtn" style="display:none;"><i
+                                        class='bx bx-x'></i> Cancel</button>
+                            </div>
                         </div>
                         <div class="graph-status" id="graphStatus">Click on the map to place a node</div>
                         <button class="graph-save-btn" id="saveGraphBtn">

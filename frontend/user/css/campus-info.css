@@ -654,7 +654,7 @@ html, body {
     background: var(--white);
     border-radius: 20px;
     width: 90vw;
-    max-width: 600px;
+    max-width: 800px;
     max-height: 85vh;
     overflow-y: auto;
     position: relative;
@@ -775,6 +775,7 @@ html, body {
 .personnel-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
     padding: 0.5rem 0.75rem;
     background: var(--off-white);

@@ -300,19 +300,6 @@ applyShapeBtn.addEventListener('click', () => {
 
 // ─── Confirm Position ─────────────────────────────────────────────────────────
 confirmPositionBtn.addEventListener('click', () => {
-    const newBox = getBoundingBox({ ...shapeData, type: shapeType });
-
-    const overlapping = existingBuildings.some(b => {
-        if (!b.shape) return false;
-        const existingBox = getBoundingBox(b.shape);
-        return isOverlapping(newBox, existingBox);
-    });
-
-    if (overlapping) {
-        showToast('error', 'This shape overlaps an existing building. Please reposition it.');
-        return;
-    }
-
     confirmedShape = { ...shapeData, type: shapeType };
     step1.classList.add('hidden');
     step2.classList.remove('hidden');

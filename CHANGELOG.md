@@ -450,3 +450,41 @@
     - Cards show: office name, office hours, email, phone
     - Clicking card opens full detail modal with gallery, category badge, name, head, contact info pills, description (Quill rendered with correct list styles), personnel list, building location
     - Category groups have top margin spacing between them
+
+## V0.9 — 13/04/2026
+### Frontend — Admin (New)
+- `dashboard.html` + `dashboard.css` + `dashboard.js`:
+  - Greeting header — time-based (Good morning/afternoon/evening) with admin name fetched from `/api/auth/me`
+  - Live date display (top right) formatted in Filipino locale (`en-PH`)
+  - **Stat Cards** (6-card grid):
+    - Buildings (excludes roads filtered client-side)
+    - Offices
+    - Posts
+    - FAQs
+    - Total Feedbacks
+    - Unread Feedbacks — highlighted card (sage green bg, green border)
+  - **Posts Breakdown** card:
+    - Horizontal bar per post type: News, Announcement, Event
+    - Bar width proportional to share of total posts
+    - Color-coded: blue (News), orange (Announcement), green (Event)
+    - Shows count per type on the right
+    - Empty state if no posts
+  - **Feedback Summary** card:
+    - Large average score display with star rating (rounded to 1 decimal)
+    - Rating distribution bars (5→1 stars), each showing count
+    - "Based on N feedbacks" label
+    - Empty state if no feedbacks
+  - **Recent Posts** card:
+    - Latest 5 posts sorted by `createdAt` descending
+    - Each item: type icon, title (truncated), type label + formatted date
+    - "View all" link → `posts.html`
+    - Empty state if no posts
+  - **Recent Feedbacks** card:
+    - Latest 5 feedbacks sorted by `createdAt` descending
+    - Each item: comment (falls back to "No comment left."), date, star rating, "New" badge if unread
+    - "View all" link → `feedbacks.html`
+    - Empty state if no feedbacks
+  - All data fetched in parallel via `Promise.all` across 5 endpoints
+  - Loading overlay shown during fetch, hidden in `finally`
+  - Error toast on fetch failure
+  - Added system icon for website

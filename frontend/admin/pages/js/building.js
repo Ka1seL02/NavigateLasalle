@@ -229,7 +229,6 @@ function renderMap() {
     svg.innerHTML = '';
     const ns = 'http://www.w3.org/2000/svg';
 
-    // ── Roads (from DB, non-interactive) ──
     allRoads.forEach(r => {
         if (!r.shape) return;
         let elem;
@@ -256,7 +255,6 @@ function renderMap() {
         svg.appendChild(elem);
     });
 
-    // ── Buildings (interactive) ──
     allBuildings.forEach(b => {
         if (!b.shape) return;
         let elem;
@@ -313,10 +311,15 @@ let graphInitialized = false;
 let graphZoomInitialized = false;
 let getGraphSVGCoords = null;
 
-// Road drawing state
+// ─── Road Drawing State ───────────────────────────────────────────────────────
 let isDrawingRoad = false;
 let roadDrawStart = null;
 let roadPreviewElem = null;
+let pendingRoad = null;   // { x, y, width, height, rotate } — drawn but not saved
+let roadDragElem = null;  // SVG elem for the pending road (draggable)
+let isMovingRoad = false;
+let roadMoveOffsetX = 0;
+let roadMoveOffsetY = 0;
 
 // ─── Graph Elements ───────────────────────────────────────────────────────────
 const graphMapSvg = document.getElementById('graphMap');
@@ -333,6 +336,12 @@ const edgeOneWayBtn = document.getElementById('edgeOneWayBtn');
 const roadOptions = document.getElementById('roadOptions');
 const roadNameInput = document.getElementById('roadNameInput');
 const roadDataIdInput = document.getElementById('roadDataIdInput');
+const roadWidthInput = document.getElementById('roadWidthInput');
+const roadHeightInput = document.getElementById('roadHeightInput');
+const roadRotateInput = document.getElementById('roadRotateInput');
+const roadApplyBtn = document.getElementById('roadApplyBtn');
+const roadSaveBtn = document.getElementById('roadSaveBtn');
+const roadCancelBtn = document.getElementById('roadCancelBtn');
 
 // ─── Mode Switcher ────────────────────────────────────────────────────────────
 function setGraphMode(mode) {
@@ -366,12 +375,27 @@ function setGraphMode(mode) {
         graphMapSvg.style.cursor = 'default';
     } else if (mode === 'road') {
         modeRoadBtn.classList.add('active');
-        graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
         roadOptions.classList.remove('hidden');
         graphMapSvg.style.cursor = 'crosshair';
+        if (pendingRoad) {
+            graphStatus.textContent = 'Road drawn. Drag to reposition, adjust dimensions, then save.';
+            showRoadControls(true);
+        } else {
+            graphStatus.textContent = 'Click and drag on the map to draw a road';
+            showRoadControls(false);
+        }
     }
-
+    saveGraphBtn.style.display = mode === 'road' ? 'none' : 'flex';
     redrawGraph();
+}
+
+// Show/hide dimension inputs + save/cancel based on whether road is drawn
+function showRoadControls(hasPending) {
+    const dimGroup = document.getElementById('roadDimGroup');
+    if (dimGroup) dimGroup.style.display = hasPending ? 'flex' : 'none';
+    if (roadApplyBtn) roadApplyBtn.style.display = hasPending ? 'flex' : 'none';
+    if (roadSaveBtn) roadSaveBtn.style.display = hasPending ? 'flex' : 'none';
+    if (roadCancelBtn) roadCancelBtn.style.display = hasPending ? 'flex' : 'none';
 }
 
 modeNodeBtn.addEventListener('click', () => setGraphMode('node'));
@@ -398,6 +422,37 @@ function generateNodeId() {
 
 function calcWeight(n1, n2) {
     return Math.round(Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2)));
+}
+
+// ─── Render Pending Road ──────────────────────────────────────────────────────
+function renderPendingRoad() {
+    if (roadDragElem) { roadDragElem.remove(); roadDragElem = null; }
+    if (!pendingRoad) return;
+
+    const ns = 'http://www.w3.org/2000/svg';
+    roadDragElem = document.createElementNS(ns, 'rect');
+    roadDragElem.setAttribute('x', pendingRoad.x);
+    roadDragElem.setAttribute('y', pendingRoad.y);
+    roadDragElem.setAttribute('width', pendingRoad.width);
+    roadDragElem.setAttribute('height', pendingRoad.height);
+    if (pendingRoad.rotate) {
+        const cx = pendingRoad.x + pendingRoad.width / 2;
+        const cy = pendingRoad.y + pendingRoad.height / 2;
+        roadDragElem.setAttribute('transform', `rotate(${pendingRoad.rotate}, ${cx}, ${cy})`);
+    }
+    roadDragElem.classList.add('road-pending');
+    roadDragElem.style.cursor = 'grab';
+    graphMapSvg.appendChild(roadDragElem);
+
+    roadDragElem.addEventListener('mousedown', (e) => {
+        if (e.altKey) return;
+        e.stopPropagation();
+        isMovingRoad = true;
+        const coords = getGraphSVGCoords(e);
+        roadMoveOffsetX = coords.x - pendingRoad.x;
+        roadMoveOffsetY = coords.y - pendingRoad.y;
+        roadDragElem.style.cursor = 'grabbing';
+    });
 }
 
 // ─── Render Graph ─────────────────────────────────────────────────────────────
@@ -438,6 +493,15 @@ function initRoadDrawing() {
     graphMapSvg.addEventListener('mousedown', (e) => {
         if (graphMode !== 'road') return;
         if (e.button !== 0 || e.altKey) return;
+        if (isMovingRoad) return;
+        if (roadDragElem && e.target === roadDragElem) return;
+
+        // Clear any pending road on new draw
+        if (pendingRoad) {
+            pendingRoad = null;
+            if (roadDragElem) { roadDragElem.remove(); roadDragElem = null; }
+            showRoadControls(false);
+        }
 
         const coords = getGraphSVGCoords(e);
         roadDrawStart = coords;
@@ -453,81 +517,148 @@ function initRoadDrawing() {
     });
 
     graphMapSvg.addEventListener('mousemove', (e) => {
-        if (!isDrawingRoad || !roadPreviewElem || !roadDrawStart) return;
-        const coords = getGraphSVGCoords(e);
-        const x = Math.min(coords.x, roadDrawStart.x);
-        const y = Math.min(coords.y, roadDrawStart.y);
-        const w = Math.abs(coords.x - roadDrawStart.x);
-        const h = Math.abs(coords.y - roadDrawStart.y);
-        roadPreviewElem.setAttribute('x', x);
-        roadPreviewElem.setAttribute('y', y);
-        roadPreviewElem.setAttribute('width', w);
-        roadPreviewElem.setAttribute('height', h);
-        graphStatus.textContent = `Road: x:${x} y:${y} w:${Math.round(w)} h:${Math.round(h)}`;
-    });
-
-    graphMapSvg.addEventListener('mouseup', async (e) => {
-        if (!isDrawingRoad || !roadDrawStart || e.button !== 0) return;
-
-        const coords = getGraphSVGCoords(e);
-        const x = Math.min(coords.x, roadDrawStart.x);
-        const y = Math.min(coords.y, roadDrawStart.y);
-        const w = Math.abs(coords.x - roadDrawStart.x);
-        const h = Math.abs(coords.y - roadDrawStart.y);
-
-        isDrawingRoad = false;
-        roadDrawStart = null;
-        if (roadPreviewElem) { roadPreviewElem.remove(); roadPreviewElem = null; }
-
-        if (w < 5 && h < 5) {
-            graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
-            return;
+        // Drawing preview
+        if (isDrawingRoad && roadPreviewElem && roadDrawStart) {
+            const coords = getGraphSVGCoords(e);
+            const x = Math.min(coords.x, roadDrawStart.x);
+            const y = Math.min(coords.y, roadDrawStart.y);
+            const w = Math.abs(coords.x - roadDrawStart.x);
+            const h = Math.abs(coords.y - roadDrawStart.y);
+            roadPreviewElem.setAttribute('x', x);
+            roadPreviewElem.setAttribute('y', y);
+            roadPreviewElem.setAttribute('width', w);
+            roadPreviewElem.setAttribute('height', h);
+            graphStatus.textContent = `w:${Math.round(w)} h:${Math.round(h)}`;
         }
 
-        const name = roadNameInput.value.trim() || 'New Road';
-        const dataId = roadDataIdInput.value.trim();
-
-        if (!dataId) {
-            showToast('error', 'Please enter a Road ID before drawing.');
-            graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
-            return;
-        }
-
-        await showLoading();
-        try {
-            const res = await fetch('/api/buildings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
-                    name,
-                    dataId,
-                    category: 'road',
-                    shape: {
-                        type: 'rect',
-                        x: Math.round(x),
-                        y: Math.round(y),
-                        width: Math.round(w),
-                        height: Math.round(h)
-                    }
-                })
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                showToast('error', data.error || 'Failed to save road.');
-            } else {
-                showToast('success', `Road "${name}" saved!`);
-                roadNameInput.value = '';
-                roadDataIdInput.value = '';
-                await refreshRoads();
-                redrawGraph();
+        // Moving pending road
+        if (isMovingRoad && pendingRoad && roadDragElem) {
+            const coords = getGraphSVGCoords(e);
+            pendingRoad.x = Math.round(coords.x - roadMoveOffsetX);
+            pendingRoad.y = Math.round(coords.y - roadMoveOffsetY);
+            roadDragElem.setAttribute('x', pendingRoad.x);
+            roadDragElem.setAttribute('y', pendingRoad.y);
+            if (pendingRoad.rotate) {
+                const cx = pendingRoad.x + pendingRoad.width / 2;
+                const cy = pendingRoad.y + pendingRoad.height / 2;
+                roadDragElem.setAttribute('transform', `rotate(${pendingRoad.rotate}, ${cx}, ${cy})`);
             }
-        } catch (err) {
-            showToast('error', 'Failed to save road.');
-        } finally {
-            hideLoading();
-            graphStatus.textContent = 'Fill in Road Name & ID below, then click and drag to draw';
+            graphStatus.textContent = `Position: x:${pendingRoad.x} y:${pendingRoad.y}`;
         }
     });
+
+    graphMapSvg.addEventListener('mouseup', (e) => {
+        // Finish drawing
+        if (isDrawingRoad && roadDrawStart && e.button === 0) {
+            const coords = getGraphSVGCoords(e);
+            const x = Math.min(coords.x, roadDrawStart.x);
+            const y = Math.min(coords.y, roadDrawStart.y);
+            const w = Math.abs(coords.x - roadDrawStart.x);
+            const h = Math.abs(coords.y - roadDrawStart.y);
+
+            isDrawingRoad = false;
+            roadDrawStart = null;
+            if (roadPreviewElem) { roadPreviewElem.remove(); roadPreviewElem = null; }
+
+            if (w < 5 && h < 5) {
+                graphStatus.textContent = 'Click and drag on the map to draw a road';
+                return;
+            }
+
+            pendingRoad = { x: Math.round(x), y: Math.round(y), width: Math.round(w), height: Math.round(h), rotate: 0 };
+            if (roadWidthInput) roadWidthInput.value = pendingRoad.width;
+            if (roadHeightInput) roadHeightInput.value = pendingRoad.height;
+            if (roadRotateInput) roadRotateInput.value = 0;
+
+            renderPendingRoad();
+            showRoadControls(true);
+            graphStatus.textContent = 'Road drawn. Drag to reposition, adjust dimensions, then save.';
+        }
+
+        // Finish moving
+        if (isMovingRoad) {
+            isMovingRoad = false;
+            if (roadDragElem) roadDragElem.style.cursor = 'grab';
+            graphStatus.textContent = 'Road moved. Adjust dimensions or save.';
+        }
+    });
+
+    // Apply dimensions
+    if (roadApplyBtn) {
+        roadApplyBtn.addEventListener('click', () => {
+            if (!pendingRoad) return;
+            pendingRoad.width = Math.max(1, parseInt(roadWidthInput.value) || pendingRoad.width);
+            pendingRoad.height = Math.max(1, parseInt(roadHeightInput.value) || pendingRoad.height);
+            pendingRoad.rotate = parseFloat(roadRotateInput.value) || 0;
+            renderPendingRoad();
+            graphStatus.textContent = `Road: w:${pendingRoad.width} h:${pendingRoad.height} rotate:${pendingRoad.rotate}°`;
+        });
+    }
+
+    // Save road
+    if (roadSaveBtn) {
+        roadSaveBtn.addEventListener('click', async () => {
+            if (!pendingRoad) return;
+            const name = roadNameInput.value.trim();
+            const dataId = roadDataIdInput.value.trim();
+            if (!name) { showToast('error', 'Please enter a Road Name.'); return; }
+            if (!dataId) { showToast('error', 'Please enter a Road ID.'); return; }
+
+            await showLoading();
+            try {
+                const shape = {
+                    type: 'rect',
+                    x: pendingRoad.x,
+                    y: pendingRoad.y,
+                    width: pendingRoad.width,
+                    height: pendingRoad.height
+                };
+                if (pendingRoad.rotate) shape.rotate = pendingRoad.rotate;
+
+                const res = await fetch('/api/buildings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ name, dataId, category: 'road', shape })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showToast('error', data.error || 'Failed to save road.');
+                } else {
+                    showToast('success', `Road "${name}" saved!`);
+                    pendingRoad = null;
+                    if (roadDragElem) { roadDragElem.remove(); roadDragElem = null; }
+                    roadNameInput.value = '';
+                    roadDataIdInput.value = '';
+                    if (roadWidthInput) roadWidthInput.value = '';
+                    if (roadHeightInput) roadHeightInput.value = '';
+                    if (roadRotateInput) roadRotateInput.value = '0';
+                    showRoadControls(false);
+                    graphStatus.textContent = 'Road saved! Click and drag to draw another.';
+                    await refreshRoads();
+                    redrawGraph();
+                }
+            } catch (err) {
+                showToast('error', 'Failed to save road.');
+            } finally {
+                hideLoading();
+            }
+        });
+    }
+
+    // Cancel
+    if (roadCancelBtn) {
+        roadCancelBtn.addEventListener('click', () => {
+            pendingRoad = null;
+            if (roadDragElem) { roadDragElem.remove(); roadDragElem = null; }
+            roadNameInput.value = '';
+            roadDataIdInput.value = '';
+            if (roadWidthInput) roadWidthInput.value = '';
+            if (roadHeightInput) roadHeightInput.value = '';
+            if (roadRotateInput) roadRotateInput.value = '0';
+            showRoadControls(false);
+            graphStatus.textContent = 'Cancelled. Click and drag to draw a road.';
+        });
+    }
 }
 
 // ─── Node Dragging ────────────────────────────────────────────────────────────
@@ -581,6 +712,7 @@ function initNodeDragging() {
 function redrawGraph() {
     const ns = 'http://www.w3.org/2000/svg';
     graphMapSvg.innerHTML = '';
+    roadDragElem = null; // reset since innerHTML wipes it
 
     // ── Defs ──
     const defs = document.createElementNS(ns, 'defs');
@@ -595,25 +727,18 @@ function redrawGraph() {
     const gridSize = 40;
     const gridGroup = document.createElementNS(ns, 'g');
     gridGroup.classList.add('graph-grid');
-
     for (let x = 0; x <= 1920; x += gridSize) {
         const line = document.createElementNS(ns, 'line');
-        line.setAttribute('x1', x);
-        line.setAttribute('y1', 0);
-        line.setAttribute('x2', x);
-        line.setAttribute('y2', 1080);
+        line.setAttribute('x1', x); line.setAttribute('y1', 0);
+        line.setAttribute('x2', x); line.setAttribute('y2', 1080);
         gridGroup.appendChild(line);
     }
-
     for (let y = 0; y <= 1080; y += gridSize) {
         const line = document.createElementNS(ns, 'line');
-        line.setAttribute('x1', 0);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', 1920);
-        line.setAttribute('y2', y);
+        line.setAttribute('x1', 0); line.setAttribute('y1', y);
+        line.setAttribute('x2', 1920); line.setAttribute('y2', y);
         gridGroup.appendChild(line);
     }
-
     graphMapSvg.appendChild(gridGroup);
 
     // ── Roads ──
@@ -633,16 +758,13 @@ function redrawGraph() {
             }
         } else if (r.shape.type === 'ellipse') {
             elem = document.createElementNS(ns, 'ellipse');
-            elem.setAttribute('cx', r.shape.cx);
-            elem.setAttribute('cy', r.shape.cy);
-            elem.setAttribute('rx', r.shape.rx);
-            elem.setAttribute('ry', r.shape.ry);
+            elem.setAttribute('cx', r.shape.cx); elem.setAttribute('cy', r.shape.cy);
+            elem.setAttribute('rx', r.shape.rx); elem.setAttribute('ry', r.shape.ry);
         }
         if (!elem) return;
         elem.classList.add('graph-road');
         elem.dataset.roadId = r._id;
         elem.dataset.roadName = r.name;
-
         if (graphMode === 'delete') {
             elem.style.cursor = 'pointer';
             elem.style.pointerEvents = 'all';
@@ -653,22 +775,23 @@ function redrawGraph() {
                 deleteRoad(r._id, r.name);
             });
         }
-
         graphMapSvg.appendChild(elem);
     });
 
+    // ── Pending Road ──
+    if (pendingRoad && graphMode === 'road') {
+        renderPendingRoad();
+    }
+
     // ── Ghost Buildings ──
     const assignedBuildingIds = new Set(graphNodes.filter(n => n.buildingId).map(n => n.buildingId));
-
     allBuildings.forEach(b => {
         if (!b.shape) return;
         let elem;
         if (b.shape.type === 'rect') {
             elem = document.createElementNS(ns, 'rect');
-            elem.setAttribute('x', b.shape.x);
-            elem.setAttribute('y', b.shape.y);
-            elem.setAttribute('width', b.shape.width);
-            elem.setAttribute('height', b.shape.height);
+            elem.setAttribute('x', b.shape.x); elem.setAttribute('y', b.shape.y);
+            elem.setAttribute('width', b.shape.width); elem.setAttribute('height', b.shape.height);
             if (b.shape.rx) elem.setAttribute('rx', b.shape.rx);
             if (b.shape.ry) elem.setAttribute('ry', b.shape.ry);
             if (b.shape.rotate) {
@@ -678,10 +801,8 @@ function redrawGraph() {
             }
         } else if (b.shape.type === 'ellipse') {
             elem = document.createElementNS(ns, 'ellipse');
-            elem.setAttribute('cx', b.shape.cx);
-            elem.setAttribute('cy', b.shape.cy);
-            elem.setAttribute('rx', b.shape.rx);
-            elem.setAttribute('ry', b.shape.ry);
+            elem.setAttribute('cx', b.shape.cx); elem.setAttribute('cy', b.shape.cy);
+            elem.setAttribute('rx', b.shape.rx); elem.setAttribute('ry', b.shape.ry);
         }
         if (!elem) return;
         elem.setAttribute('fill', '#888');
@@ -700,12 +821,9 @@ function redrawGraph() {
         const fromNode = graphNodes.find(n => n.id === edge.from);
         const toNode = graphNodes.find(n => n.id === edge.to);
         if (!fromNode || !toNode) return;
-
         const line = document.createElementNS(ns, 'line');
-        line.setAttribute('x1', fromNode.x);
-        line.setAttribute('y1', fromNode.y);
-        line.setAttribute('x2', toNode.x);
-        line.setAttribute('y2', toNode.y);
+        line.setAttribute('x1', fromNode.x); line.setAttribute('y1', fromNode.y);
+        line.setAttribute('x2', toNode.x); line.setAttribute('y2', toNode.y);
         line.classList.add('graph-edge');
         if (edge.type === 'one-way') {
             line.classList.add('one-way');
@@ -713,7 +831,6 @@ function redrawGraph() {
         }
         line.dataset.from = edge.from;
         line.dataset.to = edge.to;
-
         if (graphMode === 'delete') {
             line.style.cursor = 'pointer';
             line.style.pointerEvents = 'all';
@@ -731,7 +848,6 @@ function redrawGraph() {
     // ── Nodes ──
     graphNodes.forEach(node => {
         const g = document.createElementNS(ns, 'g');
-
         if (node.buildingId) {
             const label = document.createElementNS(ns, 'text');
             label.setAttribute('x', node.x);
@@ -740,16 +856,13 @@ function redrawGraph() {
             label.textContent = allBuildings.find(b => b._id === node.buildingId)?.dataId || node.buildingId;
             g.appendChild(label);
         }
-
         const circle = document.createElementNS(ns, 'circle');
-        circle.setAttribute('cx', node.x);
-        circle.setAttribute('cy', node.y);
+        circle.setAttribute('cx', node.x); circle.setAttribute('cy', node.y);
         circle.setAttribute('r', 6);
         circle.classList.add('graph-node');
         if (node.buildingId) circle.classList.add('assigned');
         if (node.id === selectedNodeId) circle.classList.add('selected');
         circle.dataset.nodeId = node.id;
-
         g.appendChild(circle);
         graphMapSvg.appendChild(g);
     });
@@ -760,7 +873,6 @@ function redrawGraph() {
 // ─── Delete Road ──────────────────────────────────────────────────────────────
 async function deleteRoad(id, name) {
     if (!confirm(`Delete road "${name}"? This cannot be undone.`)) return;
-
     await showLoading();
     try {
         const res = await fetch(`/api/buildings/${id}`, {
@@ -790,6 +902,7 @@ function handleGraphClick(e) {
     if (graphMode === 'node') {
         if (target.classList.contains('graph-node')) return;
         if (target.classList.contains('graph-road')) return;
+        if (target.classList.contains('road-pending')) return;
         const coords = getGraphSVGCoords(e);
         graphNodes.push({ id: generateNodeId(), x: coords.x, y: coords.y, buildingId: null });
         graphStatus.textContent = `Node placed at (${coords.x}, ${coords.y})`;
@@ -799,50 +912,21 @@ function handleGraphClick(e) {
 
     if (graphMode === 'edge') {
         if (!target.classList.contains('graph-node')) {
-            if (selectedNodeId) {
-                selectedNodeId = null;
-                graphStatus.textContent = 'Click a node to start an edge';
-                redrawGraph();
-            }
+            if (selectedNodeId) { selectedNodeId = null; graphStatus.textContent = 'Click a node to start an edge'; redrawGraph(); }
             return;
         }
         const clickedId = target.dataset.nodeId;
-        if (!selectedNodeId) {
-            selectedNodeId = clickedId;
-            graphStatus.textContent = 'Now click another node to connect';
-            redrawGraph();
-            return;
-        }
-        if (selectedNodeId === clickedId) {
-            selectedNodeId = null;
-            graphStatus.textContent = 'Click a node to start an edge';
-            redrawGraph();
-            return;
-        }
+        if (!selectedNodeId) { selectedNodeId = clickedId; graphStatus.textContent = 'Now click another node to connect'; redrawGraph(); return; }
+        if (selectedNodeId === clickedId) { selectedNodeId = null; graphStatus.textContent = 'Click a node to start an edge'; redrawGraph(); return; }
         const fromCount = graphEdges.filter(ed => ed.from === selectedNodeId || ed.to === selectedNodeId).length;
         const toCount = graphEdges.filter(ed => ed.from === clickedId || ed.to === clickedId).length;
-        if (fromCount >= 10 || toCount >= 10) {
-            showToast('error', 'A node can have at most 10 connections.');
-            selectedNodeId = null; redrawGraph(); return;
-        }
-        const exists = graphEdges.some(ed =>
-            (ed.from === selectedNodeId && ed.to === clickedId) ||
-            (ed.from === clickedId && ed.to === selectedNodeId)
-        );
-        if (exists) {
-            showToast('error', 'These nodes are already connected.');
-            selectedNodeId = null; redrawGraph(); return;
-        }
+        if (fromCount >= 10 || toCount >= 10) { showToast('error', 'A node can have at most 10 connections.'); selectedNodeId = null; redrawGraph(); return; }
+        const exists = graphEdges.some(ed => (ed.from === selectedNodeId && ed.to === clickedId) || (ed.from === clickedId && ed.to === selectedNodeId));
+        if (exists) { showToast('error', 'These nodes are already connected.'); selectedNodeId = null; redrawGraph(); return; }
         const fromNode = graphNodes.find(n => n.id === selectedNodeId);
         const toNode = graphNodes.find(n => n.id === clickedId);
         const weight = calcWeight(fromNode, toNode);
-        graphEdges.push({
-            from: selectedNodeId,
-            to: clickedId,
-            weight,
-            type: edgeDirection,
-            direction: edgeDirection === 'one-way' ? 'from→to' : null
-        });
+        graphEdges.push({ from: selectedNodeId, to: clickedId, weight, type: edgeDirection, direction: edgeDirection === 'one-way' ? 'from→to' : null });
         graphStatus.textContent = `Connected! Weight: ${weight}px. Click another node to continue.`;
         selectedNodeId = clickedId;
         redrawGraph();
@@ -855,26 +939,19 @@ function handleGraphClick(e) {
             const node = graphNodes.find(n => n.id === selectedNodeId);
             const cur = node.buildingId ? ` (currently: ${allBuildings.find(b => b._id === node.buildingId)?.dataId})` : '';
             graphStatus.textContent = `Node selected${cur}. Now click a building to assign.`;
-            redrawGraph();
-            return;
+            redrawGraph(); return;
         }
         if (target.classList.contains('ghost-building') && selectedNodeId) {
             const buildingId = target.dataset.buildingId;
             const buildingName = target.dataset.buildingName;
             graphNodes.forEach(n => { if (n.buildingId === buildingId) n.buildingId = null; });
             const node = graphNodes.find(n => n.id === selectedNodeId);
-            if (node) {
-                node.buildingId = buildingId;
-                graphStatus.textContent = `Assigned "${buildingName}". Select another node to continue.`;
-                selectedNodeId = null;
-                redrawGraph();
-            }
+            if (node) { node.buildingId = buildingId; graphStatus.textContent = `Assigned "${buildingName}". Select another node to continue.`; selectedNodeId = null; redrawGraph(); }
             return;
         }
         selectedNodeId = null;
         graphStatus.textContent = 'Click a node, then click a building to assign it';
-        redrawGraph();
-        return;
+        redrawGraph(); return;
     }
 
     if (graphMode === 'delete') {
@@ -899,11 +976,8 @@ saveGraphBtn.addEventListener('click', async () => {
             body: JSON.stringify({ nodes: graphNodes, edges: graphEdges })
         });
         const data = await res.json();
-        if (!res.ok) {
-            showToast('error', data.error || 'Failed to save graph.');
-        } else {
-            showToast('success', 'Graph saved successfully!');
-        }
+        if (!res.ok) { showToast('error', data.error || 'Failed to save graph.'); }
+        else { showToast('success', 'Graph saved successfully!'); }
     } catch (err) {
         showToast('error', 'Failed to save graph.');
     } finally {
@@ -931,7 +1005,6 @@ async function openViewModal(building) {
     selectedBuildingId = building._id;
     currentImageIndex = 0;
 
-    // ── Gallery ──
     function startAutoSwap(images) {
         clearInterval(autoSwapInterval);
         autoSwapInterval = setInterval(() => {
@@ -981,13 +1054,10 @@ async function openViewModal(building) {
     modalDescription.innerHTML = building.description ||
         '<p style="color: var(--light-grey); font-family: Noto Sans, sans-serif; font-size: 0.9rem;">No description available.</p>';
 
-    // ── Offices in this building ──
     modalOfficesSection.classList.add('hidden');
     modalOfficesList.innerHTML = '';
     try {
-        const res = await fetch(`/api/offices?building=${building._id}`, {
-            headers: { 'Accept': 'application/json' }
-        });
+        const res = await fetch(`/api/offices?building=${building._id}`, { headers: { 'Accept': 'application/json' } });
         if (res.ok) {
             const data = await res.json();
             const offices = data.offices || [];
@@ -1004,20 +1074,16 @@ async function openViewModal(building) {
                 `).join('');
             }
         }
-    } catch (err) {
-        // silently fail — offices section just stays hidden
-    }
+    } catch (err) {}
 
     editModalBtn.onclick = () => {
         const currentView = mapView.classList.contains('hidden') ? 'list' : 'map';
         window.location.href = `building-edit.html?id=${building._id}&view=${currentView}`;
     };
-
     deleteModalBtn.onclick = () => {
         viewModalOverlay.classList.add('hidden');
         openDeleteModal(building._id, building.name);
     };
-
     viewModalOverlay.classList.remove('hidden');
 }
 
@@ -1040,26 +1106,20 @@ function openDeleteModal(id, name) {
     deleteModalOverlay.classList.remove('hidden');
 }
 
-cancelDelete.addEventListener('click', () => {
-    deleteModalOverlay.classList.add('hidden');
-    deleteId = null;
-});
+cancelDelete.addEventListener('click', () => { deleteModalOverlay.classList.add('hidden'); deleteId = null; });
 
 confirmDelete.addEventListener('click', async () => {
     if (!deleteId) return;
     deleteModalOverlay.classList.add('hidden');
     await showLoading();
     try {
-        const res = await fetch(`/api/buildings/${deleteId}`, {
-            method: 'DELETE',
-            headers: { 'Accept': 'application/json' }
-        });
+        const res = await fetch(`/api/buildings/${deleteId}`, { method: 'DELETE', headers: { 'Accept': 'application/json' } });
         const data = await res.json();
-        if (!res.ok) {
-            showToast('error', data.error || 'Failed to delete building.');
-        } else {
-            showToast('success', 'Building deleted successfully!');
-            await fetchBuildings();
+        if (!res.ok) { showToast('error', data.error || 'Failed to delete building.'); }
+        else { 
+            showToast('success', 'Building deleted successfully!'); 
+            await fetchBuildings(); 
+            if (!mapView.classList.contains('hidden')) renderMap();
         }
     } catch (err) {
         showToast('error', 'Failed to delete building.');
