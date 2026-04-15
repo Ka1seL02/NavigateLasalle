@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="icon" href="/shared/img/system_icon.png">
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/register.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <div class="form-section">
+        <div class="form-content">
+            <div class="brand">
+                <img src="img/brand.png" alt="Navigate La Salle Logo">
+                <span>Navigate La Salle</span>
+            </div>
+
+            <div class="register-header">
+                <h1>Create an<br>Admin Account</h1>
+                <p>Fill in the details below to set up your admin account.</p>
+            </div>
+
+            <form id="createAccountForm">
+                <div class="form-group">
+                    <input type="text" id="name" placeholder=" " required>
+                    <label for="name">Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder=" " required readonly>
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder=" ">
+                    <label for="password">Password</label>
+                    <i class='bx bx-hide toggle-password' id="togglePassword"></i>
+                </div>
+                <div class="password-rules">
+                    <p>Please add all necessary characters to create a strong password.</p>
+                    <ul>
+                        <li>Minimum 8 characters</li>
+                        <li>One uppercase letter</li>
+                        <li>One lowercase letter</li>
+                        <li>One special character</li>
+                        <li>One number</li>
+                    </ul>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirmPassword" placeholder=" ">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <i class='bx bx-hide toggle-password' id="toggleConfirmPassword"></i>
+                </div>
+                <p class="error-msg hidden" id="errorMsg"></p>
+                <button type="submit" class="register-btn" id="registerBtn" disabled>Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="image-section"></div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay hidden" id="successModalOverlay">
+        <div class="modal">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                    <path d="M5 13l4 4L19 7" stroke="var(--light-green)" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2>Account Created!</h2>
+            <p>Your admin account has been successfully created. You can now log in.</p>
+            <button id="successOkBtn">Go to Login</button>
+        </div>
+    </div>
+
+    <!-- Expired Modal -->
+    <div class="modal-overlay hidden" id="expiredModalOverlay">
+        <div class="modal">
+            <div class="modal-icon" style="background: var(--off-white)">
+                <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2>Link Expired!</h2>
+            <p>Your invite link has expired or is invalid. Please ask your administrator to send a new invite.</p>
+            <button id="expiredOkBtn">Go to Login</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/register.js"></script>
+</body>
+
+</html>
