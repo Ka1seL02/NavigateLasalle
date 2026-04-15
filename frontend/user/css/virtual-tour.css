@@ -1,0 +1,305 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+/* Viewer container */
+#viewer {
+  width: 100vw;
+  height: 100vh;
+}
+
+#viewer .psv-marker {
+  visibility: visible !important;
+  z-index: 10;
+}
+
+/* Loader container */
+.psv-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+/* Style the logo image */
+.psv-loader img {
+  width: 180px; /* ideal size for square image */
+  height: 180px;
+  border-radius: 50%; /* makes it look circular */
+  background: radial-gradient(#fff, #025025); /* elegant gradient fill */
+  padding: 19px;
+  object-fit: cover; /* fills the circle well */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); /* soft glow */
+}
+
+/* =============================
+      Navigation Arrows Removal 
+   ============================= */
+
+.psv-virtual-tour-arrows {
+  display: none !important;
+}
+
+.psv-tooltip {
+  position: absolute; /* Needed to position the arrow */
+  background-color: rgb(0, 138, 61); /* Background color */
+  color: white; /* Text color */
+  border-radius: 10px; /* Slight rounding for a square look */
+  padding: 5px;
+  font-weight: bold;
+  max-width: 220px; /* Adjust width if needed */
+  max-height: fit-content;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Arrow pointing downwards */
+.psv-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Places the arrow at the bottom of the tooltip */
+  left: 50%; /* Centers the arrow horizontally */
+  transform: translateX(-50%); /* Centers the arrow */
+  border-width: 8px; /* Size of the arrow */
+  border-style: solid;
+  border-color: rgb(0, 138, 61) transparent transparent transparent; /* Only the top side has color */
+}
+
+/* ===================================
+      Markers CSS styles START HERE!!! 
+   =================================== */
+
+/* Universal styles for all circle markers */
+.circle-marker {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+/* ==========================
+   Marker Animation: Ripple Effect Wrapping Around the Image
+   ========================== */
+
+.circle-marker.pulse-marker {
+  position: relative;
+  width: 100px; /* Adjusted base size for larger pulse effect */
+  height: 100px;
+}
+
+.circle-marker.pulse-marker img {
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 2; /* Ensures the image is above the ripple effect */
+  transform: translateZ(0); /* Forces GPU rendering */
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+
+/* Hover effect for Marker */
+.circle-marker.pulse-marker:hover {
+  transform: scale(1.15); /* Slightly larger hover effect */
+  box-shadow: 0 0 15px rgb(255, 255, 255);
+}
+
+/* Container for ripple layers */
+.circle-marker.pulse-marker .pulse-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%; /* Ripple container slightly larger than image */
+  height: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 1; /* Ensures it stays behind the image */
+}
+
+/* Pulse layers for the ripple effect */
+.pulse-container .pulse1,
+.pulse-container .pulse2,
+.pulse-container .pulse3 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(rgb(0, 138, 61), rgb(255, 255, 255));
+  animation: pulse 3s infinite;
+}
+
+/* Delayed start for ripple layers */
+.pulse-container .pulse2 {
+  animation-delay: 1s;
+}
+
+.pulse-container .pulse3 {
+  animation-delay: 2s;
+}
+
+/* Keyframes for ripple pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 2;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ========================================
+     WELCOME BOX AT THE START OF THE TOUR 
+   ========================================*/
+
+/* Fullscreen overlay that darkens slightly */
+#welcome-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent; /* darker transparent box */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* When we want to show it smoothly */
+#welcome-box.show {
+  opacity: 1;
+}
+
+/* Inner content box */
+.welcome-content {
+  background: linear-gradient(
+    to right,
+    rgba(76, 175, 80, 0.8),
+    rgba(33, 150, 243, 0.8)
+  );
+  padding: 40px 60px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 0 15px rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "EB Garamond", "Times New Roman", serif;
+}
+
+/* Heading style */
+.welcome-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.welcome-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Extra description */
+.welcome-content p,
+.welcome-content .welcome-description {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+}
+.welcome-description p {
+  margin: 0;
+}
+
+/* Button style */
+#welcome-box button {
+  font-size: 1.4rem;
+  padding: 14px 36px;
+  background-color: #ffffff;
+  color: #008a3d;
+  border: 0.5px solid #000;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: 'EB Garamond', 'Times New Roman', serif;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+#welcome-box button:hover {
+  background: #008a3d;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.welcome-logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: -10px;
+  object-fit: contain;
+  display: block;
+  /* This removes visual blockiness */
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+/* ==================== RESPONSIVE MEDIA QUERIES =================== */
+
+@media (max-width: 1200px) {
+  .welcome-content { padding: 30px 40px; }
+  .welcome-content h1 { font-size: 2.8rem; }
+  .welcome-content h3 { font-size: 1.3rem; }
+  .welcome-content p { font-size: 1.05rem; }
+  #welcome-box button { font-size: 1.2rem; padding: 12px 30px; }
+  .welcome-logo { width: 150px; }
+  .psv-loader img { width: 150px; height: 150px; padding: 15px; }
+  .circle-marker.pulse-marker { width: 85px; height: 85px; }
+}
+
+@media (max-width: 900px) {
+  .welcome-content { padding: 24px 28px; }
+  .welcome-content h1 { font-size: 2.2rem; }
+  .welcome-content h3 { font-size: 1.1rem; }
+  .welcome-content p { font-size: 0.95rem; max-width: 90%; }
+  #welcome-box button { font-size: 1.1rem; padding: 10px 24px; }
+  .welcome-logo { width: 130px; }
+  .psv-loader img { width: 130px; height: 130px; padding: 13px; }
+  .circle-marker.pulse-marker { width: 75px; height: 75px; }
+  .circle-marker { width: 50px; height: 50px; }
+  .info-marker { width: 50px; height: 50px; }
+}
+
+@media (max-width: 768px) {
+  .welcome-content { padding: 20px 20px; }
+  .welcome-content h1 { font-size: 1.8rem; margin-bottom: 14px; }
+  .welcome-content h3 { font-size: 0.95rem; margin-bottom: 14px; }
+  .welcome-content p { font-size: 0.88rem; margin-bottom: 20px; }
+  #welcome-box button { font-size: 1rem; padding: 10px 20px; border-radius: 8px; }
+  .welcome-logo { width: 110px; }
+  .psv-loader img { width: 110px; height: 110px; padding: 11px; }
+  .circle-marker.pulse-marker { width: 65px; height: 65px; }
+  .circle-marker { width: 44px; height: 44px; }
+  .info-marker { width: 44px; height: 44px; }
+}

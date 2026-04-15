@@ -1,0 +1,52 @@
+{
+  "name": "navigate-lasalle",
+  "version": "1.0.0",
+  "description": "NavigateLaSalle - Virtual Campus Tour & Main Platform",
+  "main": "backend/server/server.js",
+  "scripts": {
+    "dev": "concurrently -n server,vite -c blue,green \"nodemon backend/server/server.js\" \"vite\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node backend/server/server.js",
+    "seed:settings": "node backend/server/scripts/seedSettings.js",
+    "seed:scenes": "node backend/server/scripts/seedScenes.js all",
+    "test:supabase": "node backend/server/scripts/testSupabase.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "@photo-sphere-viewer/autorotate-plugin": "^5.13.1",
+    "@photo-sphere-viewer/core": "^5.13.1",
+    "@photo-sphere-viewer/markers-plugin": "^5.13.1",
+    "@photo-sphere-viewer/virtual-tour-plugin": "^5.13.1",
+    "@supabase/supabase-js": "^2.86.2",
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^1.41.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mime": "^4.1.0",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.4.1",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "sib-api-v3-sdk": "^8.5.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14",
+    "vite": "^5.4.21"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CEvNyt/NavigateLaSalle-Virtual-Tour.git"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/CEvNyt/NavigateLaSalle-Virtual-Tour/issues"
+  },
+  "homepage": "https://github.com/CEvNyt/NavigateLaSalle-Virtual-Tour#readme"
+}
