@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="icon" href="/shared/img/system_icon.png">
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/building.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1 class="page-title">
+                    Buildings
+                    <span class="page-count" id="buildingsCount">0</span>
+                </h1>
+                <p class="page-subtitle">Manage campus buildings, facilities, and landmarks.</p>
+            </div>
+            <button class="add-btn" id="addBuildingBtn">
+                <i class='bx bx-plus'></i> Add Building
+            </button>
+        </div>
+
+        <div class="main-content">
+            <!-- View Tabs -->
+            <div class="view-tabs">
+                <button class="tab-btn active" id="listTabBtn">
+                    <i class='bx bx-grid-alt'></i> List
+                </button>
+                <button class="tab-btn" id="mapTabBtn">
+                    <i class='bx bx-map'></i> Map
+                </button>
+                <button class="tab-btn" id="graphTabBtn">
+                    <i class='bx bx-git-repo-forked'></i> Graph
+                </button>
+            </div>
+
+            <!-- List View -->
+            <div id="listView"></div>
+
+            <!-- Map View -->
+            <div id="mapView" class="hidden">
+                <svg id="campusMap" viewBox="0 0 1920 1080"></svg>
+                <!-- Legend -->
+                <div class="map-legend">
+                    <div class="legend-item"><span class="map-legend-dot building-dot"></span> Building</div>
+                    <div class="legend-item"><span class="map-legend-dot facility-dot"></span> Facility</div>
+                    <div class="legend-item"><span class="map-legend-dot gate-dot"></span> Gate</div>
+                    <div class="legend-item"><span class="map-legend-dot landmark-dot"></span> Landmark</div>
+                    <div class="legend-item"><span class="map-legend-dot parking-dot"></span> Parking</div>
+                    <div class="legend-item"><span class="map-legend-dot road-dot"></span> Road</div>
+                    <div class="legend-item legend-hint"> Scroll to zoom · Alt+drag to pan </div>
+                </div>
+            </div>
+
+            <!-- Graph View -->
+            <div id="graphView" class="hidden">
+                <!-- Toolbar -->
+                <div class="graph-toolbar">
+                    <div class="graph-toolbar-left">
+                        <span class="graph-mode-label">Mode:</span>
+                        <div class="graph-mode-toggle">
+                            <button class="graph-mode-btn" id="modeNoSelectBtn">
+                                <i class='bx bx-pointer'></i> No Select
+                            </button>
+                            <button class="graph-mode-btn active" id="modeNodeBtn">
+                                <i class='bx bx-radio-circle-marked'></i> Node
+                            </button>
+                            <button class="graph-mode-btn" id="modeEdgeBtn">
+                                <i class='bx bx-git-branch'></i> Edge
+                            </button>
+                            <button class="graph-mode-btn" id="modeAssignBtn">
+                                <i class='bx bx-link'></i> Assign
+                            </button>
+                            <button class="graph-mode-btn" id="modeRoadBtn">
+                                <i class='bx bx-street-view'></i> Road
+                            </button>
+                            <button class="graph-mode-btn" id="modeDeleteBtn">
+                                <i class='bx bx-trash'></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="graph-toolbar-right">
+                        <!-- Edge options (shown in Edge mode) -->
+                        <div class="graph-edge-options hidden" id="edgeOptions">
+                            <span class="graph-mode-label">Type:</span>
+                            <div class="graph-mode-toggle">
+                                <button class="graph-mode-btn" id="edgePedestrianBtn">
+                                    <i class='bx bx-walk'></i> Pedestrian
+                                </button>
+                                <button class="graph-mode-btn" id="edgeVehicleBtn">
+                                    <i class='bx bx-car'></i> Vehicle
+                                </button>
+                                <button class="graph-mode-btn active" id="edgeBothBtn">
+                                    <i class='bx bx-transfer'></i> Both
+                                </button>
+                            </div>
+                            <div class="graph-mode-toggle" id="edgeDirectionToggle">
+                                <button class="graph-mode-btn active" id="edgeTwoWayBtn">
+                                    <i class='bx bx-transfer'></i> Two-way
+                                </button>
+                                <button class="graph-mode-btn" id="edgeOneWayBtn">
+                                    <i class='bx bx-right-arrow-alt'></i> One-way
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Road options (shown in Road mode) -->
+                        <div class="graph-road-options hidden" id="roadOptions">
+                            <input type="text" class="graph-road-input" id="roadNameInput"
+                                placeholder="Road name (e.g. New Road)" />
+                            <input type="text" class="graph-road-input" id="roadDataIdInput"
+                                placeholder="Road ID (unique, e.g. New-Rd.)" />
+                            <div id="roadDimGroup" style="display:none; align-items:center; gap:6px;">
+                                <input type="number" class="graph-road-input" id="roadWidthInput" placeholder="Width"
+                                    style="width:80px;" />
+                                <input type="number" class="graph-road-input" id="roadHeightInput" placeholder="Height"
+                                    style="width:80px;" />
+                                <input type="number" class="graph-road-input" id="roadRotateInput" placeholder="Rotate°"
+                                    value="0" style="width:80px;" />
+                                <button class="graph-mode-btn" id="roadApplyBtn" style="display:none;"><i
+                                        class='bx bx-refresh'></i> Apply</button>
+                                <button class="graph-mode-btn" id="roadSaveBtn" style="display:none;"><i
+                                        class='bx bx-save'></i> Save</button>
+                                <button class="graph-mode-btn" id="roadCancelBtn" style="display:none;"><i
+                                        class='bx bx-x'></i> Cancel</button>
+                            </div>
+                        </div>
+                        <div class="graph-status" id="graphStatus">Click on the map to place a node</div>
+                        <button class="graph-undo-btn" id="undoGraphBtn" disabled>
+                            <i class='bx bx-undo'></i> Undo
+                        </button>
+                        <button class="graph-save-btn" id="saveGraphBtn" disabled>
+                            <i class='bx bx-save'></i> Save Graph
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Graph SVG -->
+                <div class="graph-map-wrapper">
+                    <svg id="graphMap" viewBox="0 0 1920 1080"></svg>
+                    <!-- Legend -->
+                    <div class="graph-legend">
+                        <div class="legend-item"><span class="legend-dot node-dot"></span> Waypoint Node</div>
+                        <div class="legend-item"><span class="legend-dot assigned-dot"></span> Building Node</div>
+                        <div class="legend-item"><span class="legend-line pedestrian-line"></span> Pedestrian</div>
+                        <div class="legend-item"><span class="legend-line vehicle-line"></span> Vehicle</div>
+                        <div class="legend-item"><span class="legend-line both-line"></span> Both</div>
+                        <div class="legend-item"><span class="legend-line oneway-line"></span> One-way</div>
+                        <div class="legend-item legend-hint"> Scroll to zoom · Alt+drag to pan </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- View Modal -->
+    <div class="modal-overlay hidden" id="viewModalOverlay">
+        <div class="view-modal" id="viewModal">
+            <button class="close-btn" id="closeViewModal">
+                <i class='bx bx-x'></i>
+            </button>
+            <div class="modal-gallery" id="modalGallery">
+                <div class="no-image">
+                    <i class='bx bx-image'></i>
+                    <p>No images available</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-meta">
+                    <span class="modal-category" id="modalCategory"></span>
+                    <span class="modal-dataid" id="modalDataId"></span>
+                </div>
+                <h2 class="modal-name" id="modalName"></h2>
+                <div class="modal-description" id="modalDescription"></div>
+                <!-- Offices in this building -->
+                <div class="modal-section hidden" id="modalOfficesSection">
+                    <h3 class="modal-section-title">Offices in this Building</h3>
+                    <div class="modal-offices-list" id="modalOfficesList"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="edit-modal-btn" id="editModalBtn">
+                    <i class='bx bx-edit'></i> Edit
+                </button>
+                <button class="delete-modal-btn" id="deleteModalBtn">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay hidden" id="deleteModalOverlay">
+        <div class="modal" id="deleteModal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                        <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h2>Delete Building</h2>
+                <button class="close-btn" id="cancelDelete">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <p>Are you sure you want to delete <strong id="deleteTargetName"></strong>? This action cannot be undone.
+            </p>
+            <div class="modal-footer">
+                <button class="delete-confirm-btn" id="confirmDelete">
+                    <i class='bx bx-trash'></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="js/building.js"></script>
+</body>
+
+</html>

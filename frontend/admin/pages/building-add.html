@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="icon" href="/shared/img/system_icon.png">
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/building-add.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/quill@2.0.2/dist/quill.snow.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <a href="building.html" class="back-link">
+                    <i class='bx bx-chevron-left'></i> Back to Buildings
+                </a>
+                <h1 class="page-title">Add New Building</h1>
+            </div>
+        </div>
+
+        <!-- Step 1: Map Editor -->
+        <div class="step-card" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div>
+                    <h2>Place on Map</h2>
+                    <p>Choose a shape, set dimensions, then drag it to the correct position on the campus map.</p>
+                </div>
+            </div>
+
+            <div class="shape-controls">
+                <div class="control-group">
+                    <label>Shape Type</label>
+                    <div class="shape-btns">
+                        <button class="shape-btn active" id="rectBtn" data-shape="rect">
+                            <i class='bx bx-rectangle'></i> Rectangle
+                        </button>
+                        <button class="shape-btn" id="ellipseBtn" data-shape="ellipse">
+                            <i class='bx bx-circle'></i> Ellipse
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rect dimensions -->
+                <div class="dimensions-group" id="rectDimensions">
+                    <div class="control-group">
+                        <label>Width</label>
+                        <input type="number" id="shapeWidth" value="100" min="10" />
+                    </div>
+                    <div class="control-group">
+                        <label>Height</label>
+                        <input type="number" id="shapeHeight" value="60" min="10" />
+                    </div>
+                    <div class="control-group">
+                        <label>Rotation (deg)</label>
+                        <input type="number" id="shapeRotate" value="0" />
+                    </div>
+                </div>
+
+                <!-- Ellipse dimensions -->
+                <div class="dimensions-group hidden" id="ellipseDimensions">
+                    <div class="control-group">
+                        <label>Radius X</label>
+                        <input type="number" id="shapeRx" value="50" min="5" />
+                    </div>
+                    <div class="control-group">
+                        <label>Radius Y</label>
+                        <input type="number" id="shapeRy" value="30" min="5" />
+                    </div>
+                </div>
+
+                <button class="apply-btn" id="applyShapeBtn">
+                    <i class='bx bx-refresh'></i> Apply
+                </button>
+            </div>
+
+            <!-- Map -->
+            <div class="map-container">
+                <svg id="addCampusMap" viewBox="0 0 1920 1080"></svg>
+                <!-- Legend -->
+                <div class="map-hint">
+                    <i class='bx bx-info-circle'></i>
+                    Scroll to zoom · Alt+drag to pan · Drag shape to position
+                </div>
+            </div>
+
+            <!-- Real-time position display -->
+            <div class="position-display" id="positionDisplay">
+                <div class="position-item" id="posRect">
+                    <span>X: <strong id="posX">0</strong></span>
+                    <span>Y: <strong id="posY">0</strong></span>
+                    <span>W: <strong id="posW">100</strong></span>
+                    <span>H: <strong id="posH">60</strong></span>
+                </div>
+                <div class="position-item hidden" id="posEllipse">
+                    <span>CX: <strong id="posCx">0</strong></span>
+                    <span>CY: <strong id="posCy">0</strong></span>
+                    <span>RX: <strong id="posRx">50</strong></span>
+                    <span>RY: <strong id="posRy">30</strong></span>
+                </div>
+                <button class="confirm-position-btn" id="confirmPositionBtn">
+                    <i class='bx bx-check'></i> Confirm Position
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Building Info -->
+        <div class="step-card hidden" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div>
+                    <h2>Building Information</h2>
+                    <p>Fill in the details for the new building.</p>
+                </div>
+            </div>
+
+            <div class="form-layout">
+                <!-- Left Column -->
+                <div class="form-left">
+                    <div class="form-card">
+                        <h2 class="form-card-title">Basic Information</h2>
+
+                        <div class="form-group">
+                            <label for="name">Name <span class="required">*</span></label>
+                            <input type="text" id="name" placeholder="e.g. Aklatang Emilio Aguinaldo" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dataId">Building ID <span class="required">*</span></label>
+                                <input type="text" id="dataId" placeholder="e.g. AEA" />
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category <span class="required">*</span></label>
+                                <select id="category">
+                                    <option value="building">Building</option>
+                                    <option value="facility">Facility</option>
+                                    <option value="gate">Gate</option>
+                                    <option value="landmark">Landmark</option>
+                                    <option value="parking">Parking</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status</label>
+                            <div class="toggle-row">
+                                <span class="toggle-label" id="visibilityLabel">Open</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="isVisible" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h2 class="form-card-title">Description</h2>
+                        <div id="quillEditor"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="form-right">
+                    <div class="form-card">
+                        <h2 class="form-card-title">Images</h2>
+                        <div class="upload-area" id="uploadArea">
+                            <i class='bx bx-cloud-upload'></i>
+                            <p>Click or drag to upload images</p>
+                            <span>JPG, PNG, WEBP</span>
+                            <input type="file" id="imageInput" multiple accept="image/*" />
+                        </div>
+                        <div class="new-image-previews" id="newImagePreviews"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="back-step-btn" id="backToStep1Btn">
+                    <i class='bx bx-chevron-left'></i> Back to Map
+                </button>
+                <button class="save-btn" id="saveBtn">
+                    <i class='bx bx-save'></i> Create Building
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/quill@2.0.2/dist/quill.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="js/building-add.js"></script>
+</body>
+
+</html>

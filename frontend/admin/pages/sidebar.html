@@ -1,0 +1,110 @@
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">
+        <img src="../img/brand.png" alt="Navigate La Salle" class="sidebar-logo">
+    </div>
+
+    <nav class="sidebar-nav">
+        <!-- MAIN -->
+        <div class="nav-section">
+            <a href="dashboard.html" class="nav-link" data-page="dashboard">
+                <i class='bx bxs-dashboard'></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- CONTENT -->
+        <div class="nav-section">
+            <a href="posts.html" class="nav-link" data-page="posts">
+                <i class='bx bxs-news'></i>
+                <span>Posts</span>
+            </a>
+            <a href="building.html" class="nav-link" data-page="buildings">
+                <i class='bx bxs-building'></i>
+                <span>Buildings</span>
+            </a>
+            <a href="office.html" class="nav-link" data-page="office">
+                <i class='bx bxs-briefcase-alt'></i>
+                <span>Offices</span>
+            </a>
+            <a href="virtual-tour.html" class="nav-link" data-page="virtual-tour">
+                <i class='bx bxs-map'></i>
+                <span>Virtual tour</span>
+            </a>
+            <a href="campus-info.html" class="nav-link" data-page="campus-info">
+                <i class='bx bxs-info-circle'></i>
+                <span>Campus Info</span>
+            </a>
+            <a href="faq.html" class="nav-link" data-page="faq">
+                <i class='bx bxs-help-circle'></i>
+                <span>FAQ</span>
+            </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- SYSTEM -->
+        <div class="nav-section">
+            <a href="accounts.html" class="nav-link" data-page="accounts">
+                <i class='bx bxs-user-account'></i>
+                <span>Accounts</span>
+            </a>
+            <a href="feedbacks.html" class="nav-link" data-page="feedbacks">
+                <i class='bx bxs-star'></i>
+                <span>Feedbacks</span>
+            </a>
+            <a href="settings.html" class="nav-link" data-page="settings">
+                <i class='bx bxs-cog'></i>
+                <span>Settings</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="theme-toggle">
+            <input type="checkbox" id="themeSwitch" />
+            <i class='bx bx-moon' id="themeIcon"></i>
+        </div>
+        <a href="#" class="logout-btn" id="logoutBtn" title="Sign Out">
+            <i class='bx bx-log-out'></i>
+            <span>Sign Out</span>
+        </a>
+    </div>
+
+</aside>
+
+<!-- Logout Modal -->
+<div class="modal-overlay hidden" id="logoutModalOverlay">
+    <div class="modal" id="logoutModal">
+        <div class="modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="var(--red)"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to logout?</p>
+        <div class="modal-btns">
+            <button class="logout-cancel-btn" id="cancelLogout">Cancel</button>
+            <button class="logout-confirm-btn" id="confirmLogout">Logout</button>
+        </div>
+    </div>
+</div>
+
+<!-- Inactivity Modal -->
+<div class="modal-overlay hidden" id="inactiveModalOverlay">
+    <div class="modal" id="inactiveModal">
+        <div class="modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="var(--green)" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h2>Session Expired</h2>
+        <p>You have been logged out due to inactivity.</p>
+        <button class="inactive-close-btn" id="inactiveOkBtn">Ok</button>
+    </div>
+</div>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="icon" href="/shared/img/system_icon.png">
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/posts-edit.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/quill@2.0.2/dist/quill.snow.css">
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <a href="posts.html" class="back-link">
+                    <i class='bx bx-chevron-left'></i> Back to Posts
+                </a>
+                <h1 class="page-title">Edit Post</h1>
+            </div>
+        </div>
+
+        <div class="form-card-outer">
+            <div class="form-layout">
+
+                <!-- Left Column -->
+                <div class="form-left">
+
+                    <div class="form-card">
+                        <h2 class="form-card-title">Post Details</h2>
+
+                        <div class="form-group">
+                            <label for="titleInput">Title <span class="required">*</span></label>
+                            <input type="text" id="titleInput" placeholder="e.g. DLSU-D Foundation Day 2025" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="typeSelect">Type <span class="required">*</span></label>
+                                <select id="typeSelect">
+                                    <option value="" disabled>Select type</option>
+                                    <option value="news">News</option>
+                                    <option value="announcement">Announcement</option>
+                                    <option value="event">Event</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="officeSelect">Office</label>
+                                <select id="officeSelect">
+                                    <option value="">DLSU-D (Campus-wide)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h2 class="form-card-title">Content <span class="required">*</span></h2>
+                        <div id="quillEditor"></div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column -->
+                <div class="form-right">
+
+                    <div class="form-card">
+                        <h2 class="form-card-title">Images <span class="required">*</span></h2>
+                        <p class="upload-hint">At least 1 image is required. Click an existing image to mark it for removal.</p>
+
+                        <!-- Existing images -->
+                        <div class="existing-image-previews" id="existingImagePreviews"></div>
+
+                        <div class="upload-area" id="uploadArea">
+                            <i class='bx bx-cloud-upload'></i>
+                            <p>Click or drag to upload new images</p>
+                            <span>JPG, PNG, WEBP</span>
+                            <input type="file" id="imageInput" multiple accept="image/*" />
+                        </div>
+                        <div class="new-image-previews" id="newImagePreviews"></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="posts.html" class="cancel-btn">Cancel</a>
+                <button class="save-btn" id="saveBtn">
+                    <i class='bx bx-save'></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/quill@2.0.2/dist/quill.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="js/posts-edit.js"></script>
+</body>
+
+</html>
