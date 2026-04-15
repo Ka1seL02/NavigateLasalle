@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate La Salle</title>
+    <!-- Global styles -->
+    <link rel="icon" href="/shared/img/system_icon.png">
+    <link rel="stylesheet" href="/shared/css/root.css">
+    <link rel="stylesheet" href="/shared/css/loading.css">
+    <!-- Specific page style and other resources -->
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/feedback.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <button class="back-btn" id="backBtn">
+                <i class='bx bx-chevron-left'></i>
+            </button>
+            <img src="img/dlsud-logo.png" alt="DLSU-D" class="school-logo" />
+            <div class="school-name">
+                <span class="school-name-top">De La Salle University</span>
+                <span class="school-name-bottom">DASMARIÑAS</span>
+            </div>
+        </div>
+        <div class="top-bar-right">
+            <div class="live-clock">
+                <span class="clock-time" id="clockTime"></span>
+                <span class="clock-date" id="clockDate"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Map Layout -->
+    <div class="map-layout">
+        <button class="left-panel-collapsed-btn hidden" id="panelExpandBtn">
+            <i class='bx bx-chevron-right'></i>
+        </button>
+        <!-- Left Panel -->
+        <aside class="left-panel" id="leftPanel">
+            <div class="left-panel-header">
+                <div class="search-bar">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="searchInput" placeholder="Search buildings or offices..." />
+                    <button class="search-clear hidden" id="searchClear">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <button class="panel-toggle-btn" id="panelToggleBtn" title="Collapse panel">
+                    <i class='bx bx-chevron-left'></i>
+                </button>
+            </div>
+            <div class="left-panel-list" id="leftPanelList">
+                <!-- Populated by JS -->
+            </div>
+        </aside>
+
+        <!-- Map Container -->
+        <div class="map-container" id="mapContainer">
+            <svg id="campusMap" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet"></svg>
+
+            <!-- Map Legend -->
+            <div class="map-legend">
+                <div class="legend-item"><span class="legend-dot building"></span> Building</div>
+                <div class="legend-item"><span class="legend-dot facility"></span> Facility</div>
+                <div class="legend-item"><span class="legend-dot gate"></span> Gate</div>
+                <div class="legend-item"><span class="legend-dot landmark"></span> Landmark</div>
+                <div class="legend-item"><span class="legend-dot parking"></span> Parking</div>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-ctrl-btn" id="zoomIn"><i class='bx bx-plus'></i></button>
+                <button class="map-ctrl-btn" id="zoomOut"><i class='bx bx-minus'></i></button>
+                <button class="map-ctrl-btn" id="resetView"><i class='bx bx-reset'></i></button>
+            </div>
+        </div>
+
+        <!-- Right Info Panel -->
+        <aside class="right-panel hidden" id="rightPanel">
+            <button class="right-panel-close" id="rightPanelClose">
+                <i class='bx bx-x'></i>
+            </button>
+
+            <!-- Image Carousel -->
+            <div class="info-gallery" id="infoGallery">
+                <div class="no-image">
+                    <i class='bx bx-buildings'></i>
+                    <p>No images available</p>
+                </div>
+            </div>
+
+            <!-- Sticky Building Header -->
+            <div class="info-sticky-header" id="infoStickyHeader">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Scrollable Body -->
+            <div class="info-body" id="infoBody"></div>
+
+            <!-- Get Directions Button -->
+            <div class="info-footer">
+                <button class="directions-btn" id="getDirectionsBtn">
+                    <i class='bx bx-navigation'></i> Get Directions
+                </button>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Directions Modal -->
+    <div class="modal-overlay hidden" id="directionsModal">
+        <div class="directions-modal">
+            <div class="directions-modal-header">
+                <h2>Get Directions</h2>
+                <button class="modal-close" id="directionsModalClose">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+
+            <div class="directions-modal-body">
+                <!-- Destination -->
+                <div class="directions-field">
+                    <label>Destination</label>
+                    <div class="directions-destination" id="directionsDestination"></div>
+                </div>
+
+                <!-- From -->
+                <div class="directions-field">
+                    <label>Starting Point</label>
+                    <div class="from-search-wrap">
+                        <input type="text" id="fromInput" placeholder="Type building name or ID..."
+                            autocomplete="off" />
+                        <div class="from-dropdown hidden" id="fromDropdown"></div>
+                    </div>
+                    <div class="quick-starts">
+                        <p class="quick-starts-label">Quick start:</p>
+                        <div class="quick-start-btns">
+                            <button class="quick-start-btn" data-id="ADG">Ayuntamiento (ADG)</button>
+                            <button class="quick-start-btn" data-id="G1">Magdalo Gate (G1)</button>
+                            <button class="quick-start-btn" data-id="G3">Magdiwang Gate (G3)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode -->
+                <div class="directions-field">
+                    <label>Travel Mode</label>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" data-mode="walking">
+                            <i class='bx bx-walk'></i> Walking
+                        </button>
+                        <button class="mode-btn" data-mode="vehicle">
+                            <i class='bx bx-car'></i> Vehicle
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="directions-modal-footer">
+                <button class="find-route-btn" id="findRouteBtn">
+                    <i class='bx bx-map'></i> Find Route
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Route Info Bar (shown after route is found) -->
+    <div class="route-bar hidden" id="routeBar">
+        <div class="route-bar-info">
+            <i class='bx bx-map-alt'></i>
+            <span id="routeBarText">Route found</span>
+        </div>
+        <button class="route-bar-clear" id="routeBarClear">
+            <i class='bx bx-x'></i> Clear Route
+        </button>
+    </div>
+
+    <script type="module" src="js/map.js"></script>
+    <script src="js/feedback.js"></script>
+</body>
+
+</html>
