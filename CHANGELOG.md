@@ -975,3 +975,10 @@
   - Run A* for vehicle leg (start -> dropoff) in yellow and walk leg (dropoff -> destination) in green, sequentially after the vehicle animation finishes
   - The route bar shows: 🚗 Drive to [Building], then 🚶 walk to [Destination]
   - If even the hybrid approach can't find a path, it falls back to the original "No route found" message.
+
+## V1.1 — 15/04/2026
+### Frontend — User Interactive Map
+- Improved Building Admin Page
+  - Added search bar for list view building
+  - Added additional viewing mode for list-view - can now switch from Card to Row view toggle
+  - Added collapsible category sections for buildings

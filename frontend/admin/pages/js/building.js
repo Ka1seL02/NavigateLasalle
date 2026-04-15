@@ -7,6 +7,9 @@ let allRoads = [];      // road category only
 let selectedBuildingId = null;
 let currentImageIndex = 0;
 let autoSwapInterval = null;
+let listViewMode = 'card';   // 'card' | 'row'
+let listSearchQuery = '';
+let collapsedCategories = new Set();
 
 // ─── Elements ─────────────────────────────────────────────────────────────────
 const listView = document.getElementById('listView');
@@ -69,6 +72,40 @@ addBuildingBtn.addEventListener('click', () => {
     window.location.href = 'building-add.html';
 });
 
+// ─── List View Controls ───────────────────────────────────────────────────────
+const cardViewBtn = document.getElementById('cardViewBtn');
+const rowViewBtn = document.getElementById('rowViewBtn');
+const listSearchInput = document.getElementById('listSearchInput');
+const listSearchClear = document.getElementById('listSearchClear');
+
+cardViewBtn.addEventListener('click', () => {
+    listViewMode = 'card';
+    cardViewBtn.classList.add('active');
+    rowViewBtn.classList.remove('active');
+    renderList();
+});
+
+rowViewBtn.addEventListener('click', () => {
+    listViewMode = 'row';
+    rowViewBtn.classList.add('active');
+    cardViewBtn.classList.remove('active');
+    renderList();
+});
+
+listSearchInput.addEventListener('input', () => {
+    listSearchQuery = listSearchInput.value;
+    listSearchClear.classList.toggle('hidden', listSearchQuery === '');
+    renderList();
+});
+
+listSearchClear.addEventListener('click', () => {
+    listSearchInput.value = '';
+    listSearchQuery = '';
+    listSearchClear.classList.add('hidden');
+    listSearchInput.focus();
+    renderList();
+});
+
 // ─── Fetch All Data ───────────────────────────────────────────────────────────
 async function fetchBuildings() {
     await showLoading();
@@ -111,43 +148,132 @@ function renderList() {
         landmark: 'Landmarks',
         parking: 'Parking Areas'
     };
+    const categoryIcons = {
+        building: 'bx-building-house',
+        facility: 'bx-server',
+        gate: 'bx-door-open',
+        landmark: 'bx-map-pin',
+        parking: 'bx-car'
+    };
+
+    const q = listSearchQuery.trim().toLowerCase();
 
     listView.innerHTML = '';
+
+    // When searching, flatten all results into one section
+    if (q) {
+        const matched = allBuildings.filter(b =>
+            b.name.toLowerCase().includes(q) || b.dataId.toLowerCase().includes(q)
+        );
+
+        if (matched.length === 0) {
+            listView.innerHTML = `
+                <div class="list-empty-state">
+                    <i class='bx bx-search-alt'></i>
+                    <p>No buildings match "<strong>${q}</strong>"</p>
+                </div>`;
+            return;
+        }
+
+        const section = document.createElement('div');
+        section.classList.add('category-section');
+        section.innerHTML = `
+            <div class="category-header">
+                <h3 class="category-title"><i class='bx bx-search-alt'></i> Results (${matched.length})</h3>
+            </div>`;
+        const container = document.createElement('div');
+        container.classList.add(listViewMode === 'card' ? 'cards-grid' : 'rows-list');
+        matched.forEach(b => {
+            container.appendChild(buildItem(b));
+        });
+        section.appendChild(container);
+        listView.appendChild(section);
+        return;
+    }
 
     categories.forEach(cat => {
         const items = allBuildings.filter(b => b.category === cat);
         if (items.length === 0) return;
 
+        const isCollapsed = collapsedCategories.has(cat);
+
         const section = document.createElement('div');
         section.classList.add('category-section');
-        section.innerHTML = `<h3 class="category-title">${categoryLabels[cat]} (${items.length})</h3>`;
+        if (isCollapsed) section.classList.add('collapsed');
 
-        const grid = document.createElement('div');
-        grid.classList.add('cards-grid');
+        const header = document.createElement('div');
+        header.classList.add('category-header');
+        header.innerHTML = `
+            <h3 class="category-title">
+                <i class='bx ${categoryIcons[cat]}'></i>
+                ${categoryLabels[cat]}
+                <span class="category-count">${items.length}</span>
+            </h3>
+            <button class="category-collapse-btn" title="${isCollapsed ? 'Expand' : 'Collapse'}">
+                <i class='bx ${isCollapsed ? 'bx-chevron-down' : 'bx-chevron-up'}'></i>
+            </button>`;
 
-        items.forEach(b => {
-            const card = document.createElement('div');
-            card.classList.add('building-card');
-            if (!b.isVisible) card.classList.add('card-hidden');
-
-            card.innerHTML = `
-                ${b.images && b.images.length > 0
-                    ? `<img class="card-image" src="${b.images[0]}" alt="${b.name}" />`
-                    : `<div class="card-image-placeholder"><i class='bx bx-building'></i></div>`
-                }
-                <div class="card-info">
-                    <p class="card-dataid">${b.dataId}</p>
-                    <p class="card-name">${b.name}</p>
-                </div>
-            `;
-
-            card.addEventListener('click', () => openViewModal(b));
-            grid.appendChild(card);
+        header.addEventListener('click', () => {
+            if (collapsedCategories.has(cat)) {
+                collapsedCategories.delete(cat);
+            } else {
+                collapsedCategories.add(cat);
+            }
+            renderList();
         });
 
-        section.appendChild(grid);
+        const container = document.createElement('div');
+        container.classList.add(listViewMode === 'card' ? 'cards-grid' : 'rows-list');
+        container.classList.add('category-body');
+
+        items.forEach(b => {
+            container.appendChild(buildItem(b));
+        });
+
+        section.appendChild(header);
+        section.appendChild(container);
         listView.appendChild(section);
     });
+}
+
+function buildItem(b) {
+    if (listViewMode === 'card') {
+        const card = document.createElement('div');
+        card.classList.add('building-card');
+        if (!b.isVisible) card.classList.add('card-hidden');
+        card.innerHTML = `
+            ${b.images && b.images.length > 0
+                ? `<img class="card-image" src="${b.images[0]}" alt="${b.name}" />`
+                : `<div class="card-image-placeholder"><i class='bx bx-building'></i></div>`
+            }
+            <div class="card-info">
+                <p class="card-dataid">${b.dataId}</p>
+                <p class="card-name">${b.name}</p>
+            </div>`;
+        card.addEventListener('click', () => openViewModal(b));
+        return card;
+    } else {
+        const row = document.createElement('div');
+        row.classList.add('building-row');
+        if (!b.isVisible) row.classList.add('card-hidden');
+        row.innerHTML = `
+            <div class="row-thumb">
+                ${b.images && b.images.length > 0
+                    ? `<img src="${b.images[0]}" alt="${b.name}" />`
+                    : `<div class="row-thumb-placeholder"><i class='bx bx-building'></i></div>`
+                }
+            </div>
+            <div class="row-info">
+                <p class="row-name">${b.name}</p>
+                <p class="row-dataid">${b.dataId}</p>
+            </div>
+            <div class="row-meta">
+                ${!b.isVisible ? `<span class="row-badge hidden-badge"><i class='bx bx-hide'></i> Hidden</span>` : ''}
+            </div>
+            <i class='bx bx-chevron-right row-arrow'></i>`;
+        row.addEventListener('click', () => openViewModal(b));
+        return row;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

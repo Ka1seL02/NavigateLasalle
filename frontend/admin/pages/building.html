@@ -48,7 +48,25 @@
             </div>
 
             <!-- List View -->
-            <div id="listView"></div>
+            <div id="listViewWrapper">
+                <!-- List Toolbar: Search + View Toggle -->
+                <div class="list-toolbar">
+                    <div class="list-search-wrap">
+                        <i class='bx bx-search list-search-icon'></i>
+                        <input type="text" id="listSearchInput" class="list-search-input" placeholder="Search by name or ID…" autocomplete="off" />
+                        <button class="list-search-clear hidden" id="listSearchClear"><i class='bx bx-x'></i></button>
+                    </div>
+                    <div class="list-view-toggle">
+                        <button class="list-view-btn active" id="cardViewBtn" title="Card view">
+                            <i class='bx bx-grid-alt'></i>
+                        </button>
+                        <button class="list-view-btn" id="rowViewBtn" title="Row view">
+                            <i class='bx bx-list-ul'></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="listView"></div>
+            </div>
 
             <!-- Map View -->
             <div id="mapView" class="hidden">
