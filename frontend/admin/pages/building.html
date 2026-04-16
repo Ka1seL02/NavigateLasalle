@@ -49,13 +49,15 @@
 
             <!-- List View -->
             <div id="listViewWrapper">
-                <!-- List Toolbar: Search + View Toggle -->
+                <!-- List Search (full-width row) -->
+                <div class="list-search-wrap">
+                    <i class='bx bx-search list-search-icon'></i>
+                    <input type="text" id="listSearchInput" class="list-search-input" placeholder="Search by name or ID…" autocomplete="off" />
+                    <button class="list-search-clear hidden" id="listSearchClear"><i class='bx bx-x'></i></button>
+                </div>
+
+                <!-- List Toolbar: Filter + Toggle -->
                 <div class="list-toolbar">
-                    <div class="list-search-wrap">
-                        <i class='bx bx-search list-search-icon'></i>
-                        <input type="text" id="listSearchInput" class="list-search-input" placeholder="Search by name or ID…" autocomplete="off" />
-                        <button class="list-search-clear hidden" id="listSearchClear"><i class='bx bx-x'></i></button>
-                    </div>
                     <div class="list-category-wrap">
                         <button class="list-category-btn" id="listCategoryBtn">
                             <i class='bx bx-filter-alt'></i>

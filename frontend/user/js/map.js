@@ -112,6 +112,15 @@ function renderMap() {
             <polygon points="0 0, 6 2, 0 4" fill="${getComputedStyle(document.documentElement).getPropertyValue('--light-green') || '#00c657'}" />
         </marker>
 
+        <!-- Subtle grass texture pattern -->
+        <pattern id="grassPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <rect width="40" height="40" fill="#cde0c5"/>
+            <circle cx="8"  cy="12" r="6"  fill="#c5dabe" opacity="0.5"/>
+            <circle cx="28" cy="30" r="8"  fill="#b8d4b0" opacity="0.4"/>
+            <circle cx="35" cy="8"  r="5"  fill="#d2e8ca" opacity="0.5"/>
+            <circle cx="15" cy="34" r="6"  fill="#bdd9b5" opacity="0.4"/>
+        </pattern>
+
         <!-- 3D drop shadow filter -->
         <filter id="buildingShadow" x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow dx="3" dy="5" stdDeviation="3" flood-color="rgba(0,0,0,0.25)" />
@@ -141,6 +150,16 @@ function renderMap() {
     `;
     svg.appendChild(defs);
 
+    // Grass background rect
+    const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bgRect.setAttribute('x', '0');
+    bgRect.setAttribute('y', '0');
+    bgRect.setAttribute('width', '1920');
+    bgRect.setAttribute('height', '1080');
+    bgRect.setAttribute('fill', 'url(#grassPattern)');
+    bgRect.setAttribute('pointer-events', 'none');
+    svg.appendChild(bgRect);
+
     allRoads.forEach(road => renderShape(road, 'road'));
 
     allBuildings.forEach(b => {
@@ -162,23 +181,42 @@ function renderMap() {
 
                 const shapeWidth = b.shape.type === 'rect' ? parseFloat(b.shape.width) : parseFloat(b.shape.rx) * 2;
                 const shapeHeight = b.shape.type === 'rect' ? parseFloat(b.shape.height) : parseFloat(b.shape.ry) * 2;
-                const fontSize = Math.max(8, Math.min(14, Math.min(shapeWidth, shapeHeight) * 0.25));
+                const fontSize = Math.max(11, Math.min(16, Math.min(shapeWidth, shapeHeight) * 0.28));
 
                 const colorMap = {
                     building: '#1a4d2e',
-                    facility: '#1565c0',
-                    gate: '#f57f17',
-                    landmark: '#e65100',
-                    parking: '#757575',
+                    facility: '#0d47a1',
+                    gate: '#e65100',
+                    landmark: '#bf360c',
+                    parking: '#424242',
                 };
+
+                // White outline text for readability (paint-order trick via filter)
+                // We render a white "shadow" text first, then the colored text on top
+                const textOutline = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                textOutline.setAttribute('x', cx);
+                textOutline.setAttribute('y', cy);
+                textOutline.setAttribute('text-anchor', 'middle');
+                textOutline.setAttribute('dominant-baseline', 'middle');
+                textOutline.setAttribute('font-size', fontSize);
+                textOutline.setAttribute('font-family', 'Noto Sans, sans-serif');
+                textOutline.setAttribute('font-weight', '800');
+                textOutline.setAttribute('fill', 'none');
+                textOutline.setAttribute('stroke', 'rgba(255,255,255,0.95)');
+                textOutline.setAttribute('stroke-width', '3');
+                textOutline.setAttribute('stroke-linejoin', 'round');
+                textOutline.setAttribute('pointer-events', 'none');
+                textOutline.setAttribute('user-select', 'none');
+                textOutline.textContent = b.dataId;
+                svg.appendChild(textOutline);
 
                 text.setAttribute('x', cx);
                 text.setAttribute('y', cy);
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('dominant-baseline', 'middle');
                 text.setAttribute('font-size', fontSize);
-                text.setAttribute('font-family', 'EB Garamond, serif');
-                text.setAttribute('font-weight', '700');
+                text.setAttribute('font-family', 'Noto Sans, sans-serif');
+                text.setAttribute('font-weight', '800');
                 text.setAttribute('fill', colorMap[b.category] || '#1a4d2e');
                 text.setAttribute('pointer-events', 'none');
                 text.setAttribute('user-select', 'none');
@@ -188,6 +226,7 @@ function renderMap() {
             }
         }
     });
+
 }
 
 function renderShape(b, cls) {
@@ -869,7 +908,7 @@ findRouteBtn.addEventListener('click', () => {
                     const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
                     const dropoffNode = graph.nodes.find(n => n.id === dropoffId);
                     const dropoffBuilding = allBuildings.find(b => b._id === dropoffNode?.buildingId);
-                    const dropoffLabel = dropoffBuilding?.name ?? 'nearest road';
+                    const dropoffLabel = dropoffBuilding?.name ?? 'nearest access point';
 
                     routeBarText.innerHTML = `
                         <i class='bx bx-car'></i> Drive to ${dropoffLabel},
@@ -881,7 +920,34 @@ findRouteBtn.addEventListener('click', () => {
             }
         }
 
-        routeBarText.textContent = 'No route found. Try a different mode.';
+        // ── Walking hybrid fallback: some sections require a vehicle road ──
+        // Try: walk to nearest vehicle entry → vehicle through restricted section → walk to dest
+        if (selectedMode === 'walking') {
+            const vehicleEntryId = findNearestVehicleDropoff(fromNode.id, toNode, graph.nodes, graph.edges);
+            if (vehicleEntryId && vehicleEntryId !== fromNode.id && vehicleEntryId !== toNode.id) {
+                const walkIn   = aStar(fromNode.id,     vehicleEntryId, graph.nodes, graph.edges, 'walking');
+                const viaVeh   = aStar(vehicleEntryId,  toNode.id,      graph.nodes, graph.edges, 'vehicle');
+                if (walkIn && viaVeh) {
+                    // Draw walk leg first, then vehicle leg (reuse drawHybridPath with legs swapped)
+                    drawHybridPath(viaVeh, walkIn); // vehicle shown amber, walk shown green
+                    directionsModal.classList.add('hidden');
+
+                    const vEntry = graph.nodes.find(n => n.id === vehicleEntryId);
+                    const vBuilding = allBuildings.find(b => b._id === vEntry?.buildingId);
+                    const vLabel = vBuilding?.name ?? 'vehicle road';
+
+                    routeBarText.innerHTML = `
+                        <i class='bx bx-walk'></i> Walk toward ${vLabel},
+                        then <i class='bx bx-car'></i> vehicle-only road to ${selectedBuilding.name}
+                        <span style="font-size:0.75em;opacity:0.8"> — part of this route requires a vehicle</span>
+                    `;
+                    routeBar.classList.remove('hidden');
+                    return;
+                }
+            }
+        }
+
+        routeBarText.textContent = 'No route found. Try a different starting point or travel mode.';
         routeBar.classList.remove('hidden');
         directionsModal.classList.add('hidden');
         return;
@@ -891,7 +957,10 @@ findRouteBtn.addEventListener('click', () => {
     directionsModal.classList.add('hidden');
 
     const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
-    routeBarText.textContent = `${fromBuilding?.name ?? 'Start'} → ${selectedBuilding.name}`;
+    const modeIcon = selectedMode === 'walking'
+        ? `<i class='bx bx-walk'></i>`
+        : `<i class='bx bx-car'></i>`;
+    routeBarText.innerHTML = `${modeIcon} ${fromBuilding?.name ?? 'Start'} → ${selectedBuilding.name}`;
     routeBar.classList.remove('hidden');
 });
 

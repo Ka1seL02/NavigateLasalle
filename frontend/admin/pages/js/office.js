@@ -6,12 +6,21 @@ let allOffices = [];
 let selectedOfficeId = null;
 let currentImageIndex = 0;
 let autoSwapInterval = null;
+let currentView = 'card';
+let currentFilter = '';
+let collapsedCategories = new Set();
 
 // ─── Elements ─────────────────────────────────────────────────────────────────
 const officeList = document.getElementById('officeList');
 const officesCount = document.getElementById('officesCount');
 const addOfficeBtn = document.getElementById('addOfficeBtn');
 const searchInput = document.getElementById('searchInput');
+const listCategoryBtn = document.getElementById('listCategoryBtn');
+const listCategoryLabel = document.getElementById('listCategoryLabel');
+const listCategoryChevron = document.getElementById('listCategoryChevron');
+const listCategoryDropdown = document.getElementById('listCategoryDropdown');
+const viewCardBtn = document.getElementById('viewCard');
+const viewListBtn = document.getElementById('viewList');
 
 // ─── Add Office ───────────────────────────────────────────────────────────────
 addOfficeBtn.addEventListener('click', () => {
@@ -23,6 +32,36 @@ searchInput.addEventListener('input', () => {
     renderList(searchInput.value.trim().toLowerCase());
 });
 
+// ─── Category Filter Dropdown ─────────────────────────────────────────────────
+listCategoryBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !listCategoryDropdown.classList.contains('hidden');
+    listCategoryDropdown.classList.toggle('hidden', isOpen);
+    listCategoryChevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+});
+
+document.addEventListener('click', () => {
+    listCategoryDropdown.classList.add('hidden');
+    listCategoryChevron.style.transform = '';
+});
+
+listCategoryDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+// ─── View Toggle ──────────────────────────────────────────────────────────────
+viewCardBtn.addEventListener('click', () => {
+    currentView = 'card';
+    viewCardBtn.classList.add('active');
+    viewListBtn.classList.remove('active');
+    renderList(searchInput.value.trim().toLowerCase());
+});
+
+viewListBtn.addEventListener('click', () => {
+    currentView = 'list';
+    viewListBtn.classList.add('active');
+    viewCardBtn.classList.remove('active');
+    renderList(searchInput.value.trim().toLowerCase());
+});
+
 // ─── Fetch Offices ────────────────────────────────────────────────────────────
 async function fetchOffices() {
     await showLoading();
@@ -31,6 +70,31 @@ async function fetchOffices() {
         const data = await res.json();
         allOffices = data.offices;
         officesCount.textContent = allOffices.length;
+
+        // Populate category dropdown
+        const categories = [...new Set(allOffices.map(o => o.category))].sort();
+        listCategoryDropdown.innerHTML = `
+            <button class="category-option active" data-value="">
+                <i class='bx bx-list-ul'></i> All Categories
+            </button>
+            ${categories.map(c => `
+                <button class="category-option" data-value="${c}">
+                    <i class='bx bx-buildings'></i> ${c}
+                </button>
+            `).join('')}
+        `;
+        listCategoryDropdown.querySelectorAll('.category-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                currentFilter = opt.dataset.value;
+                listCategoryLabel.textContent = opt.dataset.value || 'All Categories';
+                listCategoryDropdown.querySelectorAll('.category-option').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                listCategoryDropdown.classList.add('hidden');
+                listCategoryChevron.style.transform = '';
+                renderList(searchInput.value.trim().toLowerCase());
+            });
+        });
+
         renderList();
     } catch (err) {
         showToast('error', 'Failed to load offices.');
@@ -43,25 +107,24 @@ async function fetchOffices() {
 function renderList(search = '') {
     officeList.innerHTML = '';
 
-    const filtered = search
-        ? allOffices.filter(o =>
-            o.name.toLowerCase().includes(search) ||
-            o.category.toLowerCase().includes(search) ||
-            (o.head && o.head.toLowerCase().includes(search))
-          )
-        : allOffices;
+    let filtered = allOffices;
+    if (currentFilter) filtered = filtered.filter(o => o.category === currentFilter);
+    if (search) filtered = filtered.filter(o =>
+        o.name.toLowerCase().includes(search) ||
+        o.category.toLowerCase().includes(search) ||
+        (o.head && o.head.toLowerCase().includes(search))
+    );
 
     if (filtered.length === 0) {
         officeList.innerHTML = `
             <div class="empty-state">
                 <i class='bx bx-building'></i>
-                <p>${search ? 'No offices match your search.' : 'No offices yet. Click Add Office to get started.'}</p>
+                <p>${search || currentFilter ? 'No offices match your filters.' : 'No offices yet. Click Add Office to get started.'}</p>
             </div>
         `;
         return;
     }
 
-    // Group by category
     const grouped = {};
     filtered.forEach(o => {
         if (!grouped[o.category]) grouped[o.category] = [];
@@ -69,34 +132,84 @@ function renderList(search = '') {
     });
 
     Object.entries(grouped).forEach(([category, offices]) => {
+        const isCollapsed = collapsedCategories.has(category);
+
         const section = document.createElement('div');
         section.classList.add('category-section');
-        section.innerHTML = `<h3 class="category-title">${category} (${offices.length})</h3>`;
 
-        const grid = document.createElement('div');
-        grid.classList.add('cards-grid');
-
-        offices.forEach(o => {
-            const card = document.createElement('div');
-            card.classList.add('office-card');
-            if (!o.isVisible) card.classList.add('card-hidden');
-
-            card.innerHTML = `
-                ${o.images && o.images.length > 0
-                    ? `<img class="card-image" src="${o.images[0]}" alt="${o.name}" />`
-                    : `<div class="card-image-placeholder"><i class='bx bx-buildings'></i></div>`
-                }
-                <div class="card-info">
-                    <p class="card-name">${o.name}</p>
-                    ${o.head ? `<p class="card-head">${o.head}</p>` : ''}
-                </div>
-            `;
-
-            card.addEventListener('click', () => openViewModal(o));
-            grid.appendChild(card);
+        // Collapsible header — chevron inline with title (building-page style)
+        const header = document.createElement('div');
+        header.classList.add('category-header');
+        header.innerHTML = `
+            <div class="category-title">
+                <i class='bx bx-chevron-down category-chevron ${isCollapsed ? 'collapsed' : ''}'></i>
+                <span>${category}</span>
+                <span class="category-count">${offices.length}</span>
+            </div>
+        `;
+        header.addEventListener('click', () => {
+            if (collapsedCategories.has(category)) collapsedCategories.delete(category);
+            else collapsedCategories.add(category);
+            renderList(searchInput.value.trim().toLowerCase());
         });
 
-        section.appendChild(grid);
+        const body = document.createElement('div');
+        body.classList.add('category-body');
+        if (isCollapsed) body.classList.add('collapsed');
+
+        if (currentView === 'card') {
+            const grid = document.createElement('div');
+            grid.classList.add('cards-grid');
+            offices.forEach(o => {
+                const card = document.createElement('div');
+                card.classList.add('office-card');
+                if (!o.isVisible) card.classList.add('card-hidden');
+                card.innerHTML = `
+                    ${o.images && o.images.length > 0
+                        ? `<img class="card-image" src="${o.images[0]}" alt="${o.name}" />`
+                        : `<div class="card-image-placeholder"><i class='bx bx-buildings'></i></div>`
+                    }
+                    <div class="card-info">
+                        <p class="card-name">${o.name}</p>
+                        ${o.head ? `<p class="card-head">${o.head}</p>` : ''}
+                    </div>
+                `;
+                card.addEventListener('click', () => openViewModal(o));
+                grid.appendChild(card);
+            });
+            body.appendChild(grid);
+        } else {
+            const list = document.createElement('div');
+            list.classList.add('offices-list');
+            offices.forEach(o => {
+                const row = document.createElement('div');
+                row.classList.add('office-row');
+                if (!o.isVisible) row.classList.add('card-hidden');
+                row.innerHTML = `
+                    <div class="row-icon">
+                        ${o.images && o.images.length > 0
+                            ? `<img src="${o.images[0]}" alt="${o.name}" />`
+                            : `<i class='bx bx-buildings'></i>`
+                        }
+                    </div>
+                    <div class="row-info">
+                        <p class="row-name">${o.name}</p>
+                        ${o.head ? `<p class="row-head">${o.head}</p>` : ''}
+                    </div>
+                    <div class="row-meta">
+                        ${o.officeHours ? `<span class="row-badge"><i class='bx bx-time'></i> ${o.officeHours}</span>` : ''}
+                        ${!o.isVisible ? `<span class="row-badge maintenance">Under Maintenance</span>` : ''}
+                    </div>
+                    <i class='bx bx-chevron-right row-arrow'></i>
+                `;
+                row.addEventListener('click', () => openViewModal(o));
+                list.appendChild(row);
+            });
+            body.appendChild(list);
+        }
+
+        section.appendChild(header);
+        section.appendChild(body);
         officeList.appendChild(section);
     });
 }

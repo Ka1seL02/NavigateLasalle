@@ -40,6 +40,28 @@
                 <input type="text" id="searchInput" placeholder="Search offices..." />
             </div>
 
+            <!-- Toolbar: Filter + View Toggle -->
+            <div class="toolbar">
+                <div class="list-category-wrap">
+                    <button class="list-category-btn" id="listCategoryBtn">
+                        <i class='bx bx-filter-alt'></i>
+                        <span id="listCategoryLabel">All Categories</span>
+                        <i class='bx bx-chevron-down list-category-chevron' id="listCategoryChevron"></i>
+                    </button>
+                    <div class="list-category-dropdown hidden" id="listCategoryDropdown">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="viewCard" title="Card view">
+                        <i class='bx bx-grid-alt'></i>
+                    </button>
+                    <button class="view-btn" id="viewList" title="List view">
+                        <i class='bx bx-list-ul'></i>
+                    </button>
+                </div>
+            </div>
+
             <!-- Office List -->
             <div id="officeList">
                 <!-- Category sections generated here -->

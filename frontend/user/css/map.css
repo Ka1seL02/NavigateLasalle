@@ -256,7 +256,7 @@ html, body {
 .panel-item-icon.office    { background: #f3e5f5; color: #6a1b9a; }
 .panel-item-info { flex: 1; min-width: 0; }
 .panel-item-name {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--dark-grey);
     white-space: nowrap;
@@ -264,7 +264,7 @@ html, body {
     text-overflow: ellipsis;
 }
 .panel-item-sub {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     color: var(--light-grey);
     white-space: nowrap;
     overflow: hidden;
@@ -308,7 +308,7 @@ html, body {
     flex: 1;
     position: relative;
     overflow: hidden;
-    background: #f0ede8;
+    background: #d6e8d0;
 }
 
 /* ─── SVG Map ────────────────────────────────────────────────────────────────── */
@@ -377,7 +377,7 @@ html, body {
 #campusMap .parking.selected { fill: var(--light-grey); }
 
 #campusMap .road {
-    fill: #cecece;
+    fill: #c8c0b0;
     pointer-events: none;
 }
 
@@ -416,12 +416,17 @@ html, body {
 #campusMap .landmark.selected { fill: var(--orange); }
 
 #campusMap .building-label {
-    font-size: 12px;
+    font-size: 13px;
     font-family: 'Noto Sans', sans-serif;
-    font-weight: 700;
+    font-weight: 800;
     fill: var(--dark-green);
     pointer-events: none;
     user-select: none;
+    /* White outline for legibility on any background */
+    paint-order: stroke fill;
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 3px;
+    stroke-linejoin: round;
 }
 
 /* Path overlay — draw-on entrance animation */
@@ -502,7 +507,7 @@ html, body {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-family: 'Noto Sans', sans-serif;
     color: var(--dark-grey);
 }
@@ -684,7 +689,7 @@ html, body {
     width: fit-content;
 }
 .info-description {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     font-family: 'Noto Sans', sans-serif;
     color: var(--grey);
     line-height: 1.6;
@@ -711,7 +716,7 @@ html, body {
 }
 .info-office-item:hover { background: var(--off-white); }
 .info-office-name {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--dark-grey);
 }
@@ -953,6 +958,9 @@ html, body {
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
     font-family: 'Noto Sans', sans-serif;
     font-size: 0.875rem;
+    max-width: calc(100vw - 2rem);
+    white-space: nowrap;
+    overflow: hidden;
 }
 .route-bar-info {
     display: flex;

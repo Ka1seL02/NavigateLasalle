@@ -1153,3 +1153,43 @@
   - [frontend/admin/pages/virtual-tour.html](frontend/admin/pages/virtual-tour.html)
   - [frontend/admin/pages/css/virtual-tour.css](frontend/admin/pages/css/virtual-tour.css)
   - [frontend/admin/pages/css/sidebar.css](frontend/admin/pages/css/sidebar.css)
+
+## V1.3 — 17/04/2026
+
+### Frontend — User Map Page
+
+- Improved map readability and visual design
+  - Changed map canvas background from beige to a soft campus green (`#d6e8d0`) with a subtle tiled grass texture pattern rendered inside the SVG
+  - Updated road color from `#cecece` to a warmer taupe (`#c8c0b0`) for better contrast against the green ground
+  - Replaced `EB Garamond` serif font on building labels with `Noto Sans` for improved readability
+  - Increased minimum label font size from `8px` to `11px` and font weight from `700` to `800`
+  - Added white outline halo on building labels (stacked SVG text technique) so codes are legible on any shape color, including small buildings
+  - Increased panel item name font size and legend font size for accessibility
+  - Route bar now supports `innerHTML` for hybrid route labels with inline icons
+- Improved directions routing
+  - Walking mode now falls back to a hybrid route if the direct path is blocked by a vehicle-only road segment — shows a two-color path (green walk leg + amber vehicle leg) with a descriptive label
+  - Vehicle hybrid fallback label updated from `'nearest road'` to `'nearest access point'`
+  - Successful route bar labels now include a mode icon (walking or vehicle)
+  - No-route error message made more descriptive
+
+### Frontend — Admin Office Page
+
+- Added card/list view toggle
+  - Users can switch between card grid and a compact row list view
+  - View state persists across search and filter changes
+- Added category filter with building-style dropdown button
+  - Replaced plain `<select>` with a flyout dropdown button matching the building page design
+  - Categories are populated dynamically from live data
+  - Clicking outside the dropdown closes it
+- Added collapsible category sections
+  - Each category group can be expanded or collapsed via a chevron inline with the category title
+  - Collapsed state persists across search and filter re-renders
+- List row view includes office hours badge and maintenance indicator
+
+### Frontend — Admin Building Page (List View only)
+
+- Restructured list view toolbar layout
+  - Search bar moved to its own full-width row above the toolbar
+  - Filter dropdown and view toggle now sit on a separate row with space between them (filter left, toggle right)
+- Category section collapse chevron moved inline with the category title text, consistent with the office page style
+- No changes made to Map View, Graph View, or `building.js`
