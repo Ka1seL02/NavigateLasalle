@@ -831,43 +831,38 @@ function aStar(startNodeId, endNodeId, nodes, edges, mode) {
     return null;
 }
 
-// ─── Find Nearest Drivable Node to a Target ───────────────────────────────────
-// Returns the node ID that is (a) reachable by vehicle from fromNodeId and
-// (b) closest in straight-line distance to targetNode.
-function findNearestVehicleDropoff(fromNodeId, targetNode, nodes, edges) {
-    const nodeMap = {};
-    nodes.forEach(n => nodeMap[n.id] = n);
-
-    // BFS/Dijkstra over vehicle edges to collect all reachable nodes
-    const visited = new Set();
-    const queue = [fromNodeId];
-    visited.add(fromNodeId);
-
+// ─── BFS: all nodes reachable by a given mode from a starting node ────────────
+function bfsReachable(startNodeId, nodes, edges, mode) {
+    const visited = new Set([startNodeId]);
+    const queue = [startNodeId];
     while (queue.length) {
-        const current = queue.shift();
-        const neighbors = getNeighbors(current, nodes, edges, 'vehicle');
-        neighbors.forEach(({ id }) => {
-            if (!visited.has(id)) {
-                visited.add(id);
-                queue.push(id);
-            }
+        getNeighbors(queue.shift(), nodes, edges, mode).forEach(({ id }) => {
+            if (!visited.has(id)) { visited.add(id); queue.push(id); }
         });
     }
+    return visited;
+}
 
-    // Among reachable vehicle nodes, find the one closest to targetNode
-    let bestId = null;
-    let bestDist = Infinity;
-    visited.forEach(id => {
+// ─── Closest node (straight-line) among a candidate set to a target ──────────
+function closestTo(candidateIds, targetNode, nodeMap) {
+    let bestId = null, bestDist = Infinity;
+    candidateIds.forEach(id => {
         const n = nodeMap[id];
         if (!n) return;
         const d = Math.hypot(n.x - targetNode.x, n.y - targetNode.y);
-        if (d < bestDist) {
-            bestDist = d;
-            bestId = id;
-        }
+        if (d < bestDist) { bestDist = d; bestId = id; }
     });
-
     return bestId;
+}
+
+// ─── Does a node touch at least one edge of the given mode? ──────────────────
+function nodeHasMode(nodeId, edges, mode) {
+    return edges.some(e => {
+        const ok = mode === 'walking'
+            ? (e.type === 'pedestrian' || e.type === 'both')
+            : (e.type === 'vehicle'    || e.type === 'both');
+        return ok && (e.from === nodeId || e.to === nodeId);
+    });
 }
 
 // ─── Find Route ───────────────────────────────────────────────────────────────
@@ -877,11 +872,10 @@ findRouteBtn.addEventListener('click', () => {
         setTimeout(() => fromInput.classList.remove('input-error'), 2000);
         return;
     }
-
     if (!selectedBuilding) return;
 
     const fromNode = graph.nodes.find(n => n.buildingId === selectedFromId);
-    const toNode = graph.nodes.find(n => n.buildingId === selectedBuilding._id);
+    const toNode   = graph.nodes.find(n => n.buildingId === selectedBuilding._id);
 
     if (!fromNode || !toNode) {
         routeBarText.textContent = 'No route data available for this location.';
@@ -890,82 +884,120 @@ findRouteBtn.addEventListener('click', () => {
         return;
     }
 
-    const path = aStar(fromNode.id, toNode.id, graph.nodes, graph.edges, selectedMode);
+    const nodeMap = {};
+    graph.nodes.forEach(n => nodeMap[n.id] = n);
 
-    if (!path) {
-        // ── Hybrid fallback: vehicle gets as close as possible, then walk ──
-        if (selectedMode === 'vehicle') {
-            const dropoffId = findNearestVehicleDropoff(fromNode.id, toNode, graph.nodes, graph.edges);
+    const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
+    const fromLabel    = fromBuilding?.name ?? 'Start';
+    const destLabel    = selectedBuilding.name;
 
-            if (dropoffId && dropoffId !== fromNode.id) {
-                const vehiclePath = aStar(fromNode.id, dropoffId, graph.nodes, graph.edges, 'vehicle');
-                const walkPath = aStar(dropoffId, toNode.id, graph.nodes, graph.edges, 'walking');
+    const nodeLabel = id => {
+        const bld = allBuildings.find(b => b._id === graph.nodes.find(n => n.id === id)?.buildingId);
+        return bld?.name ?? 'nearest point';
+    };
 
-                if (vehiclePath && walkPath) {
-                    drawHybridPath(vehiclePath, walkPath);
-                    directionsModal.classList.add('hidden');
-
-                    const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
-                    const dropoffNode = graph.nodes.find(n => n.id === dropoffId);
-                    const dropoffBuilding = allBuildings.find(b => b._id === dropoffNode?.buildingId);
-                    const dropoffLabel = dropoffBuilding?.name ?? 'nearest access point';
-
-                    routeBarText.innerHTML = `
-                        <i class='bx bx-car'></i> Drive to ${dropoffLabel},
-                        then <i class='bx bx-walk'></i> walk to ${selectedBuilding.name}
-                    `;
-                    routeBar.classList.remove('hidden');
-                    return;
-                }
-            }
-        }
-
-        // ── Walking hybrid fallback: some sections require a vehicle road ──
-        // Try: walk to nearest vehicle entry → vehicle through restricted section → walk to dest
-        if (selectedMode === 'walking') {
-            const vehicleEntryId = findNearestVehicleDropoff(fromNode.id, toNode, graph.nodes, graph.edges);
-            if (vehicleEntryId && vehicleEntryId !== fromNode.id && vehicleEntryId !== toNode.id) {
-                const walkIn   = aStar(fromNode.id,     vehicleEntryId, graph.nodes, graph.edges, 'walking');
-                const viaVeh   = aStar(vehicleEntryId,  toNode.id,      graph.nodes, graph.edges, 'vehicle');
-                if (walkIn && viaVeh) {
-                    // Draw walk leg first, then vehicle leg (reuse drawHybridPath with legs swapped)
-                    drawHybridPath(viaVeh, walkIn); // vehicle shown amber, walk shown green
-                    directionsModal.classList.add('hidden');
-
-                    const vEntry = graph.nodes.find(n => n.id === vehicleEntryId);
-                    const vBuilding = allBuildings.find(b => b._id === vEntry?.buildingId);
-                    const vLabel = vBuilding?.name ?? 'vehicle road';
-
-                    routeBarText.innerHTML = `
-                        <i class='bx bx-walk'></i> Walk toward ${vLabel},
-                        then <i class='bx bx-car'></i> vehicle-only road to ${selectedBuilding.name}
-                        <span style="font-size:0.75em;opacity:0.8"> — part of this route requires a vehicle</span>
-                    `;
-                    routeBar.classList.remove('hidden');
-                    return;
-                }
-            }
-        }
-
-        routeBarText.textContent = 'No route found. Try a different starting point or travel mode.';
-        routeBar.classList.remove('hidden');
+    // ── 1. Try a direct same-mode path ──────────────────────────────────────
+    const directPath = aStar(fromNode.id, toNode.id, graph.nodes, graph.edges, selectedMode);
+    if (directPath) {
+        drawPath(directPath, selectedMode);
         directionsModal.classList.add('hidden');
+        const icon = selectedMode === 'walking' ? `<i class='bx bx-walk'></i>` : `<i class='bx bx-car'></i>`;
+        routeBarText.innerHTML = `${icon} ${fromLabel} → ${destLabel}`;
+        routeBar.classList.remove('hidden');
         return;
     }
 
-    drawPath(path, selectedMode);
-    directionsModal.classList.add('hidden');
+    // ── 2. Vehicle mode hybrid ───────────────────────────────────────────────
+    if (selectedMode === 'vehicle') {
+        // All vehicle nodes in the whole graph
+        const allVehicleNodes = new Set(
+            graph.nodes.filter(n => nodeHasMode(n.id, graph.edges, 'vehicle')).map(n => n.id)
+        );
 
-    const fromBuilding = allBuildings.find(b => b._id === selectedFromId);
-    const modeIcon = selectedMode === 'walking'
-        ? `<i class='bx bx-walk'></i>`
-        : `<i class='bx bx-car'></i>`;
-    routeBarText.innerHTML = `${modeIcon} ${fromBuilding?.name ?? 'Start'} → ${selectedBuilding.name}`;
+        const originOnRoad = nodeHasMode(fromNode.id, graph.edges, 'vehicle');
+        const destOnRoad   = nodeHasMode(toNode.id,   graph.edges, 'vehicle');
+
+        // --- find the vehicle entry point closest to destination (walk from origin) ---
+        // (only needed when origin has no road access)
+        const walkableFromOrigin = bfsReachable(fromNode.id, graph.nodes, graph.edges, 'walking');
+        const vehicleEntryId = originOnRoad
+            ? fromNode.id
+            : closestTo([...walkableFromOrigin].filter(id => allVehicleNodes.has(id)), toNode, nodeMap);
+
+        // --- find the vehicle dropoff point closest to destination (walk to dest) ---
+        // (only needed when destination has no road access)
+        const walkableFromDest = bfsReachable(toNode.id, graph.nodes, graph.edges, 'walking');
+        const vehicleDropoffId = destOnRoad
+            ? toNode.id
+            : (() => {
+                // From the vehicle entry, BFS all reachable vehicle nodes, pick closest
+                // that is also walkable-reachable to destination
+                if (!vehicleEntryId) return null;
+                const driveable = bfsReachable(vehicleEntryId, graph.nodes, graph.edges, 'vehicle');
+                return closestTo([...driveable].filter(id => walkableFromDest.has(id)), toNode, nodeMap);
+            })();
+
+        // Case A — origin NOT on road, destination IS on road
+        //   walk origin → vehicleEntry, then drive → destination
+        if (!originOnRoad && vehicleEntryId && destOnRoad) {
+            const walkLeg  = aStar(fromNode.id,    vehicleEntryId, graph.nodes, graph.edges, 'walking');
+            const driveLeg = aStar(vehicleEntryId, toNode.id,      graph.nodes, graph.edges, 'vehicle');
+            if (walkLeg && driveLeg) {
+                drawHybridPath(walkLeg, driveLeg, /* walkFirst */ true);
+                directionsModal.classList.add('hidden');
+                routeBarText.innerHTML = `
+                    <i class='bx bx-walk'></i> Walk to ${nodeLabel(vehicleEntryId)},
+                    then <i class='bx bx-car'></i> drive to ${destLabel}
+                `;
+                routeBar.classList.remove('hidden');
+                return;
+            }
+        }
+
+        // Case B — origin IS on road, destination NOT on road
+        //   drive origin → vehicleDropoff, then walk → destination
+        if (originOnRoad && vehicleDropoffId && !destOnRoad) {
+            const driveLeg = aStar(fromNode.id,     vehicleDropoffId, graph.nodes, graph.edges, 'vehicle');
+            const walkLeg  = aStar(vehicleDropoffId, toNode.id,        graph.nodes, graph.edges, 'walking');
+            if (driveLeg && walkLeg) {
+                drawHybridPath(driveLeg, walkLeg);
+                directionsModal.classList.add('hidden');
+                routeBarText.innerHTML = `
+                    <i class='bx bx-car'></i> Drive to ${nodeLabel(vehicleDropoffId)},
+                    then <i class='bx bx-walk'></i> walk to ${destLabel}
+                `;
+                routeBar.classList.remove('hidden');
+                return;
+            }
+        }
+
+        // Case C — neither origin nor destination on road
+        //   walk → vehicleEntry, drive → vehicleDropoff, walk → destination
+        if (!originOnRoad && vehicleEntryId && vehicleDropoffId && !destOnRoad) {
+            const walkIn   = aStar(fromNode.id,     vehicleEntryId,   graph.nodes, graph.edges, 'walking');
+            const driveLeg = aStar(vehicleEntryId,  vehicleDropoffId, graph.nodes, graph.edges, 'vehicle');
+            const walkOut  = aStar(vehicleDropoffId, toNode.id,        graph.nodes, graph.edges, 'walking');
+            if (walkIn && driveLeg && walkOut) {
+                draw3LegPath(walkIn, driveLeg, walkOut);
+                directionsModal.classList.add('hidden');
+                routeBarText.innerHTML = `
+                    <i class='bx bx-walk'></i> Walk to ${nodeLabel(vehicleEntryId)},
+                    <i class='bx bx-car'></i> drive to ${nodeLabel(vehicleDropoffId)},
+                    then <i class='bx bx-walk'></i> walk to ${destLabel}
+                `;
+                routeBar.classList.remove('hidden');
+                return;
+            }
+        }
+    }
+
+    // ── 3. Walking mode — no extra hybrid for now ────────────────────────────
+    routeBarText.textContent = 'No route found between these two locations.';
     routeBar.classList.remove('hidden');
+    directionsModal.classList.add('hidden');
 });
 
 // ─── Draw Path ────────────────────────────────────────────────────────────────
-// mode: 'walking' | 'vehicle' — affects the CSS class for colouring
 function drawPath(nodeIds, mode = 'walking') {
     clearPath();
 
@@ -975,25 +1007,30 @@ function drawPath(nodeIds, mode = 'walking') {
     const points = nodeIds.map(id => nodeMap[id]).filter(Boolean);
     if (points.length < 2) return;
 
-    // Use SVG <path> so getTotalLength() works for the draw-on animation
     const d = 'M ' + points.map(n => `${n.x},${n.y}`).join(' L ');
     const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     pathEl.setAttribute('d', d);
     pathEl.classList.add('path-line');
     if (mode === 'vehicle') pathEl.classList.add('path-vehicle');
+    else pathEl.classList.add('path-walk');
     svg.appendChild(pathEl);
     currentPathElements.push(pathEl);
 
-    // Animate: draw from total length → 0 (fill-in entrance)
     requestAnimationFrame(() => {
         const len = pathEl.getTotalLength();
-        pathEl.style.strokeDasharray = len;
+        const dur = Math.max(0.6, len / 600);
+        pathEl.style.strokeDasharray = len; // solid during draw-in
         pathEl.style.strokeDashoffset = len;
         pathEl.style.transition = 'none';
-        // Force reflow so the browser registers the start state
         pathEl.getBoundingClientRect();
-        pathEl.style.transition = `stroke-dashoffset ${Math.max(0.6, len / 600)}s cubic-bezier(0.4, 0, 0.2, 1)`;
+        pathEl.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(0.4,0,0.2,1)`;
         pathEl.style.strokeDashoffset = '0';
+        // After draw-in finishes, restore walk dashes
+        if (mode === 'walking') {
+            setTimeout(() => {
+                pathEl.style.strokeDasharray = '12 7';
+            }, dur * 1000);
+        }
     });
 
     // Start dot
@@ -1033,24 +1070,24 @@ function drawPath(nodeIds, mode = 'walking') {
     applyViewBox();
 }
 
-// ─── Draw Hybrid Path (vehicle leg + walk leg) ────────────────────────────────
-function drawHybridPath(vehicleNodeIds, walkNodeIds) {
+// ─── Draw Hybrid Path (2 legs) ────────────────────────────────────────────────
+// walkFirst=false (default): vehicle leg → walk leg  (Case B)
+// walkFirst=true:            walk leg   → vehicle leg (Case A)
+function drawHybridPath(leg1NodeIds, leg2NodeIds, walkFirst = false) {
     clearPath();
 
     const nodeMap = {};
     graph.nodes.forEach(n => nodeMap[n.id] = n);
 
-    function buildPathEl(nodeIds, cssClass, delayMs = 0) {
+    function buildLeg(nodeIds, cssClass, delayMs = 0) {
         const points = nodeIds.map(id => nodeMap[id]).filter(Boolean);
         if (points.length < 2) return null;
-
         const d = 'M ' + points.map(n => `${n.x},${n.y}`).join(' L ');
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         pathEl.setAttribute('d', d);
         pathEl.classList.add('path-line', cssClass);
         svg.appendChild(pathEl);
         currentPathElements.push(pathEl);
-
         requestAnimationFrame(() => {
             const len = pathEl.getTotalLength();
             const dur = Math.max(0.6, len / 600);
@@ -1058,81 +1095,156 @@ function drawHybridPath(vehicleNodeIds, walkNodeIds) {
             pathEl.style.strokeDashoffset = len;
             pathEl.style.transition = 'none';
             pathEl.getBoundingClientRect();
-
             setTimeout(() => {
-                pathEl.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(0.4, 0, 0.2, 1)`;
+                pathEl.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(0.4,0,0.2,1)`;
                 pathEl.style.strokeDashoffset = '0';
+                if (cssClass === 'path-walk') {
+                    setTimeout(() => { pathEl.style.strokeDasharray = '12 7'; }, dur * 1000);
+                }
             }, delayMs);
         });
-
         return points;
     }
 
-    const vPoints = buildPathEl(vehicleNodeIds, 'path-vehicle', 0);
-    // Walk leg starts after vehicle leg finishes — estimate vehicle duration
-    const vLen = vPoints ? vPoints.reduce((acc, p, i, arr) => {
-        if (i === 0) return 0;
-        return acc + Math.hypot(p.x - arr[i - 1].x, p.y - arr[i - 1].y);
-    }, 0) : 0;
-    const vDur = Math.max(600, vLen / 0.6); // ms
-
-    const wPoints = buildPathEl(walkNodeIds, 'path-walk', vDur);
-
-    // Start dot
-    const allPoints = [...(vPoints || [])];
-    if (allPoints.length) {
-        const startCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        startCircle.setAttribute('cx', allPoints[0].x);
-        startCircle.setAttribute('cy', allPoints[0].y);
-        startCircle.setAttribute('r', 10);
-        startCircle.classList.add('path-start');
-        svg.appendChild(startCircle);
-        currentPathElements.push(startCircle);
+    function legDur(points) {
+        if (!points) return 0;
+        const len = points.reduce((acc, p, i, arr) => i === 0 ? 0 : acc + Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y), 0);
+        return Math.max(600, len / 0.6);
     }
 
-    // Dropoff marker (where you park & walk)
-    const dropoff = vPoints?.[vPoints.length - 1];
-    if (dropoff) {
-        const dropoffCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        dropoffCircle.setAttribute('cx', dropoff.x);
-        dropoffCircle.setAttribute('cy', dropoff.y);
-        dropoffCircle.setAttribute('r', 10);
-        dropoffCircle.classList.add('path-dropoff', 'path-end--hidden');
-        svg.appendChild(dropoffCircle);
-        currentPathElements.push(dropoffCircle);
-        setTimeout(() => dropoffCircle.classList.remove('path-end--hidden'), vDur);
+    const [class1, class2] = walkFirst
+        ? ['path-walk', 'path-vehicle']
+        : ['path-vehicle', 'path-walk'];
+
+    const p1 = buildLeg(leg1NodeIds, class1, 0);
+    const dur1 = legDur(p1);
+    const p2 = buildLeg(leg2NodeIds, class2, dur1);
+
+    // Start dot
+    if (p1?.length) {
+        const sc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        sc.setAttribute('cx', p1[0].x); sc.setAttribute('cy', p1[0].y); sc.setAttribute('r', 10);
+        sc.classList.add('path-start');
+        svg.appendChild(sc); currentPathElements.push(sc);
+    }
+
+    // Transition marker (where mode switches)
+    const tx = p1?.[p1.length - 1];
+    if (tx && p2) {
+        const tc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        tc.setAttribute('cx', tx.x); tc.setAttribute('cy', tx.y); tc.setAttribute('r', 10);
+        tc.classList.add('path-dropoff', 'path-end--hidden');
+        svg.appendChild(tc); currentPathElements.push(tc);
+        setTimeout(() => tc.classList.remove('path-end--hidden'), dur1);
     }
 
     // End dot
-    const endPts = wPoints || vPoints;
+    const endPts = p2 || p1;
     const end = endPts?.[endPts.length - 1];
     if (end) {
-        const endCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        endCircle.setAttribute('cx', end.x);
-        endCircle.setAttribute('cy', end.y);
-        endCircle.setAttribute('r', 10);
-        endCircle.classList.add('path-end', 'path-end--hidden');
-        svg.appendChild(endCircle);
-        currentPathElements.push(endCircle);
-
-        const wLen = wPoints ? wPoints.reduce((acc, p, i, arr) => {
-            if (i === 0) return 0;
-            return acc + Math.hypot(p.x - arr[i - 1].x, p.y - arr[i - 1].y);
-        }, 0) : 0;
-        const wDur = Math.max(600, wLen / 0.6);
-        setTimeout(() => endCircle.classList.remove('path-end--hidden'), vDur + wDur);
+        const ec = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ec.setAttribute('cx', end.x); ec.setAttribute('cy', end.y); ec.setAttribute('r', 10);
+        ec.classList.add('path-end', 'path-end--hidden');
+        svg.appendChild(ec); currentPathElements.push(ec);
+        setTimeout(() => ec.classList.remove('path-end--hidden'), dur1 + legDur(p2));
     }
 
-    // Pan to middle of full combined path
-    const allPts = [...(vPoints || []), ...(wPoints || [])];
+    // Pan
+    const allPts = [...(p1 || []), ...(p2 || [])];
     if (allPts.length) {
         const mid = allPts[Math.floor(allPts.length / 2)];
-        viewBox.x = mid.x - 500;
-        viewBox.y = mid.y - 300;
-        viewBox.w = 1000;
-        viewBox.h = 600;
-        clampViewBox();
-        applyViewBox();
+        viewBox.x = mid.x - 500; viewBox.y = mid.y - 300;
+        viewBox.w = 1000; viewBox.h = 600;
+        clampViewBox(); applyViewBox();
+    }
+}
+
+// ─── Draw 3-Leg Path: walk → vehicle → walk ───────────────────────────────────
+function draw3LegPath(walkIn, driveLeg, walkOut) {
+    clearPath();
+
+    const nodeMap = {};
+    graph.nodes.forEach(n => nodeMap[n.id] = n);
+
+    function buildLeg(nodeIds, cssClass, delayMs = 0) {
+        const points = nodeIds.map(id => nodeMap[id]).filter(Boolean);
+        if (points.length < 2) return null;
+        const d = 'M ' + points.map(n => `${n.x},${n.y}`).join(' L ');
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('d', d);
+        pathEl.classList.add('path-line', cssClass);
+        svg.appendChild(pathEl);
+        currentPathElements.push(pathEl);
+        requestAnimationFrame(() => {
+            const len = pathEl.getTotalLength();
+            const dur = Math.max(0.6, len / 600);
+            pathEl.style.strokeDasharray = len;
+            pathEl.style.strokeDashoffset = len;
+            pathEl.style.transition = 'none';
+            pathEl.getBoundingClientRect();
+            setTimeout(() => {
+                pathEl.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(0.4,0,0.2,1)`;
+                pathEl.style.strokeDashoffset = '0';
+                if (cssClass === 'path-walk') {
+                    setTimeout(() => { pathEl.style.strokeDasharray = '12 7'; }, dur * 1000);
+                }
+            }, delayMs);
+        });
+        return points;
+    }
+
+    function legDur(points) {
+        if (!points) return 0;
+        const len = points.reduce((acc, p, i, arr) => i === 0 ? 0 : acc + Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y), 0);
+        return Math.max(600, len / 0.6);
+    }
+
+    const p1 = buildLeg(walkIn, 'path-walk', 0);
+    const d1 = legDur(p1);
+    const p2 = buildLeg(driveLeg, 'path-vehicle', d1);
+    const d2 = legDur(p2);
+    const p3 = buildLeg(walkOut, 'path-walk',    d1 + d2);
+
+    function addMarker(pt, cssClass, delay) {
+        if (!pt) return;
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('r', 10);
+        c.classList.add(cssClass, 'path-end--hidden');
+        svg.appendChild(c); currentPathElements.push(c);
+        setTimeout(() => c.classList.remove('path-end--hidden'), delay);
+    }
+
+    // Start dot
+    if (p1?.length) {
+        const sc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        sc.setAttribute('cx', p1[0].x); sc.setAttribute('cy', p1[0].y); sc.setAttribute('r', 10);
+        sc.classList.add('path-start');
+        svg.appendChild(sc); currentPathElements.push(sc);
+    }
+
+    // Transition 1: walk→vehicle
+    addMarker(p1?.[p1.length - 1], 'path-dropoff', d1);
+    // Transition 2: vehicle→walk
+    addMarker(p2?.[p2.length - 1], 'path-dropoff', d1 + d2);
+
+    // End dot
+    const endPts = p3 || p2 || p1;
+    const end = endPts?.[endPts.length - 1];
+    if (end) {
+        const ec = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ec.setAttribute('cx', end.x); ec.setAttribute('cy', end.y); ec.setAttribute('r', 10);
+        ec.classList.add('path-end', 'path-end--hidden');
+        svg.appendChild(ec); currentPathElements.push(ec);
+        setTimeout(() => ec.classList.remove('path-end--hidden'), d1 + d2 + legDur(p3));
+    }
+
+    // Pan
+    const allPts = [...(p1||[]), ...(p2||[]), ...(p3||[])];
+    if (allPts.length) {
+        const mid = allPts[Math.floor(allPts.length / 2)];
+        viewBox.x = mid.x - 500; viewBox.y = mid.y - 300;
+        viewBox.w = 1000; viewBox.h = 600;
+        clampViewBox(); applyViewBox();
     }
 }
 
