@@ -39,7 +39,8 @@ async function buildNodes(settings) {
   const res = await fetch("/api/scenes");
   const scenes = await res.json();
 
-  const infoIconUrl = settings.info_marker_icon_url ||
+  const infoIconUrl =
+    settings.info_marker_icon_url ||
     `https://tghodrmjcvuijdsgqbwj.supabase.co/storage/v1/object/public/virtual-tour/icons/info_modal/info_marker.png`;
 
   return scenes.map((scene) => {
@@ -95,7 +96,7 @@ async function initViewer() {
     moveInertia: true,
     maxTextureSize: 4096,
     defaultYaw: "0deg",
-    touchmoveTwoFingers: true,
+    touchmoveTwoFingers: false,
     mousewheelCtrlKey: true,
     navbar: false,
     plugins: [
@@ -116,7 +117,7 @@ async function initViewer() {
           positionMode: "manual",
           renderMode: "3d",
           maxTextureSize: 4096,
-          preload: false,        // ← disable preload — only load current scene
+          preload: false, // ← disable preload — only load current scene
           moveInertia: true,
           startNodeId: "Start",
           nodes,
@@ -140,28 +141,28 @@ async function initViewer() {
 
       // Handle special cases where marker ID prefix doesn't match scene ID
       const infoMarkerMap = {
-        "gate1":  "Gate 1",
-        "gate2":  "Gate 2",
-        "gate3":  "Gate 3",
-        "gate4":  "Gate 4",
-        "Statue": "Rotunda(front)",
-        "MAH":    "Lake Avenue (1)",
-        "BG":     "Lake Avenue (7)",
-        "CHC":    "Lake Avenue (7)",
-        "RSM":    "Gate 4 Way (6)",
-        "MP":     "Gate 4",
-        "MotorPool": "Motor Pool",
-        "ERC":    "AEA Road (2)",
-        "OVL":    "Oval (Lef)",
-        "GMH":    "AL (3)",
-        "FBH":    "Acacia Avenue (1)",
-        "KND":    "Acacia Avenue (4)",
-        "SAH":    "West Avenue (8)",
-        "SEC":    "West Avenue (12)",
-        "HS":     "HS (2)",
-        "GS":     "GS (1)",
-        "FCH":    "FCH (1)",
-        "LDH":    "LDH (1)",
+        gate1: "Gate 1",
+        gate2: "Gate 2",
+        gate3: "Gate 3",
+        gate4: "Gate 4",
+        Statue: "Rotunda(front)",
+        MAH: "Lake Avenue (1)",
+        BG: "Lake Avenue (7)",
+        CHC: "Lake Avenue (7)",
+        RSM: "Gate 4 Way (6)",
+        MP: "Gate 4",
+        MotorPool: "Motor Pool",
+        ERC: "AEA Road (2)",
+        OVL: "Oval (Lef)",
+        GMH: "AL (3)",
+        FBH: "Acacia Avenue (1)",
+        KND: "Acacia Avenue (4)",
+        SAH: "West Avenue (8)",
+        SEC: "West Avenue (12)",
+        HS: "HS (2)",
+        GS: "GS (1)",
+        FCH: "FCH (1)",
+        LDH: "LDH (1)",
       };
 
       if (infoMarkerMap[sceneId]) sceneId = infoMarkerMap[sceneId];

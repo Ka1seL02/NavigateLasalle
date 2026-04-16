@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Navigate La Salle</title>
+    <link rel="icon" href="/shared/img/system_icon.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Grenze:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Gupter:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
       rel="stylesheet"
@@ -19,7 +20,6 @@
   </head>
 
   <body>
-
     <!-- SIDEBAR LATCH (OPEN) -->
     <div id="sidebar-latch" onclick="toggleNav()">
       <img id="icon-latch" src="" alt="Open Sidebar" />
@@ -27,13 +27,15 @@
 
     <!-- SIDEBAR -->
     <div class="side-nav collapsed" id="side-nav">
-
-      
-
       <!-- Logo -->
       <div class="nav-logo">
         <img id="sidebar-logo" src="" class="logo logo-expanded" alt="Logo" />
-        <img id="sidebar-logo-collapsed" src="" class="logo logo-collapsed" alt="Logo" />
+        <img
+          id="sidebar-logo-collapsed"
+          src=""
+          class="logo logo-collapsed"
+          alt="Logo"
+        />
       </div>
 
       <!-- Divider 1: below logo -->
@@ -41,33 +43,75 @@
 
       <!-- Navigation Menu -->
       <div class="nav-item-container">
-        <div class="nav-item-row" id="buildings" onclick="toggleSubmenu('buildings')">
+        <div
+          class="nav-item-row"
+          id="buildings"
+          onclick="toggleSubmenu('buildings')"
+        >
           <div class="nav-item">
-            <span class="nav-icon-col"><img id="icon-buildings" src="" alt="Building Icon" class="nav-icon"/></span>
+            <span class="nav-icon-col"
+              ><img
+                id="icon-buildings"
+                src=""
+                alt="Building Icon"
+                class="nav-icon"
+            /></span>
             <span class="nav-text-col">Buildings</span>
           </div>
         </div>
-        <div class="nav-item-row" id="facilities" onclick="toggleSubmenu('facilities')">
+        <div
+          class="nav-item-row"
+          id="facilities"
+          onclick="toggleSubmenu('facilities')"
+        >
           <div class="nav-item">
-            <span class="nav-icon-col"><img id="icon-facilities" src="" alt="Facilities Icon" class="nav-icon"/></span>
+            <span class="nav-icon-col"
+              ><img
+                id="icon-facilities"
+                src=""
+                alt="Facilities Icon"
+                class="nav-icon"
+            /></span>
             <span class="nav-text-col">Facilities</span>
           </div>
         </div>
-        <div class="nav-item-row" id="landmarks" onclick="toggleSubmenu('landmarks')">
+        <div
+          class="nav-item-row"
+          id="landmarks"
+          onclick="toggleSubmenu('landmarks')"
+        >
           <div class="nav-item">
-            <span class="nav-icon-col"><img id="icon-landmarks" src="" alt="Landmarks Icon" class="nav-icon"/></span>
+            <span class="nav-icon-col"
+              ><img
+                id="icon-landmarks"
+                src=""
+                alt="Landmarks Icon"
+                class="nav-icon"
+            /></span>
             <span class="nav-text-col">Landmarks</span>
           </div>
         </div>
         <div class="nav-item-row" id="gates" onclick="toggleSubmenu('gates')">
           <div class="nav-item">
-            <span class="nav-icon-col"><img id="icon-gates" src="" alt="Gates Icon" class="nav-icon"/></span>
+            <span class="nav-icon-col"
+              ><img id="icon-gates" src="" alt="Gates Icon" class="nav-icon"
+            /></span>
             <span class="nav-text-col">Gates</span>
           </div>
         </div>
-        <div class="nav-item-row" id="parking" onclick="toggleSubmenu('parking')">
+        <div
+          class="nav-item-row"
+          id="parking"
+          onclick="toggleSubmenu('parking')"
+        >
           <div class="nav-item">
-            <span class="nav-icon-col"><img id="icon-parking" src="" alt="Parking Icon" class="nav-icon"/></span>
+            <span class="nav-icon-col"
+              ><img
+                id="icon-parking"
+                src=""
+                alt="Parking Icon"
+                class="nav-icon"
+            /></span>
             <span class="nav-text-col">Parking</span>
           </div>
         </div>
@@ -94,7 +138,9 @@
 
       <!-- DASHBOARD BUTTON -->
       <div class="widget" id="go-back">
-        <span class="nav-icon-col"><img class="nav-icon" id="dashboard-icon" src="" alt="Dashboard" /></span>
+        <span class="nav-icon-col"
+          ><img class="nav-icon" id="dashboard-icon" src="" alt="Dashboard"
+        /></span>
         <span class="nav-text-col" id="dashboard-label"></span>
       </div>
 
@@ -104,19 +150,23 @@
       <!-- Sidebar control -->
       <div class="sidebar-control">
         <div class="sb-control-inner">
-          <button id="sidebar-control-btn" class="sb-control-icon-btn" title="Sidebar Control">
+          <button
+            id="sidebar-control-btn"
+            class="sb-control-icon-btn"
+            title="Sidebar Control"
+          >
             <img id="icon-sidebar-control" src="" alt="Sidebar Control" />
             <div class="sb-control-menu" id="sb-control-menu">
               <p class="sb-control-title">Sidebar Control</p>
               <div class="sb-control-divider"></div>
               <div class="sb-control-option" id="sb-opt-expanded">Expanded</div>
-              <div class="sb-control-option" id="sb-opt-collapsed">Collapsed</div>
+              <div class="sb-control-option" id="sb-opt-collapsed">
+                Collapsed
+              </div>
             </div>
           </button>
         </div>
       </div>
-
-      
     </div>
 
     <!-- EXTENDED SIDEBAR (submenus populated by JS from Scenes API) -->
@@ -172,14 +222,12 @@
       </div>
     </div>
 
-    
-
     <!-- ===================== MODALS ===================== -->
 
     <!-- Welcome Modal (content populated by JS from Settings) -->
     <div id="welcome-box" class="welcome-overlay" style="display: none">
       <div class="welcome-content">
-        <img id="welcome-logo" src="" alt="Logo" class="welcome-logo"/>
+        <img id="welcome-logo" src="" alt="Logo" class="welcome-logo" />
         <h1 id="welcome-title"></h1>
         <h3 id="welcome-subtitle"></h3>
         <div id="welcome-description" class="welcome-description"></div>
@@ -201,7 +249,11 @@
     </div>
 
     <!-- Info Modal (content populated by JS from Scenes API on marker click) -->
-    <div id="building-info-box" class="welcome-overlay" style="display: none; opacity: 0; visibility: hidden">
+    <div
+      id="building-info-box"
+      class="welcome-overlay"
+      style="display: none; opacity: 0; visibility: hidden"
+    >
       <div class="welcome-content building-info-content">
         <h2 id="building-info-title"></h2>
         <p class="indented" id="building-info-desc"></p>

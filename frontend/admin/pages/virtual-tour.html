@@ -1,641 +1,1169 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Navigate La Salle</title>
     <!-- Global styles -->
-    <link rel="icon" href="/shared/img/system_icon.png">
-    <link rel="stylesheet" href="/shared/css/root.css">
-    <link rel="stylesheet" href="/shared/css/loading.css">
+    <link rel="icon" href="/shared/img/system_icon.png" />
+    <link rel="stylesheet" href="/shared/css/root.css" />
+    <link rel="stylesheet" href="/shared/css/loading.css" />
     <!-- Specific page style and other resources -->
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/toast.css">
-    <link rel="stylesheet" href="css/virtual-tour.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/quill@2.0.2/dist/quill.snow.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.13.1/index.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5.13.1/index.min.css">
-</head>
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/toast.css" />
+    <link rel="stylesheet" href="css/virtual-tour.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/quill@2.0.2/dist/quill.snow.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.13.1/index.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5.13.1/index.min.css"
+    />
+  </head>
 
-<body>
+  <body>
     <div id="sidebar-container"></div>
 
     <main>
-        <div class="page-header">
-            <div class="page-header-left">
-                <h1 class="page-title">Virtual Tour</h1>
-                <p class="page-subtitle">Manage scenes, sidebar settings, and tour content.</p>
-            </div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">Virtual Tour</h1>
+          <p class="page-subtitle">
+            Manage scenes, sidebar settings, and tour content.
+          </p>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <!-- View Tabs -->
+        <div class="view-tabs">
+          <button class="tab-btn active" id="scenesTabBtn">
+            <i class="bx bx-landscape"></i> Scenes
+          </button>
+          <button class="tab-btn" id="sidebarTabBtn">
+            <i class="bx bx-cog"></i> Settings
+          </button>
         </div>
 
-        <div class="main-content">
-            <!-- View Tabs -->
-            <div class="view-tabs">
-                <button class="tab-btn active" id="scenesTabBtn">
-                    <i class='bx bx-landscape'></i> Scenes
-                </button>
-                <button class="tab-btn" id="sidebarTabBtn">
-                    <i class='bx bx-cog'></i> Settings
-                </button>
+        <!-- ═══════════════ SCENES TAB ═══════════════ -->
+        <div id="scenesView">
+          <!-- ──── STAGE 1: BROWSE ──── -->
+          <div id="browseStage" class="browse-container">
+            <!-- Category Sidebar -->
+            <div class="cat-sidebar">
+              <div class="cat-header">
+                <div class="cat-header-title">Scenes</div>
+                <div class="cat-header-sub" id="totalScenesCount">0 scenes</div>
+              </div>
+              <div class="cat-list" id="catList"></div>
             </div>
 
-            <!-- ═══════════════ SCENES TAB ═══════════════ -->
-            <div id="scenesView">
-                <!-- ──── STAGE 1: BROWSE ──── -->
-                <div id="browseStage" class="browse-container">
-                    <!-- Category Sidebar -->
-                    <div class="cat-sidebar">
-                        <div class="cat-header">
-                            <div class="cat-header-title">Scenes</div>
-                            <div class="cat-header-sub" id="totalScenesCount">0 scenes</div>
-                        </div>
-                        <div class="cat-list" id="catList"></div>
-                    </div>
+            <!-- Main Browse Area -->
+            <div class="browse-main">
+              <div class="browse-toolbar">
+                <span class="browse-title" id="browseTitle">All</span>
+                <span class="browse-sub" id="browseSub">0 scenes</span>
+                <div class="view-switcher" id="viewSwitcher">
+                  <button
+                    class="view-btn active"
+                    data-view="cards"
+                    title="Cards"
+                  >
+                    <i class="bx bx-grid-alt"></i>
+                  </button>
+                  <button class="view-btn" data-view="table" title="Table">
+                    <i class="bx bx-list-ul"></i>
+                  </button>
+                  <button class="view-btn" data-view="strip" title="Strip list">
+                    <i class="bx bx-menu"></i>
+                  </button>
+                  <button
+                    class="view-btn"
+                    data-view="pano"
+                    title="Panorama grid"
+                  >
+                    <i class="bx bx-landscape"></i>
+                  </button>
+                  <button class="view-btn" data-view="grouped" title="Grouped">
+                    <i class="bx bx-layer"></i>
+                  </button>
+                </div>
+                <div class="search-wrap search-wrap-sm">
+                  <i class="bx bx-search"></i>
+                  <input type="text" id="sceneSearch" placeholder="Search..." />
+                </div>
+              </div>
+              <div class="campus-tabs">
+                <button class="campus-tab active" data-campus="">All</button>
+                <button class="campus-tab" data-campus="east">East</button>
+                <button class="campus-tab" data-campus="west">West</button>
+              </div>
+              <div class="card-grid" id="cardGrid"></div>
+            </div>
+          </div>
 
-                    <!-- Main Browse Area -->
-                    <div class="browse-main">
-                        <div class="browse-toolbar">
-                            <span class="browse-title" id="browseTitle">All</span>
-                            <span class="browse-sub" id="browseSub">0 scenes</span>
-                            <div class="view-switcher" id="viewSwitcher">
-                                <button class="view-btn active" data-view="cards" title="Cards"><i class='bx bx-grid-alt'></i></button>
-                                <button class="view-btn" data-view="table" title="Table"><i class='bx bx-list-ul'></i></button>
-                                <button class="view-btn" data-view="strip" title="Strip list"><i class='bx bx-menu'></i></button>
-                                <button class="view-btn" data-view="pano" title="Panorama grid"><i class='bx bx-landscape'></i></button>
-                                <button class="view-btn" data-view="grouped" title="Grouped"><i class='bx bx-layer'></i></button>
-                            </div>
-                            <div class="search-wrap search-wrap-sm">
-                                <i class='bx bx-search'></i>
-                                <input type="text" id="sceneSearch" placeholder="Search..." />
-                            </div>
-                        </div>
-                        <div class="campus-tabs">
-                            <button class="campus-tab active" data-campus="">All</button>
-                            <button class="campus-tab" data-campus="east">East</button>
-                            <button class="campus-tab" data-campus="west">West</button>
-                        </div>
-                        <div class="card-grid" id="cardGrid"></div>
+          <!-- ──── STAGE 2: EDIT ──── -->
+          <div id="editStage" class="edit-container hidden">
+            <!-- Edit Top Bar -->
+            <div class="edit-topbar">
+              <button class="back-btn" id="backBtn">
+                <i class="bx bx-chevron-left"></i>
+                <span id="backLabel">Back</span>
+              </button>
+              <span class="edit-topbar-title" id="editTitle">Edit Scene</span>
+              <div class="edit-topbar-meta" id="editMeta"></div>
+              <div class="edit-topbar-right">
+                <button class="edit-scene-btn" id="editSceneBtn">
+                  <i class="bx bx-edit-alt"></i> Edit
+                </button>
+                <button class="discard-btn hidden" id="discardBtn">
+                  Discard
+                </button>
+                <button class="save-btn hidden" id="saveSceneBtn">
+                  <i class="bx bx-save"></i> Save Changes
+                </button>
+              </div>
+            </div>
+
+            <!-- Edit Body -->
+            <div class="edit-body">
+              <!-- Left: Panorama Viewer Zone -->
+              <div class="psv-zone">
+                <div class="psv-view">
+                  <div id="psvViewer" style="width: 100%; height: 100%"></div>
+                  <button
+                    class="psv-fullscreen-btn"
+                    id="psvFullscreenBtn"
+                    title="Fullscreen"
+                  >
+                    <i class="bx bx-fullscreen"></i>
+                  </button>
+                  <!-- Locked overlay -->
+                  <div class="locked-overlay" id="lockedOverlay">
+                    <div class="lock-icon"><i class="bx bx-lock-alt"></i></div>
+                    <div class="lock-text">
+                      Scene is locked<br />Click Edit to make changes
                     </div>
+                  </div>
+                </div>
+                <div class="psv-info-bar">
+                  <span id="psvInfoId"></span>
+                  <span id="psvInfoCampus"></span>
+                  <span id="psvInfoCategory"></span>
+                </div>
+              </div>
+
+              <div class="resizer-handle" id="editResizer"></div>
+
+              <!-- Right: Panel with Tabs -->
+              <div class="right-panel is-wide">
+                <div class="panel-tabs">
+                  <button class="panel-tab active" data-panel="scene">
+                    Scene
+                  </button>
+                  <button class="panel-tab" data-panel="markers">
+                    Markers
+                  </button>
+                  <button class="panel-tab" data-panel="modal">Modal</button>
                 </div>
 
-                <!-- ──── STAGE 2: EDIT ──── -->
-                <div id="editStage" class="edit-container hidden">
-                    <!-- Edit Top Bar -->
-                    <div class="edit-topbar">
-                        <button class="back-btn" id="backBtn">
-                            <i class='bx bx-chevron-left'></i>
-                            <span id="backLabel">Back</span>
+                <div class="panel-scroll">
+                  <!-- ── Scene Panel ── -->
+                  <div class="panel-content" id="panelScene">
+                    <div class="psec">
+                      <div class="psec-head">Info</div>
+                      <div class="psec-body">
+                        <div class="pfield">
+                          <label>Title</label>
+                          <input
+                            type="text"
+                            id="pSceneTitle"
+                            class="pfield-input"
+                            disabled
+                          />
+                        </div>
+                        <div class="pfield">
+                          <label>Campus</label>
+                          <select
+                            id="pSceneCampus"
+                            class="pfield-input"
+                            disabled
+                          >
+                            <option value="east">East</option>
+                            <option value="west">West</option>
+                            <option value="both">Both</option>
+                          </select>
+                        </div>
+                        <div class="pfield">
+                          <label>Category</label>
+                          <select
+                            id="pSceneCategory"
+                            class="pfield-input"
+                            disabled
+                          >
+                            <option value="buildings">Buildings</option>
+                            <option value="facilities">Facilities</option>
+                            <option value="landmarks">Landmarks</option>
+                            <option value="gates">Gates</option>
+                            <option value="parking">Parking Areas</option>
+                            <option value="roads">Roads</option>
+                            <option value="start">Start</option>
+                          </select>
+                        </div>
+                        <div class="pfield" id="sidebarLabelField">
+                          <label>Sidebar Label</label>
+                          <input
+                            type="text"
+                            id="pSceneSidebarLabel"
+                            class="pfield-input"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="psec">
+                      <div class="psec-head">Panorama</div>
+                      <div class="psec-body">
+                        <div class="pano-preview-wrap" id="panoPreviewWrap">
+                          <img id="panoThumb" src="" alt="Current panorama" />
+                        </div>
+                        <div class="pano-upload-area" id="panoUploadArea">
+                          <i class="bx bx-cloud-upload"></i>
+                          <p>Click or drag to replace panorama</p>
+                          <span>WEBP only up to 30MB</span>
+                          <input
+                            type="file"
+                            id="panoramaInput"
+                            accept=".webp"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ── Markers Panel ── -->
+                  <div class="panel-content hidden" id="panelMarkers">
+                    <div class="psec">
+                      <div class="psec-head">Navigation Markers</div>
+                      <!-- Removed Edit Marker Positions button and toolbar -->
+                      <div class="psec-body" id="navMarkersList"></div>
+                    </div>
+                    <div class="psec">
+                      <div class="psec-head">Info Markers</div>
+                      <div class="psec-body" id="infoMarkersList"></div>
+                    </div>
+                  </div>
+
+                  <!-- ── Modal Panel ── -->
+                  <div class="panel-content hidden" id="panelModal">
+                    <div class="psec">
+                      <div class="psec-head">Info Modal Content</div>
+                      <div class="psec-body">
+                        <div class="pfield">
+                          <label>Title</label>
+                          <input
+                            type="text"
+                            id="modalTitle"
+                            class="pfield-input"
+                            placeholder="e.g. Julian Felipe Hall"
+                          />
+                        </div>
+                        <div class="pfield">
+                          <label>Description</label>
+                          <div id="quillEditor"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="psec">
+                      <div class="psec-head">Gallery</div>
+                      <div class="psec-body">
+                        <div class="gal-grid" id="galleryGrid"></div>
+                        <button class="replace-btn" id="addGalleryBtn">
+                          <i class="bx bx-plus"></i> Add Images
                         </button>
-                        <span class="edit-topbar-title" id="editTitle">Edit Scene</span>
-                        <div class="edit-topbar-meta" id="editMeta"></div>
-                        <div class="edit-topbar-right">
-                            <button class="edit-scene-btn" id="editSceneBtn">
-                                <i class='bx bx-edit-alt'></i> Edit
-                            </button>
-                            <button class="discard-btn hidden" id="discardBtn">Discard</button>
-                            <button class="save-btn hidden" id="saveSceneBtn">
-                                <i class='bx bx-save'></i> Save Changes
-                            </button>
-                        </div>
+                        <input
+                          type="file"
+                          id="galleryInput"
+                          multiple
+                          accept="image/*"
+                          class="hidden"
+                        />
+                      </div>
                     </div>
-
-                    <!-- Edit Body -->
-                    <div class="edit-body">
-                        <!-- Left: Panorama Viewer Zone -->
-                        <div class="psv-zone">
-                            <div class="psv-view">
-                                <div id="psvViewer" style="width:100%;height:100%;"></div>
-                                <button class="psv-fullscreen-btn" id="psvFullscreenBtn" title="Fullscreen"><i class='bx bx-fullscreen'></i></button>
-                                <!-- Locked overlay -->
-                                <div class="locked-overlay" id="lockedOverlay">
-                                    <div class="lock-icon"><i class='bx bx-lock-alt'></i></div>
-                                    <div class="lock-text">Scene is locked<br>Click Edit to make changes</div>
-                                </div>
-                            </div>
-                            <div class="psv-info-bar">
-                                <span id="psvInfoId"></span>
-                                <span id="psvInfoCampus"></span>
-                                <span id="psvInfoCategory"></span>
-                            </div>
+                    <div class="psec">
+                      <div class="psec-head">Audio</div>
+                      <div class="psec-body">
+                        <div class="audio-row" id="sceneAudioRow">
+                          <div class="audio-play" id="audioPlayBtn">
+                            <i class="bx bx-play"></i>
+                          </div>
+                          <div class="audio-name" id="sceneAudioName">
+                            No audio
+                          </div>
+                          <button class="mrow-btn" id="replaceAudioBtn">
+                            Replace
+                          </button>
                         </div>
-
-                        <!-- Right: Panel with Tabs -->
-                        <div class="right-panel">
-                            <div class="panel-tabs">
-                                <button class="panel-tab active" data-panel="scene">Scene</button>
-                                <button class="panel-tab" data-panel="markers">Markers</button>
-                                <button class="panel-tab" data-panel="modal">Modal</button>
-                            </div>
-
-                            <div class="panel-scroll">
-                                <!-- ── Scene Panel ── -->
-                                <div class="panel-content" id="panelScene">
-                                    <div class="psec">
-                                        <div class="psec-head">Info</div>
-                                        <div class="psec-body">
-                                            <div class="pfield">
-                                                <label>Title</label>
-                                                <input type="text" id="pSceneTitle" class="pfield-input" disabled />
-                                            </div>
-                                            <div class="pfield">
-                                                <label>Campus</label>
-                                                <select id="pSceneCampus" class="pfield-input" disabled>
-                                                    <option value="east">East</option>
-                                                    <option value="west">West</option>
-                                                    <option value="both">Both</option>
-                                                </select>
-                                            </div>
-                                            <div class="pfield">
-                                                <label>Category</label>
-                                                <select id="pSceneCategory" class="pfield-input" disabled>
-                                                    <option value="buildings">Buildings</option>
-                                                    <option value="facilities">Facilities</option>
-                                                    <option value="landmarks">Landmarks</option>
-                                                    <option value="gates">Gates</option>
-                                                    <option value="parking">Parking Areas</option>
-                                                    <option value="roads">Roads</option>
-                                                    <option value="start">Start</option>
-                                                </select>
-                                            </div>
-                                            <div class="pfield" id="sidebarLabelField">
-                                                <label>Sidebar Label</label>
-                                                <input type="text" id="pSceneSidebarLabel" class="pfield-input" disabled />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="psec">
-                                        <div class="psec-head">Panorama</div>
-                                        <div class="psec-body">
-                                            <div class="pano-preview-wrap" id="panoPreviewWrap">
-                                                <img id="panoThumb" src="" alt="Current panorama" />
-                                            </div>
-                                            <div class="pano-upload-area" id="panoUploadArea">
-                                                <i class='bx bx-cloud-upload'></i>
-                                                <p>Click or drag to replace panorama</p>
-                                                <span>WEBP only — 8192 × 4096</span>
-                                                <input type="file" id="panoramaInput" accept=".webp" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- ── Markers Panel ── -->
-                                <div class="panel-content hidden" id="panelMarkers">
-                                    <div class="psec">
-                                        <div class="psec-head">Navigation Markers</div>
-                                        <div class="psec-body" id="navMarkersList"></div>
-                                    </div>
-                                    <div class="psec">
-                                        <div class="psec-head">Info Markers</div>
-                                        <div class="psec-body" id="infoMarkersList"></div>
-                                    </div>
-                                </div>
-
-                                <!-- ── Modal Panel ── -->
-                                <div class="panel-content hidden" id="panelModal">
-                                    <div class="psec">
-                                        <div class="psec-head">Info Modal Content</div>
-                                        <div class="psec-body">
-                                            <div class="pfield">
-                                                <label>Title</label>
-                                                <input type="text" id="modalTitle" class="pfield-input" placeholder="e.g. Julian Felipe Hall" />
-                                            </div>
-                                            <div class="pfield">
-                                                <label>Description</label>
-                                                <div id="quillEditor"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="psec">
-                                        <div class="psec-head">Gallery</div>
-                                        <div class="psec-body">
-                                            <div class="gal-grid" id="galleryGrid"></div>
-                                            <button class="replace-btn" id="addGalleryBtn">
-                                                <i class='bx bx-plus'></i> Add Images
-                                            </button>
-                                            <input type="file" id="galleryInput" multiple accept="image/*" class="hidden" />
-                                        </div>
-                                    </div>
-                                    <div class="psec">
-                                        <div class="psec-head">Audio</div>
-                                        <div class="psec-body">
-                                            <div class="audio-row" id="sceneAudioRow">
-                                                <div class="audio-play" id="audioPlayBtn">
-                                                    <i class='bx bx-play'></i>
-                                                </div>
-                                                <div class="audio-name" id="sceneAudioName">No audio</div>
-                                                <button class="mrow-btn" id="replaceAudioBtn">Replace</button>
-                                            </div>
-                                            <audio id="sceneAudioPreview" class="hidden"></audio>
-                                            <input type="file" id="sceneAudioInput" accept="audio/*" class="hidden" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <audio id="sceneAudioPreview" class="hidden"></audio>
+                        <input
+                          type="file"
+                          id="sceneAudioInput"
+                          accept="audio/*"
+                          class="hidden"
+                        />
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
-
-            <!-- ═══════════════ SETTINGS TAB ═══════════════ -->
-            <div id="sidebarSettingsView" class="hidden">
-                <div class="stg-scroll">
-                    <div class="stg-layout">
-                        <!-- ── Left Column: Welcome Modal ── -->
-                        <div class="stg-col-main">
-                            <div class="stg-form-card stg-locked" id="welcomeCard">
-                                <div class="stg-form-card-header">
-                                    <h2 class="stg-form-card-title">Welcome Modal</h2>
-                                    <div class="stg-header-actions">
-                                        <button class="stg-edit-btn" id="editWelcomeBtn"><i class='bx bx-edit-alt'></i> Edit</button>
-                                        <button class="cancel-btn hidden" id="cancelWelcomeBtn">Cancel</button>
-                                        <button class="save-btn hidden" id="saveWelcomeBtn"><i class='bx bx-save'></i> Save Changes</button>
-                                    </div>
-                                </div>
-
-                                <!-- Live Preview -->
-                                <div class="stg-wp-preview-wrap">
-                                    <div class="stg-wp-overlay">
-                                        <div class="stg-wp-modal" id="wpModal">
-                                            <img class="stg-wp-logo" id="wpLogo" src="" alt="" />
-                                            <h1 class="stg-wp-title" id="wpTitle">Welcome</h1>
-                                            <h3 class="stg-wp-sub" id="wpSub">Explore the campus</h3>
-                                            <div class="stg-wp-desc" id="wpDesc"></div>
-                                            <button class="stg-wp-btn" type="button"><span id="wpBtnText">Start Tour</span></button>
-                                            <!-- Resize handles (visible only in edit mode) -->
-                                            <div class="stg-resize-handle stg-resize-t" data-dir="t"></div>
-                                            <div class="stg-resize-handle stg-resize-b" data-dir="b"></div>
-                                            <div class="stg-resize-handle stg-resize-l" data-dir="l"></div>
-                                            <div class="stg-resize-handle stg-resize-r" data-dir="r"></div>
-                                            <div class="stg-resize-handle stg-resize-tl" data-dir="tl"></div>
-                                            <div class="stg-resize-handle stg-resize-tr" data-dir="tr"></div>
-                                            <div class="stg-resize-handle stg-resize-bl" data-dir="bl"></div>
-                                            <div class="stg-resize-handle stg-resize-br" data-dir="br"></div>
-                                        </div>
-                                    </div>
-                                    <div class="stg-preview-label">Live preview — reflects current settings · drag handles to resize</div>
-                                </div>
-
-                                <!-- Form Fields -->
-                                <div class="stg-form-body">
-                                    <!-- Modal Size -->
-                                    <div class="stg-form-group">
-                                        <label>Modal Size</label>
-                                        <div class="stg-size-fields stg-size-fields-row">
-                                            <div class="stg-size-field">
-                                                <label for="modalWidth">Width <span class="stg-size-unit">px</span></label>
-                                                <input type="number" id="modalWidth" disabled min="300" max="1200" placeholder="600" />
-                                            </div>
-                                            <div class="stg-size-field">
-                                                <label for="modalHeight">Height <span class="stg-size-unit">px</span></label>
-                                                <input type="number" id="modalHeight" disabled min="200" max="900" placeholder="400" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="stg-form-group">
-                                        <label for="welcomeTitle">Tour Title <span class="required required-indicator">*</span></label>
-                                        <input type="text" id="welcomeTitle" disabled placeholder="Welcome to Navigate La Salle" />
-                                    </div>
-                                    <div class="stg-form-group">
-                                        <label for="welcomeSubtitle">Subtitle / Tagline <span class="required required-indicator">*</span></label>
-                                        <input type="text" id="welcomeSubtitle" disabled placeholder="Explore the DLSU-D Campus in 360°" />
-                                    </div>
-                                    <div class="stg-form-group">
-                                        <label for="welcomeDescription">Description <span class="required required-indicator">*</span></label>
-                                        <div id="settingsQuillEditor"></div>
-                                    </div>
-                                    <div class="stg-form-group">
-                                        <label for="welcomeBtnLabel">Enter Button Label <span class="required required-indicator">*</span></label>
-                                        <input type="text" id="welcomeBtnLabel" disabled placeholder="Start Tour" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ── Right Column: Sidebar + Assets ── -->
-                        <div class="stg-col-side">
-                            <!-- Sidebar Card -->
-                            <div class="stg-form-card stg-locked" id="sidebarCard">
-                                <div class="stg-form-card-header">
-                                    <h2 class="stg-form-card-title">Sidebar</h2>
-                                    <div class="stg-header-actions">
-                                        <button class="stg-edit-btn" id="editSidebarBtn"><i class='bx bx-edit-alt'></i> Edit</button>
-                                        <button class="cancel-btn hidden" id="cancelSidebarBtn">Cancel</button>
-                                        <button class="save-btn hidden" id="saveSidebarBtn"><i class='bx bx-save'></i> Save Changes</button>
-                                    </div>
-                                </div>
-
-                                <!-- Sidebar Preview -->
-                                <div class="stg-sb-preview-wrap">
-                                    <div class="stg-sb-overlay">
-                                        <!-- Expanded Sidebar -->
-                                        <div class="sidebar-preview">
-                                            <div class="sp-logo-area">
-                                                <img class="sp-logo" id="spLogo" src="" alt="" />
-                                            </div>
-                                            <div class="sp-sep"></div>
-                                            <div class="sp-nav">
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spIconBuildings" src="" alt="" class="sp-icon" /></span>
-                                                    <span class="sp-text-col">Buildings</span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spIconFacilities" src="" alt="" class="sp-icon" /></span>
-                                                    <span class="sp-text-col">Facilities</span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spIconLandmarks" src="" alt="" class="sp-icon" /></span>
-                                                    <span class="sp-text-col">Landmarks</span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spIconGates" src="" alt="" class="sp-icon" /></span>
-                                                    <span class="sp-text-col">Gates</span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spIconParking" src="" alt="" class="sp-icon" /></span>
-                                                    <span class="sp-text-col">Parking</span>
-                                                </div>
-                                            </div>
-                                            <div class="sp-spacer"></div>
-                                            <div class="sp-func-row">
-                                                <div class="sp-func"><img id="spIconNarrative" src="" alt="" class="sp-func-icon" /></div>
-                                                <div class="sp-func"><img id="spIconVideo" src="" alt="" class="sp-func-icon" /></div>
-                                                <div class="sp-func"><img id="spIconBgm" src="" alt="" class="sp-func-icon" /></div>
-                                            </div>
-                                            <div class="sp-dashboard">
-                                                <span class="sp-icon-col"><img id="spIconDashboard" src="" alt="" class="sp-icon" /></span>
-                                                <span class="sp-text-col" id="spDashboardLabel">Dashboard</span>
-                                            </div>
-                                            <div class="sp-sep"></div>
-                                            <div class="sp-control">
-                                                <span class="sp-icon-col"><img id="spIconControl" src="" alt="" class="sp-icon" /></span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Collapsed Sidebar -->
-                                        <div class="sidebar-preview sp-collapsed">
-                                            <div class="sp-logo-area">
-                                                <img class="sp-logo" id="spLogoCollapsed" src="" alt="" />
-                                            </div>
-                                            <div class="sp-sep"></div>
-                                            <div class="sp-nav">
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spCIconBuildings" src="" alt="" class="sp-icon" /></span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spCIconFacilities" src="" alt="" class="sp-icon" /></span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spCIconLandmarks" src="" alt="" class="sp-icon" /></span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spCIconGates" src="" alt="" class="sp-icon" /></span>
-                                                </div>
-                                                <div class="sp-item">
-                                                    <span class="sp-icon-col"><img id="spCIconParking" src="" alt="" class="sp-icon" /></span>
-                                                </div>
-                                            </div>
-                                            <div class="sp-spacer"></div>
-                                            <div class="sp-func-row">
-                                                <div class="sp-func"><img id="spCIconNarrative" src="" alt="" class="sp-func-icon" /></div>
-                                                <div class="sp-func"><img id="spCIconVideo" src="" alt="" class="sp-func-icon" /></div>
-                                                <div class="sp-func"><img id="spCIconBgm" src="" alt="" class="sp-func-icon" /></div>
-                                            </div>
-                                            <div class="sp-dashboard">
-                                                <span class="sp-icon-col"><img id="spCIconDashboard" src="" alt="" class="sp-icon" /></span>
-                                            </div>
-                                            <div class="sp-sep"></div>
-                                            <div class="sp-control">
-                                                <span class="sp-icon-col"><img id="spCIconControl" src="" alt="" class="sp-icon" /></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="stg-preview-label">Live preview — reflects current settings</div>
-                                </div>
-
-                                <!-- Sidebar Tabs -->
-                                <div class="stg-sb-tabs">
-                                    <button class="stg-sb-tab active" data-tab="sb-logos">Logos</button>
-                                    <button class="stg-sb-tab" data-tab="sb-icons">Icons</button>
-                                    <button class="stg-sb-tab" data-tab="sb-assets">Assets</button>
-                                </div>
-
-                                <!-- ── Logos Tab ── -->
-                                <div class="stg-sb-tab-content active" id="sb-logos">
-                                    <div class="stg-form-body">
-                                        <div class="stg-form-group">
-                                            <label>Expanded Logo <span class="required required-indicator">*</span></label>
-                                            <p class="stg-form-hint">Shown when sidebar is open</p>
-                                            <div class="stg-logo-display stg-logo-wide">
-                                                <img id="logoPreview" src="" alt="" />
-                                                <i class='bx bx-image stg-logo-fallback'></i>
-                                            </div>
-                                            <div class="upload-area stg-upload" id="logoUploadArea">
-                                                <i class='bx bx-cloud-upload'></i>
-                                                <p>Click or drag to replace expanded logo</p>
-                                                <span>PNG, SVG, WEBP up to 5MB · Recommended: 200×50px</span>
-                                                <input type="file" id="logoInput" accept="image/*" />
-                                            </div>
-                                        </div>
-                                        <div class="stg-form-group">
-                                            <label>Collapsed Logo <span class="required required-indicator">*</span></label>
-                                            <p class="stg-form-hint">Shown when sidebar is collapsed</p>
-                                            <div class="stg-logo-display">
-                                                <img id="logoCollapsedPreview" src="" alt="" />
-                                                <i class='bx bx-image stg-logo-fallback'></i>
-                                            </div>
-                                            <div class="upload-area stg-upload" id="logoCollapsedUploadArea">
-                                                <i class='bx bx-cloud-upload'></i>
-                                                <p>Click or drag to replace collapsed logo</p>
-                                                <span>PNG, SVG, WEBP up to 5MB · Recommended: 40×40px</span>
-                                                <input type="file" id="logoCollapsedInput" accept="image/*" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- ── Icons Tab ── -->
-                                <div class="stg-sb-tab-content" id="sb-icons">
-                                    <div class="stg-form-body">
-                                        <p class="stg-form-hint">Icons shown next to each sidebar category</p>
-
-                                        <div class="stg-icon-grid">
-                                            <!-- Buildings -->
-                                            <div class="stg-icon-card">
-                                                <label>Buildings <span class="required required-indicator">*</span></label>
-                                                <div class="stg-icon-display">
-                                                    <img id="iconBuildingsPreview" src="" alt="" />
-                                                    <i class='bx bx-image stg-logo-fallback'></i>
-                                                </div>
-                                                <div class="upload-area upload-area-sm stg-upload" id="iconBuildingsUploadArea">
-                                                    <i class='bx bx-cloud-upload'></i>
-                                                    <p>Replace icon</p>
-                                                    <input type="file" id="iconBuildingsInput" accept="image/*" />
-                                                </div>
-                                            </div>
-                                            <!-- Gates -->
-                                            <div class="stg-icon-card">
-                                                <label>Gates <span class="required required-indicator">*</span></label>
-                                                <div class="stg-icon-display">
-                                                    <img id="iconGatesPreview" src="" alt="" />
-                                                    <i class='bx bx-image stg-logo-fallback'></i>
-                                                </div>
-                                                <div class="upload-area upload-area-sm stg-upload" id="iconGatesUploadArea">
-                                                    <i class='bx bx-cloud-upload'></i>
-                                                    <p>Replace icon</p>
-                                                    <input type="file" id="iconGatesInput" accept="image/*" />
-                                                </div>
-                                            </div>
-                                            <!-- Facilities -->
-                                            <div class="stg-icon-card">
-                                                <label>Facilities <span class="required required-indicator">*</span></label>
-                                                <div class="stg-icon-display">
-                                                    <img id="iconFacilitiesPreview" src="" alt="" />
-                                                    <i class='bx bx-image stg-logo-fallback'></i>
-                                                </div>
-                                                <div class="upload-area upload-area-sm stg-upload" id="iconFacilitiesUploadArea">
-                                                    <i class='bx bx-cloud-upload'></i>
-                                                    <p>Replace icon</p>
-                                                    <input type="file" id="iconFacilitiesInput" accept="image/*" />
-                                                </div>
-                                            </div>
-                                            <!-- Parking -->
-                                            <div class="stg-icon-card">
-                                                <label>Parking <span class="required required-indicator">*</span></label>
-                                                <div class="stg-icon-display">
-                                                    <img id="iconParkingPreview" src="" alt="" />
-                                                    <i class='bx bx-image stg-logo-fallback'></i>
-                                                </div>
-                                                <div class="upload-area upload-area-sm stg-upload" id="iconParkingUploadArea">
-                                                    <i class='bx bx-cloud-upload'></i>
-                                                    <p>Replace icon</p>
-                                                    <input type="file" id="iconParkingInput" accept="image/*" />
-                                                </div>
-                                            </div>
-                                            <!-- Landmarks -->
-                                            <div class="stg-icon-card">
-                                                <label>Landmarks <span class="required required-indicator">*</span></label>
-                                                <div class="stg-icon-display">
-                                                    <img id="iconLandmarksPreview" src="" alt="" />
-                                                    <i class='bx bx-image stg-logo-fallback'></i>
-                                                </div>
-                                                <div class="upload-area upload-area-sm stg-upload" id="iconLandmarksUploadArea">
-                                                    <i class='bx bx-cloud-upload'></i>
-                                                    <p>Replace icon</p>
-                                                    <input type="file" id="iconLandmarksInput" accept="image/*" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- ── Assets Tab ── -->
-                                <div class="stg-sb-tab-content" id="sb-assets">
-                                    <div class="stg-form-body">
-                                        <p class="stg-form-sub">Sidebar function buttons</p>
-                                        <p class="stg-form-hint">The 3 action buttons shown in the sidebar — update the asset each button uses</p>
-
-                                        <!-- ── Background Music ── -->
-                                        <div class="stg-media-card">
-                                            <div class="stg-media-header">
-                                                <div class="stg-media-icon-wrap stg-media-icon-sidebar">
-                                                    <img id="assetIconBgm" src="" alt="" class="stg-media-icon" />
-                                                    <i class='bx bx-music stg-media-icon-fallback'></i>
-                                                </div>
-                                                <div class="stg-media-meta">
-                                                    <div class="stg-media-title">Background music <span class="required required-indicator">*</span></div>
-                                                    <div class="stg-media-desc">Plays ambient music in the background while the user explores the tour. Tracks play one after another like a playlist.</div>
-                                                </div>
-                                            </div>
-                                            <div class="stg-media-body" id="bgmMediaBody">
-                                                <div class="stg-track-list" id="bgmTrackList">
-                                                    <!-- tracks rendered by JS -->
-                                                </div>
-                                                <div class="stg-media-actions">
-                                                    <button class="stg-asset-btn primary" id="addBgmBtn"><i class='bx bx-plus'></i> Add track</button>
-                                                </div>
-                                            </div>
-                                            <div class="stg-media-empty hidden" id="bgmEmptyState">
-                                                <i class='bx bx-music stg-empty-icon'></i>
-                                                <p>No audio files added — the BGM button will be silent in the tour.</p>
-                                                <button class="stg-asset-btn primary" id="uploadBgmBtn"><i class='bx bx-cloud-upload'></i> Upload audio</button>
-                                            </div>
-                                            <input type="file" id="bgmInput" accept="audio/*" multiple class="hidden" />
-                                        </div>
-
-                                        <!-- ── Audio Guide ── -->
-                                        <div class="stg-media-card">
-                                            <div class="stg-media-header">
-                                                <div class="stg-media-icon-wrap stg-media-icon-sidebar">
-                                                    <img id="assetIconNarrative" src="" alt="" class="stg-media-icon" />
-                                                    <i class='bx bx-microphone stg-media-icon-fallback'></i>
-                                                </div>
-                                                <div class="stg-media-meta">
-                                                    <div class="stg-media-title">Audio guide <span class="required required-indicator">*</span></div>
-                                                    <div class="stg-media-desc">A narrated audio guide that plays when the user activates the guide button.</div>
-                                                </div>
-                                            </div>
-                                            <div class="stg-media-body" id="narrationMediaBody">
-                                                <div class="stg-track-list" id="narrationTrackList">
-                                                    <!-- single track rendered by JS -->
-                                                </div>
-                                                <div class="stg-media-actions">
-                                                    <button class="stg-asset-btn primary" id="replaceNarrationBtn"><i class='bx bx-refresh'></i> Replace</button>
-                                                </div>
-                                            </div>
-                                            <div class="stg-media-empty hidden" id="narrationEmptyState">
-                                                <i class='bx bx-microphone stg-empty-icon'></i>
-                                                <p>No audio file set — the narration button will be silent in the tour.</p>
-                                                <button class="stg-asset-btn primary" id="uploadNarrationBtn"><i class='bx bx-cloud-upload'></i> Upload audio</button>
-                                            </div>
-                                            <input type="file" id="narrationInput" accept="audio/*" class="hidden" />
-                                        </div>
-
-                                        <!-- ── Intro Video ── -->
-                                        <div class="stg-media-card">
-                                            <div class="stg-media-header">
-                                                <div class="stg-media-icon-wrap stg-media-icon-sidebar">
-                                                    <img id="assetIconVideo" src="" alt="" class="stg-media-icon" />
-                                                    <i class='bx bx-video stg-media-icon-fallback'></i>
-                                                </div>
-                                                <div class="stg-media-meta">
-                                                    <div class="stg-media-title">Intro video <span class="required required-indicator">*</span></div>
-                                                    <div class="stg-media-desc">A short campus introduction video shown when the user taps the video button.</div>
-                                                </div>
-                                            </div>
-                                            <div class="stg-media-body" id="videoMediaBody">
-                                                <div class="stg-media-file-row">
-                                                    <span class="stg-media-file-name" id="videoFileName">No file set</span>
-                                                    <span class="stg-media-file-size" id="videoFileSize"></span>
-                                                </div>
-                                                <video id="videoPlayer" controls class="stg-media-player stg-video-player"></video>
-                                                <div class="stg-media-actions">
-                                                    <button class="stg-asset-btn primary" id="replaceVideoBtn"><i class='bx bx-refresh'></i> Replace</button>
-                                                </div>
-                                            </div>
-                                            <div class="stg-media-empty hidden" id="videoEmptyState">
-                                                <i class='bx bx-video stg-empty-icon'></i>
-                                                <p>No video uploaded yet — the button will be hidden in the tour until a file is uploaded.</p>
-                                                <button class="stg-asset-btn primary" id="uploadVideoBtn"><i class='bx bx-cloud-upload'></i> Upload video</button>
-                                            </div>
-                                            <input type="file" id="videoInput" accept="video/*" class="hidden" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+
+        <!-- ═══════════════ SETTINGS TAB ═══════════════ -->
+        <div id="sidebarSettingsView" class="hidden">
+          <div class="stg-scroll">
+            <div class="stg-layout">
+              <!-- ── Left Column: Welcome Modal ── -->
+              <div class="stg-col-main">
+                <div class="stg-form-card stg-locked" id="welcomeCard">
+                  <div class="stg-form-card-header">
+                    <h2 class="stg-form-card-title">Welcome Modal</h2>
+                    <div class="stg-header-actions">
+                      <button class="stg-edit-btn" id="editWelcomeBtn">
+                        <i class="bx bx-edit-alt"></i> Edit
+                      </button>
+                      <button class="cancel-btn hidden" id="cancelWelcomeBtn">
+                        Cancel
+                      </button>
+                      <button class="save-btn hidden" id="saveWelcomeBtn">
+                        <i class="bx bx-save"></i> Save Changes
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Live Preview -->
+                  <div class="stg-wp-preview-wrap">
+                    <div class="stg-wp-overlay">
+                      <div class="stg-wp-modal" id="wpModal">
+                        <img class="stg-wp-logo" id="wpLogo" src="" alt="" />
+                        <h1 class="stg-wp-title" id="wpTitle">Welcome</h1>
+                        <h3 class="stg-wp-sub" id="wpSub">
+                          Explore the campus
+                        </h3>
+                        <div class="stg-wp-desc" id="wpDesc"></div>
+                        <button class="stg-wp-btn" type="button">
+                          <span id="wpBtnText">Start Tour</span>
+                        </button>
+                        <!-- Resize handles (visible only in edit mode) -->
+                        <div
+                          class="stg-resize-handle stg-resize-t"
+                          data-dir="t"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-b"
+                          data-dir="b"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-l"
+                          data-dir="l"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-r"
+                          data-dir="r"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-tl"
+                          data-dir="tl"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-tr"
+                          data-dir="tr"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-bl"
+                          data-dir="bl"
+                        ></div>
+                        <div
+                          class="stg-resize-handle stg-resize-br"
+                          data-dir="br"
+                        ></div>
+                      </div>
+                    </div>
+                    <div class="stg-preview-label">
+                      Live preview — reflects current settings · drag handles to
+                      resize
+                    </div>
+                  </div>
+
+                  <!-- Form Fields -->
+                  <div class="stg-form-body">
+                    <!-- Modal Size -->
+                    <div class="stg-form-group">
+                      <label>Modal Size</label>
+                      <div class="stg-size-fields stg-size-fields-row">
+                        <div class="stg-size-field">
+                          <label for="modalWidth"
+                            >Width <span class="stg-size-unit">px</span></label
+                          >
+                          <input
+                            type="number"
+                            id="modalWidth"
+                            disabled
+                            min="300"
+                            max="1200"
+                            placeholder="600"
+                          />
+                        </div>
+                        <div class="stg-size-field">
+                          <label for="modalHeight"
+                            >Height <span class="stg-size-unit">px</span></label
+                          >
+                          <input
+                            type="number"
+                            id="modalHeight"
+                            disabled
+                            min="200"
+                            max="900"
+                            placeholder="400"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="stg-form-group">
+                      <label for="welcomeTitle"
+                        >Tour Title
+                        <span class="required required-indicator"
+                          >*</span
+                        ></label
+                      >
+                      <input
+                        type="text"
+                        id="welcomeTitle"
+                        disabled
+                        placeholder="Welcome to Navigate La Salle"
+                      />
+                    </div>
+                    <div class="stg-form-group">
+                      <label for="welcomeSubtitle"
+                        >Subtitle / Tagline
+                        <span class="required required-indicator"
+                          >*</span
+                        ></label
+                      >
+                      <input
+                        type="text"
+                        id="welcomeSubtitle"
+                        disabled
+                        placeholder="Explore the DLSU-D Campus in 360°"
+                      />
+                    </div>
+                    <div class="stg-form-group">
+                      <label for="welcomeDescription"
+                        >Description
+                        <span class="required required-indicator"
+                          >*</span
+                        ></label
+                      >
+                      <div id="settingsQuillEditor"></div>
+                    </div>
+                    <div class="stg-form-group">
+                      <label for="welcomeBtnLabel"
+                        >Enter Button Label
+                        <span class="required required-indicator"
+                          >*</span
+                        ></label
+                      >
+                      <input
+                        type="text"
+                        id="welcomeBtnLabel"
+                        disabled
+                        placeholder="Start Tour"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Right Column: Sidebar + Assets ── -->
+              <div class="stg-col-side">
+                <!-- Sidebar Card -->
+                <div class="stg-form-card stg-locked" id="sidebarCard">
+                  <div class="stg-form-card-header">
+                    <h2 class="stg-form-card-title">Sidebar</h2>
+                    <div class="stg-header-actions">
+                      <button class="stg-edit-btn" id="editSidebarBtn">
+                        <i class="bx bx-edit-alt"></i> Edit
+                      </button>
+                      <button class="cancel-btn hidden" id="cancelSidebarBtn">
+                        Cancel
+                      </button>
+                      <button class="save-btn hidden" id="saveSidebarBtn">
+                        <i class="bx bx-save"></i> Save Changes
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Sidebar Preview -->
+                  <div class="stg-sb-preview-wrap">
+                    <div class="stg-sb-overlay">
+                      <!-- Expanded Sidebar -->
+                      <div class="sidebar-preview">
+                        <div class="sp-logo-area">
+                          <img class="sp-logo" id="spLogo" src="" alt="" />
+                        </div>
+                        <div class="sp-sep"></div>
+                        <div class="sp-nav">
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spIconBuildings"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                            <span class="sp-text-col">Buildings</span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spIconFacilities"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                            <span class="sp-text-col">Facilities</span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spIconLandmarks"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                            <span class="sp-text-col">Landmarks</span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spIconGates"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                            <span class="sp-text-col">Gates</span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spIconParking"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                            <span class="sp-text-col">Parking</span>
+                          </div>
+                        </div>
+                        <div class="sp-spacer"></div>
+                        <div class="sp-func-row">
+                          <div class="sp-func">
+                            <img
+                              id="spIconNarrative"
+                              src=""
+                              alt=""
+                              class="sp-func-icon"
+                            />
+                          </div>
+                          <div class="sp-func">
+                            <img
+                              id="spIconVideo"
+                              src=""
+                              alt=""
+                              class="sp-func-icon"
+                            />
+                          </div>
+                          <div class="sp-func">
+                            <img
+                              id="spIconBgm"
+                              src=""
+                              alt=""
+                              class="sp-func-icon"
+                            />
+                          </div>
+                        </div>
+                        <div class="sp-dashboard">
+                          <span class="sp-icon-col"
+                            ><img
+                              id="spIconDashboard"
+                              src=""
+                              alt=""
+                              class="sp-icon"
+                          /></span>
+                          <span class="sp-text-col" id="spDashboardLabel"
+                            >Dashboard</span
+                          >
+                        </div>
+                        <div class="sp-sep"></div>
+                        <div class="sp-control">
+                          <span class="sp-icon-col"
+                            ><img
+                              id="spIconControl"
+                              src=""
+                              alt=""
+                              class="sp-icon"
+                          /></span>
+                        </div>
+                      </div>
+
+                      <!-- Collapsed Sidebar -->
+                      <div class="sidebar-preview sp-collapsed">
+                        <div class="sp-logo-area">
+                          <img
+                            class="sp-logo"
+                            id="spLogoCollapsed"
+                            src=""
+                            alt=""
+                          />
+                        </div>
+                        <div class="sp-sep"></div>
+                        <div class="sp-nav">
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spCIconBuildings"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spCIconFacilities"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spCIconLandmarks"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spCIconGates"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                          </div>
+                          <div class="sp-item">
+                            <span class="sp-icon-col"
+                              ><img
+                                id="spCIconParking"
+                                src=""
+                                alt=""
+                                class="sp-icon"
+                            /></span>
+                          </div>
+                        </div>
+                        <div class="sp-spacer"></div>
+                        <div class="sp-func-row">
+                          <div class="sp-func">
+                            <img
+                              id="spCIconNarrative"
+                              src=""
+                              alt=""
+                              class="sp-func-icon"
+                            />
+                          </div>
+                          <div class="sp-func">
+                            <img
+                              id="spCIconVideo"
+                              src=""
+                              alt=""
+                              class="sp-func-icon"
+                            />
+                          </div>
+                          <div class="sp-func">
+                            <img
+                              id="spCIconBgm"
+                              src=""
+                              alt=""
+                              class="sp-func-icon"
+                            />
+                          </div>
+                        </div>
+                        <div class="sp-dashboard">
+                          <span class="sp-icon-col"
+                            ><img
+                              id="spCIconDashboard"
+                              src=""
+                              alt=""
+                              class="sp-icon"
+                          /></span>
+                        </div>
+                        <div class="sp-sep"></div>
+                        <div class="sp-control">
+                          <span class="sp-icon-col"
+                            ><img
+                              id="spCIconControl"
+                              src=""
+                              alt=""
+                              class="sp-icon"
+                          /></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="stg-preview-label">
+                      Live preview — reflects current settings
+                    </div>
+                  </div>
+
+                  <!-- Sidebar Tabs -->
+                  <div class="stg-sb-tabs">
+                    <button class="stg-sb-tab active" data-tab="sb-logos">
+                      Logos
+                    </button>
+                    <button class="stg-sb-tab" data-tab="sb-icons">
+                      Icons
+                    </button>
+                    <button class="stg-sb-tab" data-tab="sb-assets">
+                      Assets
+                    </button>
+                  </div>
+
+                  <!-- ── Logos Tab ── -->
+                  <div class="stg-sb-tab-content active" id="sb-logos">
+                    <div class="stg-form-body">
+                      <div class="stg-form-group">
+                        <label
+                          >Expanded Logo
+                          <span class="required required-indicator"
+                            >*</span
+                          ></label
+                        >
+                        <p class="stg-form-hint">Shown when sidebar is open</p>
+                        <div class="stg-logo-display stg-logo-wide">
+                          <img id="logoPreview" src="" alt="" />
+                          <i class="bx bx-image stg-logo-fallback"></i>
+                        </div>
+                        <div class="upload-area stg-upload" id="logoUploadArea">
+                          <i class="bx bx-cloud-upload"></i>
+                          <p>Click or drag to replace expanded logo</p>
+                          <span
+                            >PNG, SVG, WEBP up to 5MB · Recommended:
+                            200×50px</span
+                          >
+                          <input type="file" id="logoInput" accept="image/*" />
+                        </div>
+                      </div>
+                      <div class="stg-form-group">
+                        <label
+                          >Collapsed Logo
+                          <span class="required required-indicator"
+                            >*</span
+                          ></label
+                        >
+                        <p class="stg-form-hint">
+                          Shown when sidebar is collapsed
+                        </p>
+                        <div class="stg-logo-display">
+                          <img id="logoCollapsedPreview" src="" alt="" />
+                          <i class="bx bx-image stg-logo-fallback"></i>
+                        </div>
+                        <div
+                          class="upload-area stg-upload"
+                          id="logoCollapsedUploadArea"
+                        >
+                          <i class="bx bx-cloud-upload"></i>
+                          <p>Click or drag to replace collapsed logo</p>
+                          <span
+                            >PNG, SVG, WEBP up to 5MB · Recommended:
+                            40×40px</span
+                          >
+                          <input
+                            type="file"
+                            id="logoCollapsedInput"
+                            accept="image/*"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ── Icons Tab ── -->
+                  <div class="stg-sb-tab-content" id="sb-icons">
+                    <div class="stg-form-body">
+                      <p class="stg-form-hint">
+                        Icons shown next to each sidebar category
+                      </p>
+
+                      <div class="stg-icon-grid">
+                        <!-- Buildings -->
+                        <div class="stg-icon-card">
+                          <label
+                            >Buildings
+                            <span class="required required-indicator"
+                              >*</span
+                            ></label
+                          >
+                          <div class="stg-icon-display">
+                            <img id="iconBuildingsPreview" src="" alt="" />
+                            <i class="bx bx-image stg-logo-fallback"></i>
+                          </div>
+                          <div
+                            class="upload-area upload-area-sm stg-upload"
+                            id="iconBuildingsUploadArea"
+                          >
+                            <i class="bx bx-cloud-upload"></i>
+                            <p>Replace icon</p>
+                            <input
+                              type="file"
+                              id="iconBuildingsInput"
+                              accept="image/*"
+                            />
+                          </div>
+                        </div>
+                        <!-- Gates -->
+                        <div class="stg-icon-card">
+                          <label
+                            >Gates
+                            <span class="required required-indicator"
+                              >*</span
+                            ></label
+                          >
+                          <div class="stg-icon-display">
+                            <img id="iconGatesPreview" src="" alt="" />
+                            <i class="bx bx-image stg-logo-fallback"></i>
+                          </div>
+                          <div
+                            class="upload-area upload-area-sm stg-upload"
+                            id="iconGatesUploadArea"
+                          >
+                            <i class="bx bx-cloud-upload"></i>
+                            <p>Replace icon</p>
+                            <input
+                              type="file"
+                              id="iconGatesInput"
+                              accept="image/*"
+                            />
+                          </div>
+                        </div>
+                        <!-- Facilities -->
+                        <div class="stg-icon-card">
+                          <label
+                            >Facilities
+                            <span class="required required-indicator"
+                              >*</span
+                            ></label
+                          >
+                          <div class="stg-icon-display">
+                            <img id="iconFacilitiesPreview" src="" alt="" />
+                            <i class="bx bx-image stg-logo-fallback"></i>
+                          </div>
+                          <div
+                            class="upload-area upload-area-sm stg-upload"
+                            id="iconFacilitiesUploadArea"
+                          >
+                            <i class="bx bx-cloud-upload"></i>
+                            <p>Replace icon</p>
+                            <input
+                              type="file"
+                              id="iconFacilitiesInput"
+                              accept="image/*"
+                            />
+                          </div>
+                        </div>
+                        <!-- Parking -->
+                        <div class="stg-icon-card">
+                          <label
+                            >Parking
+                            <span class="required required-indicator"
+                              >*</span
+                            ></label
+                          >
+                          <div class="stg-icon-display">
+                            <img id="iconParkingPreview" src="" alt="" />
+                            <i class="bx bx-image stg-logo-fallback"></i>
+                          </div>
+                          <div
+                            class="upload-area upload-area-sm stg-upload"
+                            id="iconParkingUploadArea"
+                          >
+                            <i class="bx bx-cloud-upload"></i>
+                            <p>Replace icon</p>
+                            <input
+                              type="file"
+                              id="iconParkingInput"
+                              accept="image/*"
+                            />
+                          </div>
+                        </div>
+                        <!-- Landmarks -->
+                        <div class="stg-icon-card">
+                          <label
+                            >Landmarks
+                            <span class="required required-indicator"
+                              >*</span
+                            ></label
+                          >
+                          <div class="stg-icon-display">
+                            <img id="iconLandmarksPreview" src="" alt="" />
+                            <i class="bx bx-image stg-logo-fallback"></i>
+                          </div>
+                          <div
+                            class="upload-area upload-area-sm stg-upload"
+                            id="iconLandmarksUploadArea"
+                          >
+                            <i class="bx bx-cloud-upload"></i>
+                            <p>Replace icon</p>
+                            <input
+                              type="file"
+                              id="iconLandmarksInput"
+                              accept="image/*"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ── Assets Tab ── -->
+                  <div class="stg-sb-tab-content" id="sb-assets">
+                    <div class="stg-form-body">
+                      <p class="stg-form-sub">Sidebar function buttons</p>
+                      <p class="stg-form-hint">
+                        The 3 action buttons shown in the sidebar — update the
+                        asset each button uses
+                      </p>
+
+                      <!-- ── Background Music ── -->
+                      <div class="stg-media-card">
+                        <div class="stg-media-header">
+                          <div
+                            class="stg-media-icon-wrap stg-media-icon-sidebar"
+                          >
+                            <img
+                              id="assetIconBgm"
+                              src=""
+                              alt=""
+                              class="stg-media-icon"
+                            />
+                            <i class="bx bx-music stg-media-icon-fallback"></i>
+                          </div>
+                          <div class="stg-media-meta">
+                            <div class="stg-media-title">
+                              Background music
+                              <span class="required required-indicator">*</span>
+                            </div>
+                            <div class="stg-media-desc">
+                              Plays ambient music in the background while the
+                              user explores the tour. Tracks play one after
+                              another like a playlist.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="stg-media-body" id="bgmMediaBody">
+                          <div class="stg-track-list" id="bgmTrackList">
+                            <!-- tracks rendered by JS -->
+                          </div>
+                          <div class="stg-media-actions">
+                            <button
+                              class="stg-asset-btn primary"
+                              id="addBgmBtn"
+                            >
+                              <i class="bx bx-plus"></i> Add track
+                            </button>
+                          </div>
+                        </div>
+                        <div class="stg-media-empty hidden" id="bgmEmptyState">
+                          <i class="bx bx-music stg-empty-icon"></i>
+                          <p>
+                            No audio files added — the BGM button will be silent
+                            in the tour.
+                          </p>
+                          <button
+                            class="stg-asset-btn primary"
+                            id="uploadBgmBtn"
+                          >
+                            <i class="bx bx-cloud-upload"></i> Upload audio
+                          </button>
+                        </div>
+                        <input
+                          type="file"
+                          id="bgmInput"
+                          accept="audio/*"
+                          multiple
+                          class="hidden"
+                        />
+                      </div>
+
+                      <!-- ── Audio Guide ── -->
+                      <div class="stg-media-card">
+                        <div class="stg-media-header">
+                          <div
+                            class="stg-media-icon-wrap stg-media-icon-sidebar"
+                          >
+                            <img
+                              id="assetIconNarrative"
+                              src=""
+                              alt=""
+                              class="stg-media-icon"
+                            />
+                            <i
+                              class="bx bx-microphone stg-media-icon-fallback"
+                            ></i>
+                          </div>
+                          <div class="stg-media-meta">
+                            <div class="stg-media-title">
+                              Audio guide
+                              <span class="required required-indicator">*</span>
+                            </div>
+                            <div class="stg-media-desc">
+                              A narrated audio guide that plays when the user
+                              activates the guide button.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="stg-media-body" id="narrationMediaBody">
+                          <div class="stg-track-list" id="narrationTrackList">
+                            <!-- single track rendered by JS -->
+                          </div>
+                          <div class="stg-media-actions">
+                            <button
+                              class="stg-asset-btn primary"
+                              id="replaceNarrationBtn"
+                            >
+                              <i class="bx bx-refresh"></i> Replace
+                            </button>
+                          </div>
+                        </div>
+                        <div
+                          class="stg-media-empty hidden"
+                          id="narrationEmptyState"
+                        >
+                          <i class="bx bx-microphone stg-empty-icon"></i>
+                          <p>
+                            No audio file set — the narration button will be
+                            silent in the tour.
+                          </p>
+                          <button
+                            class="stg-asset-btn primary"
+                            id="uploadNarrationBtn"
+                          >
+                            <i class="bx bx-cloud-upload"></i> Upload audio
+                          </button>
+                        </div>
+                        <input
+                          type="file"
+                          id="narrationInput"
+                          accept="audio/*"
+                          class="hidden"
+                        />
+                      </div>
+
+                      <!-- ── Intro Video ── -->
+                      <div class="stg-media-card">
+                        <div class="stg-media-header">
+                          <div
+                            class="stg-media-icon-wrap stg-media-icon-sidebar"
+                          >
+                            <img
+                              id="assetIconVideo"
+                              src=""
+                              alt=""
+                              class="stg-media-icon"
+                            />
+                            <i class="bx bx-video stg-media-icon-fallback"></i>
+                          </div>
+                          <div class="stg-media-meta">
+                            <div class="stg-media-title">
+                              Intro video
+                              <span class="required required-indicator">*</span>
+                            </div>
+                            <div class="stg-media-desc">
+                              A short campus introduction video shown when the
+                              user taps the video button.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="stg-media-body" id="videoMediaBody">
+                          <div class="stg-media-file-row">
+                            <span class="stg-media-file-name" id="videoFileName"
+                              >No file set</span
+                            >
+                            <span
+                              class="stg-media-file-size"
+                              id="videoFileSize"
+                            ></span>
+                          </div>
+                          <video
+                            id="videoPlayer"
+                            controls
+                            class="stg-media-player stg-video-player"
+                          ></video>
+                          <div class="stg-media-actions">
+                            <button
+                              class="stg-asset-btn primary"
+                              id="replaceVideoBtn"
+                            >
+                              <i class="bx bx-refresh"></i> Replace
+                            </button>
+                          </div>
+                        </div>
+                        <div
+                          class="stg-media-empty hidden"
+                          id="videoEmptyState"
+                        >
+                          <i class="bx bx-video stg-empty-icon"></i>
+                          <p>
+                            No video uploaded yet — the button will be hidden in
+                            the tour until a file is uploaded.
+                          </p>
+                          <button
+                            class="stg-asset-btn primary"
+                            id="uploadVideoBtn"
+                          >
+                            <i class="bx bx-cloud-upload"></i> Upload video
+                          </button>
+                        </div>
+                        <input
+                          type="file"
+                          id="videoInput"
+                          accept="video/*"
+                          class="hidden"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="https://unpkg.com/quill@2.0.2/dist/quill.js"></script>
     <script type="module" src="js/sidebar.js"></script>
     <script type="module" src="js/virtual-tour.js"></script>
-</body>
-
+  </body>
 </html>
