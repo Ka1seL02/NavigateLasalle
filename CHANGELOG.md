@@ -992,3 +992,12 @@
     - Added dataid/buildingid to be displayed on top of the buildings
 ### Frontend - Campus Info Page
 - Replaced the background images for sections that needs background img (Mission-Vision, Core Values, Contact)
+### Frontend — User Map Page
+- Enhanced building visual depth
+  - Applied directional gradient fill per building category (building, facility, landmark)
+  - Strengthened drop shadow filter (dx=5, dy=8) for more pronounced 3D appearance
+- Added dataId labels rendered on top of each building shape
+  - Labels are centered on their respective shapes
+  - Font size scales proportionally to shape size to prevent overflow on smaller buildings
+  - Label color matches the category color of each building
+  - Uses EB Garamond font for visual consistency with the rest of the system

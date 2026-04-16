@@ -111,6 +111,33 @@ function renderMap() {
         <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
             <polygon points="0 0, 6 2, 0 4" fill="${getComputedStyle(document.documentElement).getPropertyValue('--light-green') || '#00c657'}" />
         </marker>
+
+        <!-- 3D drop shadow filter -->
+        <filter id="buildingShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="5" dy="8" stdDeviation="4" flood-color="rgba(0,0,0,0.35)" />
+        </filter>
+
+        <!-- Building gradient: light top-left to slightly darker bottom-right -->
+        <linearGradient id="buildingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ffffff; stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#dce8dc; stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="buildingGradientHover" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#dce8dc; stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#b8d4b8; stop-opacity:1" />
+        </linearGradient>
+
+        <!-- Facility gradient: light blue -->
+        <linearGradient id="facilityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#eef6fc; stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#c5dff0; stop-opacity:1" />
+        </linearGradient>
+
+        <!-- Landmark gradient: light orange -->
+        <linearGradient id="landmarkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#fef3ea; stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#f9d5b5; stop-opacity:1" />
+        </linearGradient>
     `;
     svg.appendChild(defs);
 
@@ -123,6 +150,43 @@ function renderMap() {
             elem.dataset.id = b._id;
             elem.dataset.dataId = b.dataId;
             elem.addEventListener('click', () => onBuildingClick(b));
+
+            // Draw dataId label on top of shape
+            if (b.dataId && b.shape) {
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                const cx = b.shape.type === 'rect'
+                    ? parseFloat(b.shape.x) + parseFloat(b.shape.width) / 2
+                    : parseFloat(b.shape.cx);
+                const cy = b.shape.type === 'rect'
+                    ? parseFloat(b.shape.y) + parseFloat(b.shape.height) / 2
+                    : parseFloat(b.shape.cy);
+
+                const shapeWidth = b.shape.type === 'rect' ? parseFloat(b.shape.width) : parseFloat(b.shape.rx) * 2;
+                const shapeHeight = b.shape.type === 'rect' ? parseFloat(b.shape.height) : parseFloat(b.shape.ry) * 2;
+                const fontSize = Math.max(8, Math.min(14, Math.min(shapeWidth, shapeHeight) * 0.25));
+
+                const colorMap = {
+                    building: '#1a4d2e',
+                    facility: '#1565c0',
+                    gate: '#f57f17',
+                    landmark: '#e65100',
+                    parking: '#757575',
+                };
+
+                text.setAttribute('x', cx);
+                text.setAttribute('y', cy);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', fontSize);
+                text.setAttribute('font-family', 'EB Garamond, serif');
+                text.setAttribute('font-weight', '700');
+                text.setAttribute('fill', colorMap[b.category] || '#1a4d2e');
+                text.setAttribute('pointer-events', 'none');
+                text.setAttribute('user-select', 'none');
+                text.textContent = b.dataId;
+                text.addEventListener('click', () => onBuildingClick(b));
+                svg.appendChild(text);
+            }
         }
     });
 }
@@ -940,7 +1004,7 @@ function drawHybridPath(vehicleNodeIds, walkNodeIds) {
     // Walk leg starts after vehicle leg finishes — estimate vehicle duration
     const vLen = vPoints ? vPoints.reduce((acc, p, i, arr) => {
         if (i === 0) return 0;
-        return acc + Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y);
+        return acc + Math.hypot(p.x - arr[i - 1].x, p.y - arr[i - 1].y);
     }, 0) : 0;
     const vDur = Math.max(600, vLen / 0.6); // ms
 
@@ -985,7 +1049,7 @@ function drawHybridPath(vehicleNodeIds, walkNodeIds) {
 
         const wLen = wPoints ? wPoints.reduce((acc, p, i, arr) => {
             if (i === 0) return 0;
-            return acc + Math.hypot(p.x - arr[i-1].x, p.y - arr[i-1].y);
+            return acc + Math.hypot(p.x - arr[i - 1].x, p.y - arr[i - 1].y);
         }, 0) : 0;
         const wDur = Math.max(600, wLen / 0.6);
         setTimeout(() => endCircle.classList.remove('path-end--hidden'), vDur + wDur);

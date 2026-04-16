@@ -381,6 +381,49 @@ html, body {
     pointer-events: none;
 }
 
+/* ─── 3D Building Effect ─────────────────────────────────────────────────────── */
+#campusMap .building {
+    fill: url(#buildingGradient);
+    stroke: var(--dark-green);
+    stroke-width: 2;
+    cursor: pointer;
+    transition: fill 0.2s;
+    filter: url(#buildingShadow);
+}
+#campusMap .building:hover { fill: url(#buildingGradientHover); }
+#campusMap .building.selected { fill: url(#buildingGradientHover); stroke-width: 2.5; }
+
+#campusMap .facility {
+    fill: url(#facilityGradient);
+    stroke: #5b9ec9;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: fill 0.2s;
+    filter: url(#buildingShadow);
+}
+#campusMap .facility:hover { fill: #5b9ec9; }
+#campusMap .facility.selected { fill: #5b9ec9; }
+
+#campusMap .landmark {
+    fill: url(#landmarkGradient);
+    stroke: var(--orange);
+    stroke-width: 2;
+    cursor: pointer;
+    transition: fill 0.2s;
+    filter: url(#buildingShadow);
+}
+#campusMap .landmark:hover { fill: var(--orange); }
+#campusMap .landmark.selected { fill: var(--orange); }
+
+#campusMap .building-label {
+    font-size: 12px;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 700;
+    fill: var(--dark-green);
+    pointer-events: none;
+    user-select: none;
+}
+
 /* Path overlay — draw-on entrance animation */
 #campusMap .path-line {
     fill: none;
