@@ -114,7 +114,7 @@ function renderMap() {
 
         <!-- 3D drop shadow filter -->
         <filter id="buildingShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="5" dy="8" stdDeviation="4" flood-color="rgba(0,0,0,0.35)" />
+            <feDropShadow dx="3" dy="5" stdDeviation="3" flood-color="rgba(0,0,0,0.25)" />
         </filter>
 
         <!-- Building gradient: light top-left to slightly darker bottom-right -->
@@ -151,7 +151,6 @@ function renderMap() {
             elem.dataset.dataId = b.dataId;
             elem.addEventListener('click', () => onBuildingClick(b));
 
-            // Draw dataId label on top of shape
             if (b.dataId && b.shape) {
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 const cx = b.shape.type === 'rect'
