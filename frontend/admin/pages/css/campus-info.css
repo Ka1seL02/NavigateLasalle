@@ -259,6 +259,37 @@ main {
     color: var(--white);
 }
 
+/* ─── Video URL Input ────────────────────────────────────────────────────────── */
+.video-url-wrap {
+    display: none;
+    margin-bottom: 1rem;
+}
+.video-url-wrap.active { display: block; }
+.video-url-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--dark-grey);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.video-url-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--shadow);
+    border-radius: 8px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--dark-grey);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--white);
+}
+.video-url-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 138, 61, 0.08);
+}
+
 /* ─── Section Footer ─────────────────────────────────────────────────────────── */
 .section-card-footer {
     display: none;

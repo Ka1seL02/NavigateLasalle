@@ -35,6 +35,13 @@ async function fetchAll() {
     buildPage(infoData.sections);
 }
 
+// ─── YouTube URL → Embed URL ──────────────────────────────────────────────────
+function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+    const match = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+}
+
 // ─── Build Page ───────────────────────────────────────────────────────────────
 function buildPage(sections) {
     const byKey = {};
@@ -152,17 +159,32 @@ function buildPage(sections) {
 
     // ── Section 4: Hymn ──────────────────────────────────────────────────────
     const hymn = byKey['hymn'];
+    const embedUrl = getYouTubeEmbedUrl(hymn?.videoUrl);
+
     const hymnSection = document.createElement('div');
     hymnSection.className = 'ci-section section-hymn';
     hymnSection.dataset.index = 3;
     hymnSection.innerHTML = `
-        <div class="hymn-card">
-            <div class="hymn-icon"><i class='bx bx-music'></i></div>
-            <p class="hymn-label">Our Song</p>
-            <h2 class="hymn-title">Alma Mater Hymn</h2>
-            <div class="hymn-content">
-                ${hymn?.content || '<p>Content coming soon.</p>'}
+        <div class="hymn-card ${embedUrl ? 'hymn-card--with-video' : ''}">
+            <div class="hymn-text-side">
+                <div class="hymn-icon"><i class='bx bx-music'></i></div>
+                <p class="hymn-label">Our Song</p>
+                <h2 class="hymn-title">Alma Mater Hymn</h2>
+                <div class="hymn-content">
+                    ${hymn?.content || '<p>Content coming soon.</p>'}
+                </div>
             </div>
+            ${embedUrl ? `
+                <div class="hymn-video-side">
+                    <iframe
+                        src="${embedUrl}"
+                        title="Alma Mater Hymn"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            ` : ''}
         </div>
     `;
     sectionsContainer.appendChild(hymnSection);

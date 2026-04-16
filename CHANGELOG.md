@@ -1193,3 +1193,23 @@
   - Filter dropdown and view toggle now sit on a separate row with space between them (filter left, toggle right)
 - Category section collapse chevron moved inline with the category title text, consistent with the office page style
 - No changes made to Map View, Graph View, or `building.js`
+
+### Backend — Campus Info
+ 
+- Added `videoUrl` field to `CampusInfo` model
+  - New `String` field with `default: null` for storing a YouTube video URL per section
+- Updated PATCH route to accept and persist `videoUrl` from request body
+
+### Frontend — Admin Campus Info Page
+ 
+- Added YouTube URL input field to the Alma Mater Hymn card edit mode
+  - Input is hidden by default and shown only when the hymn card is in edit mode
+  - Resets to saved value on cancel
+  - `videoUrl` is included in the PATCH request body on save and synced to local state after success
+  
+### Frontend — User/Kiosk Campus Info Page
+ 
+- Alma Mater Hymn section now supports an embedded YouTube video alongside the lyrics
+  - Added `getYouTubeEmbedUrl()` helper that converts a standard YouTube watch URL to an embed URL
+  - If a `videoUrl` is set, the hymn card switches from a centered column layout to a side-by-side row layout with the lyrics on the left and the video iframe on the right
+  - If no `videoUrl` is set, the hymn section renders exactly as before — no layout change

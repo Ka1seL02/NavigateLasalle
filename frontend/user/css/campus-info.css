@@ -316,12 +316,14 @@ html, body {
 }
 .cv-value-desc p { margin: 0; }
 
-/* ─── Section 4 — Alma Mater Hymn (white bg, centered) ──────────────────────── */
+/* ─── Section 4 — Alma Mater Hymn ───────────────────────────────────────────── */
 .section-hymn {
     background: var(--dirty-white);
     align-items: center;
     justify-content: center;
 }
+
+/* Default: no video — centered column layout */
 .hymn-card {
     width: 92%;
     max-width: 680px;
@@ -332,6 +334,40 @@ html, body {
     padding: 2rem 0;
     text-align: center;
 }
+
+/* With video: side-by-side layout */
+.hymn-card--with-video {
+    max-width: 1100px;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 3rem;
+}
+.hymn-text-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0;
+}
+.hymn-card--with-video .hymn-text-side {
+    align-items: flex-start;
+}
+.hymn-video-side {
+    flex: 1;
+    min-width: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    aspect-ratio: 16 / 9;
+}
+.hymn-video-side iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
 .hymn-icon {
     width: 64px;
     height: 64px;
@@ -342,6 +378,7 @@ html, body {
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
+    flex-shrink: 0;
 }
 .hymn-label {
     font-size: 0.68rem;
@@ -442,13 +479,6 @@ html, body {
 }
 .offices-card {
     width: 92%;
-    max-width: 1100px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    height: 100%;
-    padding: 2.5rem 0;
-    overflow: hidden;width: 92%;
     max-width: 1100px;
     display: flex;
     flex-direction: column;

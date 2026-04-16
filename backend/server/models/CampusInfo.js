@@ -25,6 +25,10 @@ const campusInfoSchema = new mongoose.Schema(
             type: String,
             enum: ['rich_text', 'core_value'],
             default: 'rich_text'
+        },
+        videoUrl: {
+            type: String,
+            default: null
         }
     },
     { timestamps: true }

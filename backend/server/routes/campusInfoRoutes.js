@@ -31,12 +31,13 @@ router.get('/:key', async (req, res) => {
 // Protected — admin only
 router.patch('/:key', verifyToken, async (req, res) => {
     try {
-        const { content, icon } = req.body;
+        const { content, icon, videoUrl } = req.body;
         const section = await CampusInfo.findOne({ key: req.params.key });
         if (!section) return res.status(404).json({ error: 'Section not found.' });
 
         if (content !== undefined) section.content = content ?? null;
         if (icon !== undefined) section.icon = icon ?? null;
+        if (videoUrl !== undefined) section.videoUrl = videoUrl ?? null;
 
         await section.save();
         res.json({ message: 'Section updated successfully.', section });

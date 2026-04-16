@@ -90,6 +90,19 @@ function renderSections() {
                     </div>
                 ` : ''}
 
+                ${section.key === 'hymn' ? `
+                    <div class="video-url-wrap" id="video-url-wrap-${section.key}">
+                        <label class="video-url-label">YouTube Video URL</label>
+                        <input
+                            type="text"
+                            class="video-url-input"
+                            id="video-url-${section.key}"
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            value="${section.videoUrl || ''}"
+                        />
+                    </div>
+                ` : ''}
+
                 <div class="section-quill-wrap" id="quill-wrap-${section.key}">
                     <div class="section-quill-editor-wrap">
                         <div id="quill-${section.key}"></div>
@@ -175,6 +188,10 @@ function openEdit(key, isCoreValue) {
     document.getElementById(`footer-${key}`).classList.add('active');
     if (isCoreValue) document.getElementById(`icon-wrap-${key}`).classList.add('active');
 
+    // Show video URL input for hymn
+    const videoWrap = document.getElementById(`video-url-wrap-${key}`);
+    if (videoWrap) videoWrap.classList.add('active');
+
     const editBtn = document.querySelector(`.section-edit-btn[data-key="${key}"]`);
     editBtn.classList.add('editing');
     editBtn.innerHTML = `<i class='bx bx-edit'></i> Editing...`;
@@ -191,6 +208,12 @@ function closeEdit(key, section, isCoreValue) {
             btn.classList.toggle('selected', btn.dataset.icon === section.icon);
         });
     }
+
+    // Hide and reset video URL input for hymn
+    const videoWrap = document.getElementById(`video-url-wrap-${key}`);
+    if (videoWrap) videoWrap.classList.remove('active');
+    const videoInput = document.getElementById(`video-url-${key}`);
+    if (videoInput) videoInput.value = section.videoUrl || '';
 
     document.getElementById(`preview-${key}`).classList.remove('hidden');
     document.getElementById(`quill-wrap-${key}`).classList.remove('active');
@@ -213,6 +236,10 @@ async function saveSection(section, isCoreValue) {
         const body = { content };
         if (isCoreValue) body.icon = icon;
 
+        // Include videoUrl for hymn section
+        const videoInput = document.getElementById(`video-url-${section.key}`);
+        if (videoInput) body.videoUrl = videoInput.value.trim() || null;
+
         const res = await fetch(`/api/campus-info/${section.key}`, {
             method: 'PATCH',
             headers: {
@@ -232,6 +259,7 @@ async function saveSection(section, isCoreValue) {
             section.content = content;
             section.icon = icon ?? section.icon;
             section.updatedAt = new Date().toISOString();
+            if (body.videoUrl !== undefined) section.videoUrl = body.videoUrl;
 
             // Update preview
             const preview = document.getElementById(`preview-${section.key}`);
