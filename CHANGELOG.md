@@ -1,8 +1,11 @@
 # Navigate La Salle
+
 # CHANGELOG
 
 ## V0.1 — 09/04/2026
+
 ### Backend
+
 - Initialized Express server with ES Modules
 - Connected MongoDB Atlas via Mongoose
 - Configured dotenv, cookie-parser, nodemon
@@ -23,11 +26,15 @@
   - Reset password email (template ID 3)
   - Invite email (template ID 4)
 - Models: Admin.js, Invite.js
+
 ### Frontend — Admin Auth Pages
+
 - login.html — login form with error handling, loading overlay, redirect if already logged in
 - forgot-password.html — sends reset email, success modal, loading overlay
 - reset-password.html — token validation on load, expired token modal, password rules validation on blur, confirm password check, button disabled until valid, success modal, loading overlay
+
 ### Frontend — Admin Pages
+
 - sidebar.html — full sidebar with nav, admin footer, logout modal, inactivity modal (UI only)
 - sidebar.js — auth check, sidebar loader, admin info population, active link highlight, collapse toggle with localStorage persistence, logout flow
 - dashboard.html — layout only
@@ -43,20 +50,28 @@
   - Pagination
   - Loading overlay on all fetch operations
   - Toast notifications for success/error
+
 ### Shared
+
 - loading.html + loading.css + loading.js — global loading overlay system
 - toast.js + toast.css — global toast notification system
 
 ## V0.2 — 10/04/2026
+
 ### Frontend — Sidebar
+
 - Added dark mode / light mode theme toggle switch in sidebar
 - Theme persists across all pages via localStorage
 - Icon switches between moon (light) and sun (dark)
 - Label reflects current mode (Dark Mode / Light Mode)
 - Toggle switch stays visible when sidebar is collapsed, icon and label hide
+
 ### Frontend — Shared
+
 - Added dark mode CSS variables to root.css via [data-theme="dark"] selector
+
 ### Backend
+
 - Added FAQ.js model (question, answer, isVisible, unique question constraint)
 - Added faqRoutes.js:
   - GET /api/faq — fetch all FAQs
@@ -64,7 +79,9 @@
   - PATCH /api/faq/:id — update question, answer, and/or visibility
   - DELETE /api/faq/:id — delete FAQ
 - Wired faqRoutes in server.js
+
 ### Frontend — FAQ Page
+
 - faq.html — FAQ management page layout
 - faq.js — dynamic population of FAQ list with:
   - Collapse/expand per FAQ item with chevron rotation
@@ -79,7 +96,9 @@
   - Toast notifications for success/error
 
 ## V0.3 — 10/04/2026
+
 ### Frontend — Sidebar (Revamp)
+
 - Removed collapse toggle entirely — sidebar is now fixed width (80px)
 - Removed admin name/role display from sidebar
 - New dark green vertical icon-based sidebar design
@@ -87,7 +106,9 @@
 - Theme toggle becomes clickable icon in footer (moon/sun)
 - Sign Out button at bottom with icon and label
 - Modals updated to match new design language (blur backdrop, EB Garamond headings)
+
 ### Frontend — Auth Pages Redesign
+
 - login.css — full redesign: fluid layout, EB Garamond headings, Noto Sans body,
   staggered entrance animations, green glow on input focus, lift effect on button,
   image section with green gradient overlay and brand name, responsive breakpoints
@@ -96,14 +117,18 @@
 - reset-password.css — matching redesign, password rules styled as card,
   disabled button handled via CSS :disabled pseudo-class
 - register.css — matching redesign, readonly email field styled, expired modal
+
 ### Frontend — Accounts Page
+
 - accounts.css — full redesign: dirty-white background, white card main-content,
   Noto Sans typography, sticky table headers, no row dividers with hover highlight,
   role badges differentiated (superadmin gets border)
 - Added "you" badge on current logged-in user's row
 - Fixed table stretching on large screens
 - Fixed main-content card height via align-items: flex-start on main
+
 ### Frontend — FAQ Page
+
 - faq.css — full redesign matching design language
 - faq.html — added Create FAQ modal with floating label inputs and Delete FAQ modal
 - faq.js — wired up create and delete:
@@ -112,8 +137,11 @@
   - Fixed double deleteBtn declaration bug
   - Fixed openDeleteFaqModal scope issue
   - Smooth collapse/expand animation via max-height transition
+
 ## V0.4 — 11/04/2026
+
 ### Backend
+
 - Added cloudinary.js config
 - Added upload.js middleware with multer-storage-cloudinary:
   - Subfolders per resource type (buildings/, offices/, news/)
@@ -130,7 +158,9 @@
   - PATCH /api/buildings/:id — update, handles image removal from Cloudinary
   - DELETE /api/buildings/:id — delete from DB and Cloudinary
 - Added seedBuildings.js — seeds all 57 map elements from SVG campus map
+
 ### Frontend — Building Page
+
 - building.html — list + map view with tab toggle
 - building.css — cards grouped by category, map SVG view, view modal with gallery
 - building.js:
@@ -140,7 +170,9 @@
     scrollable without scrollbar, centered content
   - Delete modal — confirms before delete
   - Remembers list/map view when returning from edit via URL param
+
 ### Frontend — Building Edit Page
+
 - building-edit.html — prefilled form with all building fields
 - building-edit.css — two-column layout, image management
 - building-edit.js:
@@ -151,7 +183,9 @@
   - Visibility toggle labeled Open / Under Maintenance
   - Empty Quill saves as null not HTML empty state
   - Cancel and save return to correct list/map view via URL param
+
 ### Frontend — Building Add Page
+
 - building-add.html — two-step flow
 - building-add.css — step cards, map editor, form layouts
 - building-add.js:
@@ -162,7 +196,9 @@
   - Back to map button returns to Step 1
 
 ## V0.5 — 11/04/2026
+
 ### Backend
+
 - Added `road` as a valid category in `Building.js` model enum
 - Added `seedRoads.js` — seeds 28 campus roads into the buildings collection:
   - All named roads, trails, and rotundas from the campus SVG map
@@ -186,7 +222,9 @@
   - `PATCH /api/offices/:id` — update, handles image removal from Cloudinary
   - `DELETE /api/offices/:id` — deletes from DB, Cloudinary, and removes from any parent subOffices arrays
 - Wired `/api/mapgraph` and `/api/offices` into `server.js`
+
 ### Frontend — Building Page (Updated)
+
 - `building.html`:
   - Added Graph tab alongside List and Map
   - Map view legend added below canvas (building types + scroll/pan hint)
@@ -219,7 +257,9 @@
   - getSVGCoords replaced with version returned by initZoomPan
   - Overlap detection on Confirm Position — checks new shape bounding box against all existing non-road buildings, blocks if overlapping
   - Roads rendered as muted grey reference layer on add map
+
 ### Frontend — Office Pages (New)
+
 - `offices.html` + `office.css` + `office.js`:
   - Card grid grouped by section/category with search filter (name, category, head)
   - View modal: gallery with auto-swap carousel, section badge, visibility badge (orange if under maintenance), name, head, contact info pills (email/phone/hours), Quill description, personnel list, sub-offices list, building reference
@@ -239,7 +279,9 @@
   - Back/cancel navigate to `office.html`
 
 ## V0.6 — 11/04/2026
+
 ### Backend
+
 - Added `Post.js` model:
   - Fields: title, content (Quill HTML), type (enum: news/announcement/event), office (ObjectId ref Office, null = DLSU-D campus-wide), images ([String], min 1 required), createdAt/updatedAt (auto timestamps)
   - No isVisible field
@@ -274,7 +316,9 @@
   - Subject: "Email Change Verification"
   - Preview: "Use the code to confirm your email change"
   - Displays 6-digit code in a styled box with expiry notice
+
 ### Frontend — Posts Pages (New)
+
 - `posts.html` + `posts.css` + `posts.js`:
   - Card grid sorted newest first, no grouping
   - Cards show: thumbnail (first image), type badge (News/Announcement/Event), title, office name (DLSU-D if null), date posted
@@ -295,7 +339,9 @@
   - New images appended alongside kept existing images
   - Validates min 1 image will remain after removals
   - Office field fix: always appends office to FormData (even empty string) to correctly set null in DB
+
 ### Frontend — Feedbacks Page (New)
+
 - `feedbacks.html` + `feedbacks.css` + `feedbacks.js`:
   - Card grid sorted newest first
   - Filter tabs: All / Unread (with live count badge) / Read
@@ -305,7 +351,9 @@
   - Unread count badge on tab updates live after reading
   - View modal: star rating, comment, date, Delete button
   - Delete confirm modal with confirmation
+
 ### Frontend — Settings Page (New)
+
 - `settings.html` + `settings.css` + `settings.js`:
   - Three cards: Profile (name), Email Address, Security (password)
   - Profile card: update name only, prefilled from `GET /api/auth/me`
@@ -314,7 +362,9 @@
   - Security card: current password + new password + confirm new password, show/hide toggle on all password fields, min 8 character validation
 
 ## V0.7 — 12/04/2026
+
 ### Backend
+
 - Made `GET /api/buildings` and `GET /api/buildings/:id` public — kiosk no longer requires auth to fetch buildings
 - Made `GET /api/offices` and `GET /api/offices/:id` public — kiosk no longer requires auth to fetch offices
 - Made `GET /api/faqs` public, now filters `isVisible: true` at DB level — kiosk no longer requires auth, hidden FAQs excluded automatically
@@ -322,7 +372,9 @@
   - `GET /api/weather` — public, proxies OpenWeatherMap API using coordinates for Dasmariñas, Cavite (lat: 14.3294, lon: 120.9367), returns temp, feels_like, condition, description, icon, humidity, city
   - Wired `/api/weather` into `server.js`
   - `OPENWEATHER_API_KEY` added to `.env`
+
 ### Frontend — User Side (New)
+
 - `home.html` + `home.css` + `home.js`:
   - Fullscreen glassmorphism layout with campus background image
   - Top bar: DLSU-D logo, school name, live clock (updates every second)
@@ -378,7 +430,7 @@
     - From: searchable input with dropdown + 3 quick start buttons (Ayuntamiento ADG, Magdalo Gate G1, Magdiwang Gate G3)
     - Travel mode toggle: Walking / Vehicle
     - Walking — all edges bidirectional; Vehicle — respects one-way edge direction
-  - **A* pathfinding** implemented:
+  - **A\* pathfinding** implemented:
     - Animated dashed green path drawn on SVG
     - Green circle = start, red circle = end
     - Map auto-focuses on path midpoint after route found
@@ -395,7 +447,9 @@
   - No `type="module"` needed — plain script tag on each page
 
 ## V0.8 — 12/04/2026
+
 ### Backend
+
 - Added `CampusInfo.js` model:
   - Fields: key (unique String), label (String), content (Quill HTML, default null), icon (String, default null), type (enum: 'rich_text' | 'core_value', default 'rich_text')
   - Timestamps auto
@@ -414,7 +468,9 @@
   - `hymn` — rich_text
   - `contact` — rich_text
   - Safe to re-run (skips existing keys)
+
 ### Frontend — Admin (New)
+
 - `campus-info.html` + `campus-info.css` + `campus-info.js`:
   - One card per section, no add or delete — edit only
   - Each card shows: icon, label, last updated date, Edit button
@@ -425,7 +481,9 @@
   - Content loaded into Quill only when Edit is opened (fixes empty editor bug)
   - Save patches via `PATCH /api/campus-info/:key`
   - Updates preview and last updated date after save
+
 ### Frontend — User Side (New)
+
 - `campus-info.html` + `campus-info.css` + `campus-info.js`:
   - Full page snap scroll — one section per viewport height
   - Vertical dot indicator (right side) with hover label, adapts color per section background, wrapped in glass pill for visibility
@@ -450,10 +508,13 @@
     - Cards show: office name, office hours, email, phone
     - Clicking card opens full detail modal with gallery, category badge, name, head, contact info pills, description (Quill rendered with correct list styles), personnel list, building location
     - Category groups have top margin spacing between them# Navigate La Salle
+
 # CHANGELOG
 
 ## V0.1 — 09/04/2026
+
 ### Backend
+
 - Initialized Express server with ES Modules
 - Connected MongoDB Atlas via Mongoose
 - Configured dotenv, cookie-parser, nodemon
@@ -474,11 +535,15 @@
   - Reset password email (template ID 3)
   - Invite email (template ID 4)
 - Models: Admin.js, Invite.js
+
 ### Frontend — Admin Auth Pages
+
 - login.html — login form with error handling, loading overlay, redirect if already logged in
 - forgot-password.html — sends reset email, success modal, loading overlay
 - reset-password.html — token validation on load, expired token modal, password rules validation on blur, confirm password check, button disabled until valid, success modal, loading overlay
+
 ### Frontend — Admin Pages
+
 - sidebar.html — full sidebar with nav, admin footer, logout modal, inactivity modal (UI only)
 - sidebar.js — auth check, sidebar loader, admin info population, active link highlight, collapse toggle with localStorage persistence, logout flow
 - dashboard.html — layout only
@@ -494,20 +559,28 @@
   - Pagination
   - Loading overlay on all fetch operations
   - Toast notifications for success/error
+
 ### Shared
+
 - loading.html + loading.css + loading.js — global loading overlay system
 - toast.js + toast.css — global toast notification system
 
 ## V0.2 — 10/04/2026
+
 ### Frontend — Sidebar
+
 - Added dark mode / light mode theme toggle switch in sidebar
 - Theme persists across all pages via localStorage
 - Icon switches between moon (light) and sun (dark)
 - Label reflects current mode (Dark Mode / Light Mode)
 - Toggle switch stays visible when sidebar is collapsed, icon and label hide
+
 ### Frontend — Shared
+
 - Added dark mode CSS variables to root.css via [data-theme="dark"] selector
+
 ### Backend
+
 - Added FAQ.js model (question, answer, isVisible, unique question constraint)
 - Added faqRoutes.js:
   - GET /api/faq — fetch all FAQs
@@ -515,7 +588,9 @@
   - PATCH /api/faq/:id — update question, answer, and/or visibility
   - DELETE /api/faq/:id — delete FAQ
 - Wired faqRoutes in server.js
+
 ### Frontend — FAQ Page
+
 - faq.html — FAQ management page layout
 - faq.js — dynamic population of FAQ list with:
   - Collapse/expand per FAQ item with chevron rotation
@@ -530,7 +605,9 @@
   - Toast notifications for success/error
 
 ## V0.3 — 10/04/2026
+
 ### Frontend — Sidebar (Revamp)
+
 - Removed collapse toggle entirely — sidebar is now fixed width (80px)
 - Removed admin name/role display from sidebar
 - New dark green vertical icon-based sidebar design
@@ -538,7 +615,9 @@
 - Theme toggle becomes clickable icon in footer (moon/sun)
 - Sign Out button at bottom with icon and label
 - Modals updated to match new design language (blur backdrop, EB Garamond headings)
+
 ### Frontend — Auth Pages Redesign
+
 - login.css — full redesign: fluid layout, EB Garamond headings, Noto Sans body,
   staggered entrance animations, green glow on input focus, lift effect on button,
   image section with green gradient overlay and brand name, responsive breakpoints
@@ -547,14 +626,18 @@
 - reset-password.css — matching redesign, password rules styled as card,
   disabled button handled via CSS :disabled pseudo-class
 - register.css — matching redesign, readonly email field styled, expired modal
+
 ### Frontend — Accounts Page
+
 - accounts.css — full redesign: dirty-white background, white card main-content,
   Noto Sans typography, sticky table headers, no row dividers with hover highlight,
   role badges differentiated (superadmin gets border)
 - Added "you" badge on current logged-in user's row
 - Fixed table stretching on large screens
 - Fixed main-content card height via align-items: flex-start on main
+
 ### Frontend — FAQ Page
+
 - faq.css — full redesign matching design language
 - faq.html — added Create FAQ modal with floating label inputs and Delete FAQ modal
 - faq.js — wired up create and delete:
@@ -563,8 +646,11 @@
   - Fixed double deleteBtn declaration bug
   - Fixed openDeleteFaqModal scope issue
   - Smooth collapse/expand animation via max-height transition
+
 ## V0.4 — 11/04/2026
+
 ### Backend
+
 - Added cloudinary.js config
 - Added upload.js middleware with multer-storage-cloudinary:
   - Subfolders per resource type (buildings/, offices/, news/)
@@ -581,7 +667,9 @@
   - PATCH /api/buildings/:id — update, handles image removal from Cloudinary
   - DELETE /api/buildings/:id — delete from DB and Cloudinary
 - Added seedBuildings.js — seeds all 57 map elements from SVG campus map
+
 ### Frontend — Building Page
+
 - building.html — list + map view with tab toggle
 - building.css — cards grouped by category, map SVG view, view modal with gallery
 - building.js:
@@ -591,7 +679,9 @@
     scrollable without scrollbar, centered content
   - Delete modal — confirms before delete
   - Remembers list/map view when returning from edit via URL param
+
 ### Frontend — Building Edit Page
+
 - building-edit.html — prefilled form with all building fields
 - building-edit.css — two-column layout, image management
 - building-edit.js:
@@ -602,7 +692,9 @@
   - Visibility toggle labeled Open / Under Maintenance
   - Empty Quill saves as null not HTML empty state
   - Cancel and save return to correct list/map view via URL param
+
 ### Frontend — Building Add Page
+
 - building-add.html — two-step flow
 - building-add.css — step cards, map editor, form layouts
 - building-add.js:
@@ -613,7 +705,9 @@
   - Back to map button returns to Step 1
 
 ## V0.5 — 11/04/2026
+
 ### Backend
+
 - Added `road` as a valid category in `Building.js` model enum
 - Added `seedRoads.js` — seeds 28 campus roads into the buildings collection:
   - All named roads, trails, and rotundas from the campus SVG map
@@ -637,7 +731,9 @@
   - `PATCH /api/offices/:id` — update, handles image removal from Cloudinary
   - `DELETE /api/offices/:id` — deletes from DB, Cloudinary, and removes from any parent subOffices arrays
 - Wired `/api/mapgraph` and `/api/offices` into `server.js`
+
 ### Frontend — Building Page (Updated)
+
 - `building.html`:
   - Added Graph tab alongside List and Map
   - Map view legend added below canvas (building types + scroll/pan hint)
@@ -670,7 +766,9 @@
   - getSVGCoords replaced with version returned by initZoomPan
   - Overlap detection on Confirm Position — checks new shape bounding box against all existing non-road buildings, blocks if overlapping
   - Roads rendered as muted grey reference layer on add map
+
 ### Frontend — Office Pages (New)
+
 - `offices.html` + `office.css` + `office.js`:
   - Card grid grouped by section/category with search filter (name, category, head)
   - View modal: gallery with auto-swap carousel, section badge, visibility badge (orange if under maintenance), name, head, contact info pills (email/phone/hours), Quill description, personnel list, sub-offices list, building reference
@@ -690,7 +788,9 @@
   - Back/cancel navigate to `office.html`
 
 ## V0.6 — 11/04/2026
+
 ### Backend
+
 - Added `Post.js` model:
   - Fields: title, content (Quill HTML), type (enum: news/announcement/event), office (ObjectId ref Office, null = DLSU-D campus-wide), images ([String], min 1 required), createdAt/updatedAt (auto timestamps)
   - No isVisible field
@@ -725,7 +825,9 @@
   - Subject: "Email Change Verification"
   - Preview: "Use the code to confirm your email change"
   - Displays 6-digit code in a styled box with expiry notice
+
 ### Frontend — Posts Pages (New)
+
 - `posts.html` + `posts.css` + `posts.js`:
   - Card grid sorted newest first, no grouping
   - Cards show: thumbnail (first image), type badge (News/Announcement/Event), title, office name (DLSU-D if null), date posted
@@ -746,7 +848,9 @@
   - New images appended alongside kept existing images
   - Validates min 1 image will remain after removals
   - Office field fix: always appends office to FormData (even empty string) to correctly set null in DB
+
 ### Frontend — Feedbacks Page (New)
+
 - `feedbacks.html` + `feedbacks.css` + `feedbacks.js`:
   - Card grid sorted newest first
   - Filter tabs: All / Unread (with live count badge) / Read
@@ -756,7 +860,9 @@
   - Unread count badge on tab updates live after reading
   - View modal: star rating, comment, date, Delete button
   - Delete confirm modal with confirmation
+
 ### Frontend — Settings Page (New)
+
 - `settings.html` + `settings.css` + `settings.js`:
   - Three cards: Profile (name), Email Address, Security (password)
   - Profile card: update name only, prefilled from `GET /api/auth/me`
@@ -765,7 +871,9 @@
   - Security card: current password + new password + confirm new password, show/hide toggle on all password fields, min 8 character validation
 
 ## V0.7 — 12/04/2026
+
 ### Backend
+
 - Made `GET /api/buildings` and `GET /api/buildings/:id` public — kiosk no longer requires auth to fetch buildings
 - Made `GET /api/offices` and `GET /api/offices/:id` public — kiosk no longer requires auth to fetch offices
 - Made `GET /api/faqs` public, now filters `isVisible: true` at DB level — kiosk no longer requires auth, hidden FAQs excluded automatically
@@ -773,7 +881,9 @@
   - `GET /api/weather` — public, proxies OpenWeatherMap API using coordinates for Dasmariñas, Cavite (lat: 14.3294, lon: 120.9367), returns temp, feels_like, condition, description, icon, humidity, city
   - Wired `/api/weather` into `server.js`
   - `OPENWEATHER_API_KEY` added to `.env`
+
 ### Frontend — User Side (New)
+
 - `home.html` + `home.css` + `home.js`:
   - Fullscreen glassmorphism layout with campus background image
   - Top bar: DLSU-D logo, school name, live clock (updates every second)
@@ -829,7 +939,7 @@
     - From: searchable input with dropdown + 3 quick start buttons (Ayuntamiento ADG, Magdalo Gate G1, Magdiwang Gate G3)
     - Travel mode toggle: Walking / Vehicle
     - Walking — all edges bidirectional; Vehicle — respects one-way edge direction
-  - **A* pathfinding** implemented:
+  - **A\* pathfinding** implemented:
     - Animated dashed green path drawn on SVG
     - Green circle = start, red circle = end
     - Map auto-focuses on path midpoint after route found
@@ -846,7 +956,9 @@
   - No `type="module"` needed — plain script tag on each page
 
 ## V0.8 — 12/04/2026
+
 ### Backend
+
 - Added `CampusInfo.js` model:
   - Fields: key (unique String), label (String), content (Quill HTML, default null), icon (String, default null), type (enum: 'rich_text' | 'core_value', default 'rich_text')
   - Timestamps auto
@@ -865,7 +977,9 @@
   - `hymn` — rich_text
   - `contact` — rich_text
   - Safe to re-run (skips existing keys)
+
 ### Frontend — Admin (New)
+
 - `campus-info.html` + `campus-info.css` + `campus-info.js`:
   - One card per section, no add or delete — edit only
   - Each card shows: icon, label, last updated date, Edit button
@@ -876,7 +990,9 @@
   - Content loaded into Quill only when Edit is opened (fixes empty editor bug)
   - Save patches via `PATCH /api/campus-info/:key`
   - Updates preview and last updated date after save
+
 ### Frontend — User Side (New)
+
 - `campus-info.html` + `campus-info.css` + `campus-info.js`:
   - Full page snap scroll — one section per viewport height
   - Vertical dot indicator (right side) with hover label, adapts color per section background, wrapped in glass pill for visibility
@@ -903,7 +1019,9 @@
     - Category groups have top margin spacing between them
 
 ## V0.9 — 13/04/2026
+
 ### Frontend — Admin (New)
+
 - `dashboard.html` + `dashboard.css` + `dashboard.js`:
   - Greeting header — time-based (Good morning/afternoon/evening) with admin name fetched from `/api/auth/me`
   - Live date display (top right) formatted in Filipino locale (`en-PH`)
@@ -941,7 +1059,9 @@
   - Added system icon for website
 
 ## V1.0 — 14/04/2026
+
 ### Backend — Graph
+
 - Modified MapGraph.js
   - replaced 'type' and 'direction' fields
   - replaced exisiting 'edge'(edge is connection of nodes) category with 3 new ones ['pedestrian', 'vehicle', 'both']
@@ -950,7 +1070,9 @@
   - Added 'oneWay: Boolean' - separate from type, only relevant for 'vehicle' and 'both'
   - 'direction' stay as-is, but now only set when oneWay: true
   - Route validates that pedestrian edges can't be one-way, and one-way edges must have a direction
+
 ### Frontend — Admin/map[js, css, html]
+
 - Added additional controls
   - Add noselect mode to setGraphMode()
   - Add edge type selector UI (pedestrian / vehicle / both) in edge options, replacing the old two-way/one-way toggle (one-way becomes a sub-option only when vehicle or both is selected)
@@ -960,29 +1082,37 @@
   - Wire save button to reset dirty state, disable both buttons when clean
   - Add pushUndo() calls at every mutation point (add node, add edge, delete node, delete edge, move node, assign building)
   - Edges are now color-coded: blue (pedestrian), orange (vehicle), dark green (both)
+
 ### Frontend — User/map.js
+
 - Update logic in wayfinding to fit upgraded model
   - Derives isWalkable (pedestrian or both) and isDrivable (vehicle or both) from the edge type
   - Walking mode: filters to walkable edges only, always traverses both directions
   - Vehicle mode: filters to drivable edges only, then checks edge.oneWay (boolean) instead of the old edge.type === 'one-way', and uses edge.direction to determine which way is allowed
 
 ## V1.1 — 15/04/2026
+
 ### Frontend — User Interactive Map
-- Improve/Added draw-on path animation 
+
+- Improve/Added draw-on path animation
   - replaced the old 'polyline' with marching dashes by 'SVG' path element and is making a fill in/snake like transition from start to destination
 - Hybrid vehicle + wall fallback
   - When vehicle route finds no route, instead of 'no route' finds the closest drivable node to the pedestrian-only destination
-  - Run A* for vehicle leg (start -> dropoff) in yellow and walk leg (dropoff -> destination) in green, sequentially after the vehicle animation finishes
+  - Run A\* for vehicle leg (start -> dropoff) in yellow and walk leg (dropoff -> destination) in green, sequentially after the vehicle animation finishes
   - The route bar shows: 🚗 Drive to [Building], then 🚶 walk to [Destination]
   - If even the hybrid approach can't find a path, it falls back to the original "No route found" message.
 
 ## V1.1 — 15/04/2026
+
 ### Backend - Server.js
+
 - Removed the duplicate 'app.get'('/') at the bottom
 - Moved the existsSync import to the top with the other imports (it was inline before)
 - Removed the redundant 'app.get'('/admin') redirect since express.static already handles it
 - Added admin redirect route
+
 ### Frontend — Admin Building Page
+
 - Improved Building Admin Page
   - In list view:
     - Added search functionality
@@ -990,9 +1120,13 @@
     - Added collapsible category sections for buildings
   - In Map View
     - Added dataid/buildingid to be displayed on top of the buildings
+
 ### Frontend - Campus Info Page
+
 - Replaced the background images for sections that needs background img (Mission-Vision, Core Values, Contact)
+
 ### Frontend — User Map Page
+
 - Enhanced building visual depth
   - Applied directional gradient fill per building category (building, facility, landmark)
   - Strengthened drop shadow filter (dx=5, dy=8) for more pronounced 3D appearance
@@ -1001,3 +1135,21 @@
   - Font size scales proportionally to shape size to prevent overflow on smaller buildings
   - Label color matches the category color of each building
   - Uses EB Garamond font for visual consistency with the rest of the system
+
+## V1.2 — 16/04/2026
+
+### Frontend — Admin Virtual Tour & Sidebar
+
+- Removed all draggable marker edit logic and UI from the admin virtual tour.
+- Removed the "Edit Marker Positions" button and related toolbar from the Markers panel.
+- Navigation and info marker positions (yaw/pitch) are now edited directly via text fields in the Markers panel.
+- Changes to yaw/pitch fields update the panorama viewer in real time.
+- Cleaned up related CSS for draggable marker edit mode and toolbar.
+- No more drag-to-move marker logic; all marker position editing is now field-based for maintainability.
+- Unified font family in the sidebar to match the rest of the system for visual consistency.
+- Updated sidebar CSS to hide the scrollbar visually while keeping scroll functionality (using -ms-overflow-style scrollbar-width, and ::-webkit-scrollbar rules).
+- Affected files:
+  - [frontend/admin/pages/js/virtual-tour.js](frontend/admin/pages/js/virtual-tour.js)
+  - [frontend/admin/pages/virtual-tour.html](frontend/admin/pages/virtual-tour.html)
+  - [frontend/admin/pages/css/virtual-tour.css](frontend/admin/pages/css/virtual-tour.css)
+  - [frontend/admin/pages/css/sidebar.css](frontend/admin/pages/css/sidebar.css)
