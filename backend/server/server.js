@@ -5,13 +5,14 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { existsSync } from 'fs';
 import { verifyToken } from './middleware/auth.js';
 
 // Virtual Tour routes
 import scenesRoutes from './routes/scenes.js';
 import settingsRoutes from './routes/settings.js';
 
-// Main project routes (es-restructure)
+// Main project routes
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import buildingRoutes from './routes/buildingRoutes.js';
@@ -43,11 +44,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ── API Routes ──
-// Virtual Tour
 app.use('/api/scenes', scenesRoutes);
 app.use('/api/settings', settingsRoutes);
-
-// Main project (es-restructure)
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/buildings', buildingRoutes);
@@ -60,35 +58,19 @@ app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/weather', weatherRoutes);
 
 // ── Bundled VT (production — serve dist/ if it exists) ──
-import { existsSync } from 'fs';
 const distPath = join(__dirname, '../../dist');
 if (existsSync(distPath)) {
   app.use('/user/virtual-tour.html', express.static(join(distPath, 'user/virtual-tour.html')));
   app.use('/assets', express.static(join(distPath, 'assets')));
 }
 
-// ─── Landing Page ──────────────────────────────────────────────────────────────
-app.get('/', (req, res) => {
-    res.sendFile(join(__dirname, '../../frontend/user/home.html'));
-});
-
-// ─── Admin Page ────────────────────────────────────────────────────────────────
-app.get('/admin', express.static(join(__dirname, '../../frontend/admin')));
-
-// ── Protected Admin Pages ──
+// ── Static Files ──
 app.use('/admin/pages', verifyToken, express.static(join(__dirname, '../../frontend/admin/pages')));
-
-// ── Static Files (user pages, shared, assets, admin auth pages — all public) ──
 app.use(express.static(join(__dirname, '../../frontend')));
 
-// ── Root route → User home page ──
+// ── Root Route ──
 app.get('/', (req, res) => {
-  res.redirect('/user/home.html');
-});
-
-// ── Admin route → login ──
-app.get('/admin', (req, res) => {
-  res.redirect('/admin/login.html');
+  res.sendFile(join(__dirname, '../../frontend/user/home.html'));
 });
 
 // ── 404 Handler ──
@@ -102,6 +84,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// ─── Start Server ──────────────────────────────────────────────────────────────
+// ── Start Server ──
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

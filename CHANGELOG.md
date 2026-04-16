@@ -977,6 +977,10 @@
   - If even the hybrid approach can't find a path, it falls back to the original "No route found" message.
 
 ## V1.1 — 15/04/2026
+### Backend - Server.js
+- Removed the duplicate 'app.get'('/') at the bottom
+- Moved the existsSync import to the top with the other imports (it was inline before)
+- Removed the redundant 'app.get'('/admin') redirect since express.static already handles it
 ### Frontend — Admin Building Page
 - Improved Building Admin Page
   - In list view:
@@ -985,3 +989,5 @@
     - Added collapsible category sections for buildings
   - In Map View
     - Added dataid/buildingid to be displayed on top of the buildings
+### Frontend - Campus Info Page
+- Replaced the background images for sections that needs background img (Mission-Vision, Core Values, Contact)

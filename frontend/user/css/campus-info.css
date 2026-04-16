@@ -102,7 +102,7 @@ html, body {
 
 /* ─── Section 1 — Mission & Vision (campus bg, two columns) ──────────────────── */
 .section-mission-vision {
-    background-image: url('../img/home_bg.jpg');
+    background-image: url('../img/dlsud-mv.jpg');
     background-size: cover;
     background-position: center;
     align-items: flex-end;
@@ -225,7 +225,7 @@ html, body {
 
 /* ─── Section 3 — Core Values (campus bg, left title + right stacked cards) ──── */
 .section-core-values {
-    background-image: url('../img/home_bg.jpg');
+    background-image: url('../img/dlsud-cv.jpg');
     background-size: cover;
     background-position: center;
     align-items: flex-end;
@@ -378,7 +378,7 @@ html, body {
 
 /* ─── Section 5 — Contact (campus bg) ───────────────────────────────────────── */
 .section-contact {
-    background-image: url('../img/home_bg.jpg');
+    background-image: url('../img/dlsud-contact.JPG');
     background-size: cover;
     background-position: center;
     align-items: flex-end;
