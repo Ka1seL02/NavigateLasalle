@@ -981,6 +981,7 @@
 - Removed the duplicate 'app.get'('/') at the bottom
 - Moved the existsSync import to the top with the other imports (it was inline before)
 - Removed the redundant 'app.get'('/admin') redirect since express.static already handles it
+- Added admin redirect route
 ### Frontend — Admin Building Page
 - Improved Building Admin Page
   - In list view:

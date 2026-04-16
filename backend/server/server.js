@@ -73,6 +73,11 @@ app.get('/', (req, res) => {
   res.sendFile(join(__dirname, '../../frontend/user/home.html'));
 });
 
+// ── Admin Redirect ──
+app.get('/admin', (req, res) => {
+  res.redirect('/admin/login.html');
+});
+
 // ── 404 Handler ──
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
