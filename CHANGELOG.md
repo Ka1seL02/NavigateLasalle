@@ -977,8 +977,11 @@
   - If even the hybrid approach can't find a path, it falls back to the original "No route found" message.
 
 ## V1.1 — 15/04/2026
-### Frontend — User Interactive Map
+### Frontend — Admin Building Page
 - Improved Building Admin Page
-  - Added search bar for list view building
-  - Added additional viewing mode for list-view - can now switch from Card to Row view toggle
-  - Added collapsible category sections for buildings
+  - In list view:
+    - Added search functionality
+    - Added additional viewing mode - can now switch from Card to Row view toggle
+    - Added collapsible category sections for buildings
+  - In Map View
+    - Added dataid/buildingid to be displayed on top of the buildings

@@ -198,6 +198,71 @@ main {
 .list-view-btn:hover { color: var(--dark-green); background: var(--white); }
 .list-view-btn.active { color: var(--white); background: var(--dark-green); }
 
+/* ─── Category Filter Dropdown ───────────────────────────────────────────────── */
+.list-category-wrap {
+    position: relative;
+}
+.list-category-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dark-grey);
+    background: var(--dirty-white);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+    user-select: none;
+}
+.list-category-btn:hover { border-color: var(--green); color: var(--dark-green); }
+.list-category-btn i:first-child { font-size: 1rem; color: var(--light-grey); }
+.list-category-chevron {
+    font-size: 1rem;
+    color: var(--light-grey);
+    transition: transform 0.2s;
+}
+.list-category-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 180px;
+    background: var(--white);
+    border: 1px solid var(--shadow);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    z-index: 50;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.category-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--dark-grey);
+    background: none;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-align: left;
+}
+.category-option i { font-size: 0.95rem; color: var(--light-grey); }
+.category-option:hover { background: var(--dirty-white); color: var(--dark-green); }
+.category-option:hover i { color: var(--dark-green); }
+.category-option.active { background: rgba(0,138,61,0.08); color: var(--dark-green); font-weight: 700; }
+.category-option.active i { color: var(--dark-green); }
+
 /* ─── Category Section ───────────────────────────────────────────────────────── */
 .category-section { display: flex; flex-direction: column; gap: 0; }
 .category-header {
@@ -420,6 +485,22 @@ main {
 #campusMap .parking { fill: var(--off-white); stroke: var(--light-grey); stroke-width: 2; cursor: pointer; transition: fill 0.2s; }
 #campusMap .parking:hover { fill: var(--light-grey); }
 #campusMap .road { fill: #cecece; pointer-events: none; }
+
+/* ── Building dataId labels ── */
+#campusMap .map-building-label {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--dark-green);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    paint-order: stroke fill;
+    stroke: rgba(255, 255, 255, 0.85);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    pointer-events: none;
+    user-select: none;
+}
 
 #campusMap .building,
 #campusMap .facility,

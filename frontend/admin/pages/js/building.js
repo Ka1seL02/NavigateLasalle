@@ -10,9 +10,11 @@ let autoSwapInterval = null;
 let listViewMode = 'card';   // 'card' | 'row'
 let listSearchQuery = '';
 let collapsedCategories = new Set();
+let listCategoryFilter = '';  // '' = all
 
 // ─── Elements ─────────────────────────────────────────────────────────────────
 const listView = document.getElementById('listView');
+const listViewWrapper = document.getElementById('listViewWrapper');
 const mapView = document.getElementById('mapView');
 const graphView = document.getElementById('graphView');
 const listTabBtn = document.getElementById('listTabBtn');
@@ -30,11 +32,13 @@ if (savedView === 'map') {
     listTabBtn.classList.remove('active');
     mapView.classList.remove('hidden');
     listView.classList.add('hidden');
+    listViewWrapper.classList.add('hidden');
 } else if (savedView === 'graph') {
     graphTabBtn.classList.add('active');
     listTabBtn.classList.remove('active');
     graphView.classList.remove('hidden');
     listView.classList.add('hidden');
+    listViewWrapper.classList.add('hidden');
 }
 
 // ─── View Tabs ────────────────────────────────────────────────────────────────
@@ -42,7 +46,7 @@ listTabBtn.addEventListener('click', () => {
     listTabBtn.classList.add('active');
     mapTabBtn.classList.remove('active');
     graphTabBtn.classList.remove('active');
-    listView.classList.remove('hidden');
+    listViewWrapper.classList.remove('hidden');
     mapView.classList.add('hidden');
     graphView.classList.add('hidden');
 });
@@ -52,7 +56,7 @@ mapTabBtn.addEventListener('click', () => {
     listTabBtn.classList.remove('active');
     graphTabBtn.classList.remove('active');
     mapView.classList.remove('hidden');
-    listView.classList.add('hidden');
+    listViewWrapper.classList.add('hidden');
     graphView.classList.add('hidden');
     renderMap();
 });
@@ -62,7 +66,7 @@ graphTabBtn.addEventListener('click', () => {
     listTabBtn.classList.remove('active');
     mapTabBtn.classList.remove('active');
     graphView.classList.remove('hidden');
-    listView.classList.add('hidden');
+    listViewWrapper.classList.add('hidden');
     mapView.classList.add('hidden');
     renderGraph();
 });
@@ -104,6 +108,49 @@ listSearchClear.addEventListener('click', () => {
     listSearchClear.classList.add('hidden');
     listSearchInput.focus();
     renderList();
+});
+
+// ─── Category Filter Dropdown ──────────────────────────────────────────────────
+const listCategoryBtn = document.getElementById('listCategoryBtn');
+const listCategoryDropdown = document.getElementById('listCategoryDropdown');
+const listCategoryLabel = document.getElementById('listCategoryLabel');
+const listCategoryChevron = document.getElementById('listCategoryChevron');
+const categoryOptions = document.querySelectorAll('.category-option');
+
+const categoryNames = {
+    '': 'All Categories',
+    building: 'Buildings',
+    facility: 'Facilities',
+    gate: 'Gates',
+    landmark: 'Landmarks',
+    parking: 'Parking Areas'
+};
+
+listCategoryBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !listCategoryDropdown.classList.contains('hidden');
+    listCategoryDropdown.classList.toggle('hidden', isOpen);
+    listCategoryChevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+});
+
+document.addEventListener('click', () => {
+    listCategoryDropdown.classList.add('hidden');
+    listCategoryChevron.style.transform = '';
+});
+
+listCategoryDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+categoryOptions.forEach(opt => {
+    opt.addEventListener('click', () => {
+        listCategoryFilter = opt.dataset.value;
+        listCategoryLabel.textContent = categoryNames[listCategoryFilter];
+        categoryOptions.forEach(o => o.classList.toggle('active', o === opt));
+        listCategoryDropdown.classList.add('hidden');
+        listCategoryChevron.style.transform = '';
+        // Reset collapsed state when switching category
+        collapsedCategories.clear();
+        renderList();
+    });
 });
 
 // ─── Fetch All Data ───────────────────────────────────────────────────────────
@@ -157,13 +204,18 @@ function renderList() {
     };
 
     const q = listSearchQuery.trim().toLowerCase();
+    // Apply category filter — if a specific category is selected, only show that one
+    const activeCategories = listCategoryFilter
+        ? categories.filter(c => c === listCategoryFilter)
+        : categories;
 
     listView.innerHTML = '';
 
     // When searching, flatten all results into one section
     if (q) {
         const matched = allBuildings.filter(b =>
-            b.name.toLowerCase().includes(q) || b.dataId.toLowerCase().includes(q)
+            activeCategories.includes(b.category) &&
+            (b.name.toLowerCase().includes(q) || b.dataId.toLowerCase().includes(q))
         );
 
         if (matched.length === 0) {
@@ -191,7 +243,7 @@ function renderList() {
         return;
     }
 
-    categories.forEach(cat => {
+    activeCategories.forEach(cat => {
         const items = allBuildings.filter(b => b.category === cat);
         if (items.length === 0) return;
 
@@ -386,6 +438,8 @@ function renderMap() {
     allBuildings.forEach(b => {
         if (!b.shape) return;
         let elem;
+        let cx, cy;
+
         if (b.shape.type === 'rect') {
             elem = document.createElementNS(ns, 'rect');
             elem.setAttribute('x', b.shape.x);
@@ -394,9 +448,9 @@ function renderMap() {
             elem.setAttribute('height', b.shape.height);
             if (b.shape.rx) elem.setAttribute('rx', b.shape.rx);
             if (b.shape.ry) elem.setAttribute('ry', b.shape.ry);
+            cx = parseFloat(b.shape.x) + parseFloat(b.shape.width) / 2;
+            cy = parseFloat(b.shape.y) + parseFloat(b.shape.height) / 2;
             if (b.shape.rotate) {
-                const cx = parseFloat(b.shape.x) + parseFloat(b.shape.width) / 2;
-                const cy = parseFloat(b.shape.y) + parseFloat(b.shape.height) / 2;
                 elem.setAttribute('transform', `rotate(${b.shape.rotate}, ${cx}, ${cy})`);
             }
         } else if (b.shape.type === 'ellipse') {
@@ -405,12 +459,32 @@ function renderMap() {
             elem.setAttribute('cy', b.shape.cy);
             elem.setAttribute('rx', b.shape.rx);
             elem.setAttribute('ry', b.shape.ry);
+            cx = parseFloat(b.shape.cx);
+            cy = parseFloat(b.shape.cy);
         }
         if (!elem) return;
         elem.classList.add(b.category);
         elem.dataset.id = b._id;
         elem.dataset.dataId = b.dataId;
         svg.appendChild(elem);
+
+        // ── DataId label centered on the shape ──
+        if (cx !== undefined && cy !== undefined) {
+            const label = document.createElementNS(ns, 'text');
+            label.setAttribute('x', cx);
+            label.setAttribute('y', cy);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('dominant-baseline', 'middle');
+            label.classList.add('map-building-label');
+            label.dataset.id = b._id;
+            label.style.pointerEvents = 'none';
+            // Rotate label with the shape so it stays visually inside it
+            if (b.shape.type === 'rect' && b.shape.rotate) {
+                label.setAttribute('transform', `rotate(${b.shape.rotate}, ${cx}, ${cy})`);
+            }
+            label.textContent = b.dataId;
+            svg.appendChild(label);
+        }
     });
 
     svg.addEventListener('click', (e) => {
