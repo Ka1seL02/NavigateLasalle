@@ -29,7 +29,8 @@ router.get("/filter", async (req, res) => {
     const { campus, category } = req.query;
     const filter = {};
     if (campus) filter.campus = { $in: campus.split(",").map((c) => c.trim()) };
-    if (category) filter.category = { $in: category.split(",").map((c) => c.trim()) };
+    if (category)
+      filter.category = { $in: category.split(",").map((c) => c.trim()) };
     const scenes = await Scene.find(filter);
     res.json(scenes);
   } catch (err) {
@@ -65,7 +66,7 @@ router.put("/:id", verifyToken, async (req, res) => {
     const scene = await Scene.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
-      { new: true, runValidators: true }
+      { returnDocument: "after", runValidators: true },
     );
     if (!scene) return res.status(404).json({ error: "Scene not found" });
     res.json(scene);
@@ -95,80 +96,92 @@ function bucketPathFromUrl(url) {
 // POST upload a file for a scene (admin)
 // Query params: type=panorama|marker_icon|gallery|audio  &markerId=xxx (for marker_icon)
 // Body (optional via query): oldUrl — the current URL to delete/replace
-router.post("/:id/upload", verifyToken, upload.single("file"), async (req, res) => {
-  try {
-    const { type, markerId, oldUrl } = req.query;
-    const file = req.file;
-    if (!file) return res.status(400).json({ error: "No file provided" });
+router.post(
+  "/:id/upload",
+  verifyToken,
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const { type, markerId, oldUrl } = req.query;
+      const file = req.file;
+      if (!file) return res.status(400).json({ error: "No file provided" });
 
-    const scene = await Scene.findById(req.params.id);
-    if (!scene) return res.status(404).json({ error: "Scene not found" });
+      const scene = await Scene.findById(req.params.id);
+      if (!scene) return res.status(404).json({ error: "Scene not found" });
 
-    const ext = file.originalname.split(".").pop().toLowerCase();
-    const ts = Date.now();
-    const campus = scene.campus;     // "east", "west", or "both"
-    const category = scene.category; // "buildings", "facilities", etc.
-    const sceneId = scene._id;       // e.g. "JFH", "Gate 1"
-    let bucketPath;
+      const ext = file.originalname.split(".").pop().toLowerCase();
+      const ts = Date.now();
+      const campus = scene.campus; // "east", "west", or "both"
+      const category = scene.category; // "buildings", "facilities", etc.
+      const sceneId = scene._id; // e.g. "JFH", "Gate 1"
+      let bucketPath;
 
-    // Mirror the existing Supabase folder hierarchy:
-    //   panoramas  → images/{campus}/{category}/{sceneId}.webp
-    //   markers    → images/markers/{campus}/{category}/{sceneId}/{file}.webp
-    //   gallery    → images/info_modal_gallery/{campus}/{category}/{sceneId}/{file}.ext
-    //   audio      → audios/info_modal/{campus}/{category}/{sceneId}.mp3
-    switch (type) {
-      case "panorama":
-        bucketPath = `images/${campus}/${category}/${sceneId}_${ts}.${ext}`;
-        break;
-      case "marker_icon":
-        if (!markerId) return res.status(400).json({ error: "markerId required" });
-        bucketPath = `images/markers/${campus}/${category}/${sceneId}/${markerId}_${ts}.${ext}`;
-        break;
-      case "gallery":
-        bucketPath = `images/info_modal_gallery/${campus}/${category}/${sceneId}/${sceneId}_${ts}.${ext}`;
-        break;
-      case "audio":
-        bucketPath = `audios/info_modal/${campus}/${category}/${sceneId}_${ts}.${ext}`;
-        break;
-      default:
-        return res.status(400).json({ error: "Invalid upload type" });
-    }
-
-    // Delete the old file from Supabase if oldUrl is provided (replace, not add)
-    if (oldUrl) {
-      const oldPath = bucketPathFromUrl(oldUrl);
-      if (oldPath) {
-        await supabase.storage.from(BUCKET_NAME).remove([oldPath]);
+      // Mirror the existing Supabase folder hierarchy:
+      //   panoramas  → images/{campus}/{category}/{sceneId}.webp
+      //   markers    → images/markers/{campus}/{category}/{sceneId}/{file}.webp
+      //   gallery    → images/info_modal_gallery/{campus}/{category}/{sceneId}/{file}.ext
+      //   audio      → audios/info_modal/{campus}/{category}/{sceneId}.mp3
+      switch (type) {
+        case "panorama":
+          bucketPath = `images/${campus}/${category}/${sceneId}_${ts}.${ext}`;
+          break;
+        case "marker_icon":
+          if (!markerId)
+            return res.status(400).json({ error: "markerId required" });
+          bucketPath = `images/markers/${campus}/${category}/${sceneId}/${markerId}_${ts}.${ext}`;
+          break;
+        case "gallery":
+          bucketPath = `images/info_modal_gallery/${campus}/${category}/${sceneId}/${sceneId}_${ts}.${ext}`;
+          break;
+        case "audio":
+          bucketPath = `audios/info_modal/${campus}/${category}/${sceneId}_${ts}.${ext}`;
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid upload type" });
       }
+
+      // Delete the old file from Supabase if oldUrl is provided (replace, not add)
+      if (oldUrl) {
+        const oldPath = bucketPathFromUrl(oldUrl);
+        if (oldPath) {
+          await supabase.storage.from(BUCKET_NAME).remove([oldPath]);
+        }
+      }
+
+      const { error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(bucketPath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true,
+        });
+
+      if (error) return res.status(500).json({ error: error.message });
+
+      const { data } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(bucketPath);
+
+      res.json({ url: data.publicUrl });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-
-    const { error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(bucketPath, file.buffer, {
-        contentType: file.mimetype,
-        upsert: true,
-      });
-
-    if (error) return res.status(500).json({ error: error.message });
-
-    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(bucketPath);
-
-    res.json({ url: data.publicUrl });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+  },
+);
 
 // DELETE remove a file from Supabase storage (for gallery image removal)
 router.delete("/:id/upload", verifyToken, async (req, res) => {
   try {
     const { url } = req.query;
-    if (!url) return res.status(400).json({ error: "url query param required" });
+    if (!url)
+      return res.status(400).json({ error: "url query param required" });
 
     const oldPath = bucketPathFromUrl(url);
-    if (!oldPath) return res.status(400).json({ error: "Invalid Supabase URL" });
+    if (!oldPath)
+      return res.status(400).json({ error: "Invalid Supabase URL" });
 
-    const { error } = await supabase.storage.from(BUCKET_NAME).remove([oldPath]);
+    const { error } = await supabase.storage
+      .from(BUCKET_NAME)
+      .remove([oldPath]);
     if (error) return res.status(500).json({ error: error.message });
 
     res.json({ message: "File deleted" });

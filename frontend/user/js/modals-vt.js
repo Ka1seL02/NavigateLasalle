@@ -11,15 +11,20 @@ async function loadModalSettings() {
   // Welcome modal
   document.getElementById("welcome-logo").src = settings.welcome_logo_url;
   document.getElementById("welcome-title").textContent = settings.welcome_title;
-  document.getElementById("welcome-subtitle").textContent = settings.welcome_subtitle;
-  document.getElementById("welcome-description").innerHTML = settings.welcome_description;
-  document.getElementById("start-tour-btn").textContent = settings.welcome_btn_label;
+  document.getElementById("welcome-subtitle").textContent =
+    settings.welcome_subtitle;
+  document.getElementById("welcome-description").innerHTML =
+    settings.welcome_description;
+  document.getElementById("start-tour-btn").textContent =
+    settings.welcome_btn_label;
 
   // Apply modal size
   const welcomeContent = document.querySelector(".welcome-content");
   if (welcomeContent) {
-    if (settings.welcome_modal_width) welcomeContent.style.width = settings.welcome_modal_width + "px";
-    if (settings.welcome_modal_height) welcomeContent.style.minHeight = settings.welcome_modal_height + "px";
+    if (settings.welcome_modal_width)
+      welcomeContent.style.width = settings.welcome_modal_width + "px";
+    if (settings.welcome_modal_height)
+      welcomeContent.style.minHeight = settings.welcome_modal_height + "px";
   }
 
   // Video source
@@ -34,8 +39,10 @@ async function loadModalSettings() {
   const narrativeBtn = document.getElementById("narrative-btn");
   const narrativeIcon = document.getElementById("icon-narrative");
   const iconNarrativeDefault = settings.icon_narrative_url;
-  const iconNarrativePlay   = settings.icon_narrative_play_url || settings.icon_narrative_url;
-  const iconNarrativeMute   = settings.icon_narrative_mute_url || settings.icon_narrative_url;
+  const iconNarrativePlay =
+    settings.icon_narrative_play_url || settings.icon_narrative_url;
+  const iconNarrativeMute =
+    settings.icon_narrative_mute_url || settings.icon_narrative_url;
 
   let narrationAudio = null;
   let narrationPlaying = false;
@@ -68,8 +75,8 @@ async function loadModalSettings() {
   const musicBtn = document.getElementById("music-btn");
   const bgmIcon = document.getElementById("icon-bgm");
   const iconBgmDefault = settings.icon_bgm_url;
-  const iconBgmPlay    = settings.icon_bgm_play_url || settings.icon_bgm_url;
-  const iconBgmMute    = settings.icon_bgm_mute_url || settings.icon_bgm_url;
+  const iconBgmPlay = settings.icon_bgm_play_url || settings.icon_bgm_url;
+  const iconBgmMute = settings.icon_bgm_mute_url || settings.icon_bgm_url;
 
   let bgmPlaying = false;
   let bgmAudio = null;
@@ -77,7 +84,10 @@ async function loadModalSettings() {
 
   // BGM stored as comma-separated URLs
   const bgmTracks = settings.bgm_url
-    ? settings.bgm_url.split(",").map(t => t.trim()).filter(Boolean)
+    ? settings.bgm_url
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
     : [];
 
   function playNextBGM() {
@@ -98,7 +108,10 @@ async function loadModalSettings() {
         bgmPlaying = true;
         bgmIcon.src = iconBgmPlay;
       } else {
-        if (bgmAudio) { bgmAudio.pause(); bgmAudio = null; }
+        if (bgmAudio) {
+          bgmAudio.pause();
+          bgmAudio = null;
+        }
         bgmPlaying = false;
         bgmIcon.src = iconBgmDefault;
       }
@@ -127,6 +140,15 @@ closeVideoBtn?.addEventListener("click", () => {
   videoPlayer.currentTime = 0;
 });
 
+// Close when clicking outside the video container
+videoOverlay?.addEventListener("click", (e) => {
+  if (e.target === videoOverlay) {
+    videoOverlay.style.display = "none";
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
+  }
+});
+
 // =====================
 //  INIT
 // =====================
@@ -150,14 +172,15 @@ export async function openInfoModal(sceneId, markerId) {
 
   // Pick the right modal: check modals map by markerId first, fall back to modal
   const modalsMap = scene.modals || {};
-  const modalData = (markerId && modalsMap[markerId])
-    ? modalsMap[markerId]
-    : scene.modal;
+  const modalData =
+    markerId && modalsMap[markerId] ? modalsMap[markerId] : scene.modal;
 
   if (!modalData || !modalData.title) return;
 
-  document.getElementById("building-info-title").textContent = modalData.title || scene.title;
-  document.getElementById("building-info-desc").innerHTML = modalData.description || "";
+  document.getElementById("building-info-title").textContent =
+    modalData.title || scene.title;
+  document.getElementById("building-info-desc").innerHTML =
+    modalData.description || "";
 
   const infoBox = document.getElementById("building-info-box");
   infoBox.style.display = "flex";
@@ -167,7 +190,10 @@ export async function openInfoModal(sceneId, markerId) {
   // =====================
   //  INFO MODAL AUDIO
   // =====================
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
   infoAudioPlaying = false;
 
   const audioBtn = document.getElementById("audio-btn");
@@ -177,7 +203,10 @@ export async function openInfoModal(sceneId, markerId) {
   const settingsRes = await fetch("/api/settings");
   const settings = await settingsRes.json();
   const iconPlay = settings.icon_info_audio_url;
-  const iconStop = settings.icon_info_audio_stop_url || settings.icon_narrative_mute_url || settings.icon_info_audio_url;
+  const iconStop =
+    settings.icon_info_audio_stop_url ||
+    settings.icon_narrative_mute_url ||
+    settings.icon_info_audio_url;
 
   if (modalData.audio_url) {
     currentAudio = new Audio(modalData.audio_url);
@@ -230,7 +259,10 @@ export async function openInfoModal(sceneId, markerId) {
     infoBox.style.display = "none";
     infoBox.style.opacity = "0";
     infoBox.style.visibility = "hidden";
-    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio = null;
+    }
     infoAudioPlaying = false;
   });
 }
@@ -245,7 +277,8 @@ function openGallery() {
   updateGalleryImage();
 
   document.getElementById("prev-image").onclick = () => {
-    currentGalleryIndex = (currentGalleryIndex - 1 + galleryImages.length) % galleryImages.length;
+    currentGalleryIndex =
+      (currentGalleryIndex - 1 + galleryImages.length) % galleryImages.length;
     updateGalleryImage();
   };
 
@@ -260,5 +293,6 @@ function openGallery() {
 }
 
 function updateGalleryImage() {
-  document.getElementById("gallery-current-img").src = galleryImages[currentGalleryIndex];
+  document.getElementById("gallery-current-img").src =
+    galleryImages[currentGalleryIndex];
 }

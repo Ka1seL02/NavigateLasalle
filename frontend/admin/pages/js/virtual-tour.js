@@ -507,6 +507,7 @@ function enterSceneEditMode() {
   document.getElementById("saveSceneBtn").classList.remove("hidden");
 
   renderNavMarkersList(); // Re-render to show edit UI
+  renderInfoMarkersList();
 
   // Enable scene info fields
   document
@@ -539,6 +540,14 @@ function discardSceneChanges() {
   updatedMarkerPositions = {};
   newMarkerIcons = {};
 
+  // Re-lock
+  isUnlocked = false;
+  document.getElementById("lockedOverlay").classList.remove("hidden");
+  document.querySelector(".right-panel").classList.add("panel-locked");
+  document.getElementById("editSceneBtn").classList.remove("hidden");
+  document.getElementById("discardBtn").classList.add("hidden");
+  document.getElementById("saveSceneBtn").classList.add("hidden");
+
   // Revert scene info fields
   prefillScenePanel();
 
@@ -557,14 +566,6 @@ function discardSceneChanges() {
     psvMarkersPlugin.clearMarkers();
     addSceneMarkersToPsv(true);
   }
-
-  // Re-lock
-  isUnlocked = false;
-  document.getElementById("lockedOverlay").classList.remove("hidden");
-  document.querySelector(".right-panel").classList.add("panel-locked");
-  document.getElementById("editSceneBtn").classList.remove("hidden");
-  document.getElementById("discardBtn").classList.add("hidden");
-  document.getElementById("saveSceneBtn").classList.add("hidden");
 
   // Disable scene info fields
   document
@@ -663,16 +664,13 @@ function renderNavMarkersList() {
                 <input type="file" class="marker-icon-input hidden" data-marker-id="${m.id}" data-marker-type="nav" accept=".webp" />
               </div>
               <div class="mrow-coords-display">
-                <div class="mrow-coord-pill"><span>Yaw</span><input class="mrow-yaw-input" data-marker-id="${m.id}" type="number" step="0.01" value="${m.yaw?.toFixed(2) ?? "0.00"}" /></div>
-                <div class="mrow-coord-pill"><span>Pitch</span><input class="mrow-pitch-input" data-marker-id="${m.id}" type="number" step="0.01" value="${m.pitch?.toFixed(2) ?? "0.00"}" /></div>
+                <div class="mrow-coord-pill"><span>Yaw</span><input class="mrow-yaw-input" data-marker-id="${m.id}" type="number" step="0.001" value="${m.yaw?.toFixed(3) ?? "0.000"}" /></div>
+                <div class="mrow-coord-pill"><span>Pitch</span><input class="mrow-pitch-input" data-marker-id="${m.id}" type="number" step="0.001" value="${m.pitch?.toFixed(3) ?? "0.000"}" /></div>
               </div>
             </div>
             `
                 : `
-              <div class="mrow-coords-display">
-                <div class="mrow-coord-pill"><span>Yaw</span><span class="mrow-yaw" data-marker-id="${m.id}">${m.yaw?.toFixed(2) ?? "0.00"}</span></div>
-                <div class="mrow-coord-pill"><span>Pitch</span><span class="mrow-pitch" data-marker-id="${m.id}">${m.pitch?.toFixed(2) ?? "0.00"}</span></div>
-              </div>
+              
             `
             }
         </div>
@@ -731,17 +729,6 @@ function renderNavMarkersList() {
   }
 }
 
-// ─── Draggable Markers for Editing Position ─────────────────────────────────────────────────
-// 2. Add these listeners inside your initPSV() function or wherever you initialize the viewer
-function setupMarkerDragging() {
-  // (Draggable marker logic removed)
-}
-
-// 3. Function to toggle "Edit Position" mode
-function togglePositionEdit() {
-  // (Draggable marker edit mode removed)
-}
-
 // ─── Render Info Markers List ─────────────────────────────────────────────────
 function renderInfoMarkersList() {
   const container = document.getElementById("infoMarkersList");
@@ -755,12 +742,6 @@ function renderInfoMarkersList() {
   container.innerHTML = markers
     .map((m, i) => {
       // Always show yaw/pitch, even if not editing
-      const coordsHTML = `
-          <div class="mrow-coords-display">
-            <div class="mrow-coord-pill"><span>Yaw</span><span class="mrow-yaw" data-marker-id="${m.id}">${typeof m.yaw === "number" ? m.yaw.toFixed(2) : "—"}</span></div>
-            <div class="mrow-coord-pill"><span>Pitch</span><span class="mrow-pitch" data-marker-id="${m.id}">${typeof m.pitch === "number" ? m.pitch.toFixed(2) : "—"}</span></div>
-          </div>
-        `;
       return `
         <div class="mrow ${m.id === selectedNavMarkerId ? "is-selected" : ""}" data-marker-id="${m.id}">
             <div class="mrow-icon mrow-icon-upload" title="Click to replace icon">
@@ -777,20 +758,17 @@ function renderInfoMarkersList() {
               <div class="mrow-upload-area" onclick="this.querySelector('input').click()">
                 <i class="bx bx-cloud-upload"></i>
                 <p>Click or drag to replace Marker Icon</p>
-                <span>WEBP only up to 10KB</span>
-                <input type="file" class="marker-icon-input hidden" data-marker-id="${m.id}" data-marker-type="info" accept=".webp" />
+                <span>JPG, PNG, SVG only up to 10KB</span>
+                <input type="file" class="marker-icon-input hidden" data-marker-id="${m.id}" data-marker-type="info" accept=".jpg,.jpeg,.png,.svg" />
               </div>
               <div class="mrow-coords-display">
-                <div class="mrow-coord-pill"><span>Yaw</span><input class="mrow-yaw-input" data-marker-id="${m.id}" type="number" step="0.01" value="${typeof m.yaw === "number" ? m.yaw.toFixed(2) : "0.00"}" /></div>
-                <div class="mrow-coord-pill"><span>Pitch</span><input class="mrow-pitch-input" data-marker-id="${m.id}" type="number" step="0.01" value="${typeof m.pitch === "number" ? m.pitch.toFixed(2) : "0.00"}" /></div>
+                <div class="mrow-coord-pill"><span>Yaw</span><input class="mrow-yaw-input" data-marker-id="${m.id}" type="number" step="0.001" value="${m.yaw?.toFixed(3) ?? "0.000"}" /></div>
+                <div class="mrow-coord-pill"><span>Pitch</span><input class="mrow-pitch-input" data-marker-id="${m.id}" type="number" step="0.001" value="${m.pitch?.toFixed(3) ?? "0.000"}" /></div>
               </div>
             </div>
             `
                 : `
-              <div class="mrow-coords-display">
-                <div class="mrow-coord-pill"><span>Yaw</span><span class="mrow-yaw" data-marker-id="${m.id}">${typeof m.yaw === "number" ? m.yaw.toFixed(2) : "0.00"}</span></div>
-                <div class="mrow-coord-pill"><span>Pitch</span><span class="mrow-pitch" data-marker-id="${m.id}">${typeof m.pitch === "number" ? m.pitch.toFixed(2) : "0.00"}</span></div>
-              </div>
+              
             `
             }
         </div>
@@ -837,7 +815,6 @@ function renderInfoMarkersList() {
           );
           infoMarker.yaw = yaw;
           infoMarker.pitch = pitch;
-          // Update marker in PSV viewer
           if (psvMarkersPlugin) {
             const marker = psvMarkersPlugin.getMarker(markerId);
             if (marker) {
@@ -888,22 +865,43 @@ function handleMarkerIconUpload(e, markerId, markerType) {
   const file = e.target.files[0];
   if (!file) return;
 
-  if (!file.name.toLowerCase().endsWith(".webp")) {
-    showToast("error", "Only .webp format is allowed for marker icons");
-    e.target.value = "";
-    return;
-  }
+  const fileName = file.name.toLowerCase();
 
-  if (file.size > 10 * 1024) {
-    showToast("error", "Marker icon must be under 10 KB");
-    e.target.value = "";
-    return;
+  // Validate format based on marker type
+  if (markerType === "nav") {
+    if (!fileName.endsWith(".webp")) {
+      showToast(
+        "error",
+        "Only .webp format is allowed for navigation marker icons",
+      );
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 10 * 1024) {
+      showToast("error", "Marker icon must be under 10 KB");
+      e.target.value = "";
+      return;
+    }
+  } else if (markerType === "info") {
+    if (
+      !fileName.endsWith(".jpg") &&
+      !fileName.endsWith(".jpeg") &&
+      !fileName.endsWith(".png") &&
+      !fileName.endsWith(".svg")
+    ) {
+      showToast(
+        "error",
+        "Only .jpg, .png, or .svg formats are allowed for info marker icons",
+      );
+      e.target.value = "";
+      return;
+    }
   }
 
   const img = new Image();
   img.onload = () => {
     URL.revokeObjectURL(img.src);
-    if (img.width !== 100 || img.height !== 100) {
+    if (markerType === "nav" && (img.width !== 100 || img.height !== 100)) {
       showToast(
         "error",
         `Marker icon must be 100×100. Got ${img.width}×${img.height}`,

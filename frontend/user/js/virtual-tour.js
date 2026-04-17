@@ -152,7 +152,7 @@ async function initViewer() {
         RSM: "Gate 4 Way (6)",
         MP: "Gate 4",
         MotorPool: "Motor Pool",
-        ERC: "AEA Road (2)",
+        ERC: "AEA-ERC",
         OVL: "Oval (Lef)",
         GMH: "AL (3)",
         FBH: "Acacia Avenue (1)",

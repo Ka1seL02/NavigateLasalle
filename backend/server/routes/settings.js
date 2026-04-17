@@ -87,14 +87,15 @@ router.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
 
-    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(bucketPath);
+    const { data } = supabase.storage
+      .from(BUCKET_NAME)
+      .getPublicUrl(bucketPath);
 
     res.json({ url: data.publicUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // GET settings (frontend fetches this on load)
 router.get("/", async (req, res) => {
@@ -118,7 +119,7 @@ router.put("/", verifyToken, async (req, res) => {
     const settings = await Settings.findByIdAndUpdate(
       "site_settings",
       { $set: req.body },
-      { new: true, upsert: true, runValidators: true }
+      { returnDocument: "after", upsert: true, runValidators: true },
     );
     res.json(settings);
   } catch (err) {

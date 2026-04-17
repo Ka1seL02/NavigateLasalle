@@ -961,9 +961,8 @@ body.tour-in-progress #sidebar-latch {
   display: flex;
 }
 
-.video-close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10000;
+.video-close-btn img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 }
